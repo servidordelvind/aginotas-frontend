@@ -11,7 +11,14 @@ import { Customers } from './pages/Customers';
 import { History } from './pages/History';
 import { Subscriptions } from './pages/Subscriptions';
 import { Recover } from './pages/Recover';
-import { LoginAdmin } from './pages/LoginAdmin';
+import { AdminLogin } from './pages/AdminLogin';
+import { AdminDashboard } from './pages/AdminDashboard';
+import  AdminPrivateRoute  from './pages/AdminProvateRoute';
+// import DashboardMetrics from './pages/DashboardMetrics';
+import { AdminUsers } from './pages/AdminUsers';
+import { AdminReports } from './pages/AdminReports';
+import { UserChat } from './pages/UserChat';
+
 
 function App() {
   return (
@@ -21,7 +28,7 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/login" element={<Login/>} />
-        <Route path="/admin" element={<LoginAdmin/>} />
+        <Route path="/admin/login" element={<AdminLogin/>} />
         <Route path="/register" element={<Register />} />
         <Route path="/recover" element={<Recover/>} />
         <Route element={<Layout />}>
@@ -29,7 +36,16 @@ function App() {
           <Route path="/customers" element={<Customers />} />
           <Route path="/subscriptions" element={<Subscriptions />} />
           <Route path="/history" element={<History />} />
+          <Route path="/chat" element={<UserChat />} />
+<Route element={<AdminPrivateRoute />}>
+        {/* <Route path="/admin/metrics" element={<DashboardMetrics />} /> */}
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/reports" element={<AdminReports />} />
         </Route>
+        </Route>
+
+        
       </Routes>
     </BrowserRouter>
   );

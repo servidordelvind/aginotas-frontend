@@ -266,4 +266,40 @@ export const api = {
 
     return response.json();
   },
+
+  //teste admin
+  async login_admin(data: { email: string; password: string }): Promise<{ token: string }> {
+    // Simulação de credenciais válidas (substitua por sua lógica real)
+    const validCredentials = {
+      email: 'admin@example.com',
+      password: 'password123',
+    };
+
+    if (data.email === validCredentials.email && data.password === validCredentials.password) {
+      // Credenciais válidas: simular a geração de um token
+      const token = 'seu_token_admin_valido'; // Substitua por sua lógica de geração de token
+      return { token };
+    } else {
+      // Credenciais inválidas
+      throw new Error('Credenciais de administrador inválidas');
+    }
+  },
+
+  // async login_admin(data: { email: string; password: string }): Promise<{ token: string }> {
+  //   const response = await fetch(`${API_URL}/admin/auth`, { // Ajuste a rota para a sua API de login de admin
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify(data),
+  //   });
+
+  //   if (!response.ok) {
+  //     const errorData = await response.json();
+  //     throw new Error(errorData.message || 'Falha ao autenticar administrador');
+  //   }
+
+  //   return response.json();
+  // },
+
 };
