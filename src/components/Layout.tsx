@@ -11,6 +11,7 @@ import {
   MessageCircleCode,
   Menu,
   X,
+  Settings,
 } from 'lucide-react';
 import Cookies from 'js-cookie';
 
@@ -55,12 +56,13 @@ export function Layout() {
     { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
     { icon: Users, label: 'Clientes', path: '/customers' },
     { icon: CreditCard, label: 'Assinaturas', path: '/subscriptions' },
-    { icon: MessageSquare, label: 'Chat com Suporte', path: '/chat' },
+    ...(isAdmin ? [] : [{ icon: MessageSquare, label: 'Chat com Suporte', path: '/chat' }]), // Adicionado aqui
     ...(isAdmin
       ? [
           { icon: ShieldCheck, label: 'Admin Dashboard', path: '/admin/dashboard' },
           { icon: UserCog, label: 'Admin Users', path: '/admin/users' },
           { icon: MessageCircleCode, label: 'Admin Reports', path: '/admin/reports' },
+          { icon: Settings, label: 'Admin Subscriptions', path: '/admin/subscriptions' },
         ]
       : []),
   ];

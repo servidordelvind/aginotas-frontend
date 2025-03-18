@@ -13,11 +13,12 @@ import { Subscriptions } from './pages/Subscriptions';
 import { Recover } from './pages/Recover';
 import { AdminLogin } from './pages/AdminLogin';
 import { AdminDashboard } from './pages/AdminDashboard';
-import  AdminPrivateRoute  from './pages/AdminProvateRoute';
+import  AdminPrivateRoute  from './pages/AdminPrivateRoute';
 // import DashboardMetrics from './pages/DashboardMetrics';
 import { AdminUsers } from './pages/AdminUsers';
 import { AdminReports } from './pages/AdminReports';
 import { UserChat } from './pages/UserChat';
+import { SubscriptionManagement } from './pages/SubscriptionManagement';
 
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/reports" element={<AdminReports />} />
+          <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
         </Route>
         </Route>
 
