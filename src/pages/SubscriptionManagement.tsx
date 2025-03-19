@@ -437,33 +437,7 @@ export function SubscriptionManagement() {
                             )}
                         </div>
 
-                        <div className="bg-white rounded-lg shadow-md p-8">
-                            <Typography variant="h6" className="mb-4 text-gray-900">Aumentar Valor da Fatura de Usuário</Typography>
-                            <Select value={selectedInvoiceUser?.id || ''} onChange={(e) => setSelectedInvoiceUser(users.find(user => user.id === Number(e.target.value)) || null)} displayEmpty fullWidth className="mb-4 border border-gray-300 focus:ring-indigo-500">
-                                <MenuItem value="">Selecione um usuário</MenuItem>
-                                {users.map((user) => (<MenuItem key={user.id} value={user.id}>{user.name}</MenuItem>))}
-                            </Select>
-                            {selectedInvoiceUser && (
-                                <>
-                                    <Select value={selectedMonth} onChange={(e) => setSelectedMonth(Number(e.target.value))} fullWidth className="mb-4 border border-gray-300 focus:ring-indigo-500">
-                                        <MenuItem value={1}>Janeiro</MenuItem>
-                                        <MenuItem value={2}>Fevereiro</MenuItem>
-                                        <MenuItem value={3}>Março</MenuItem>
-                                        <MenuItem value={4}>Abril</MenuItem>
-                                        <MenuItem value={5}>Maio</MenuItem>
-                                        <MenuItem value={6}>Junho</MenuItem>
-                                        <MenuItem value={7}>Julho</MenuItem>
-                                        <MenuItem value={8}>Agosto</MenuItem>
-                                        <MenuItem value={9}>Setembro</MenuItem>
-                                        <MenuItem value={10}>Outubro</MenuItem>
-                                        <MenuItem value={11}>Novembro</MenuItem>
-                                        <MenuItem value={12}>Dezembro</MenuItem>
-                                    </Select>
-                                    <TextField label="Valor Adicional da Fatura" type="number" value={extraInvoiceValue} onChange={(e) => setExtraInvoiceValue(Number(e.target.value))} fullWidth margin="normal" className="border border-gray-300 focus:ring-indigo-500" />
-                                    <Button variant="contained" onClick={handleAddExtraInvoiceValue} className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition-colors duration-300">Aumentar Valor da Fatura</Button>
-                                </>
-                            )}
-                        </div>
+                       
                     </div>
                 )}
             </main>
