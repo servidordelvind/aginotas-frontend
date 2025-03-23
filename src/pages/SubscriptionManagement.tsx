@@ -29,23 +29,17 @@ export function SubscriptionManagement() {
     const [error, setError] = useState(null);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [newUserSubscriptionValue, setNewUserSubscriptionValue] = useState(0);
-    const [extraInvoiceValue, setExtraInvoiceValue] = useState(0);
-    const [selectedItem, setSelectedItem] = useState('users');
+    const [selectedItem, setSelectedItem] = useState('settings');
     const [plans] = useState<Plan[]>([
         { id: 1, name: 'Plano Básico', price: 29.90 },
         { id: 2, name: 'Plano Profissional', price: 49.90 },
         { id: 3, name: 'Plano Premium', price: 99.90 },
     ]);
-    const [newSubscription, setNewSubscription] = useState({
-        name: '',
-        email: '',
-        planId: 1,
-    });
+    
     const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
     const [newDefaultPlanValue, setNewDefaultPlanValue] = useState(0);
     // const [promotions, setPromotions] = useState<Promotion[]>([]);
-    const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1); // Mês atual por padrão
-    const [selectedInvoiceUser, setSelectedInvoiceUser] = useState<User | null>(null);
+   
     const [subscriptionChangeMonth, setSubscriptionChangeMonth] = useState<number>(new Date().getMonth() + 1);
     const [promotions, setPromotions] = useState<Promotion[]>([
         { id: 1, name: 'Promoção de Verão', discount: 20, eligiblePlans: [1, 2] }, // Promoção fake
@@ -124,90 +118,12 @@ export function SubscriptionManagement() {
 
     };
 
-    const handleUpdateUserValue = () => {
-        if (!selectedUser) return;
-        // Chamada de API comentada
-        /*
-        fetch(`/api/subscriptions/user/${selectedUser.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ subscriptionValue: newUserSubscriptionValue }),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error('Erro ao atualizar valor da assinatura do usuário');
-            }
-            alert('Valor da assinatura do usuário atualizado com sucesso!');
-            setUsers((prevUsers) =>
-              prevUsers.map((user) =>
-                user.id === selectedUser.id ? { ...user, subscriptionValue: newUserSubscriptionValue } : user
-              )
-            );
-          })
-          .catch((err) => {
-            setError(err.message);
-          });
-        */
-        alert('Valor da assinatura do usuário atualizado com sucesso! (Simulado)');
-        setUsers((prevUsers) =>
-            prevUsers.map((user) =>
-                user.id === selectedUser?.id ? { ...user, subscriptionValue: newUserSubscriptionValue } : user
-            )
-        );
-    };
+   
 
 
-    const handleAddExtraInvoiceValue = () => {
-        if (!selectedUser) return;
-        // Chamada de API comentada
-        /*
-        fetch(`/api/subscriptions/user/${selectedUser.id}/extra`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ extraValue: extraInvoiceValue }),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error('Erro ao adicionar valor extra à fatura do usuário');
-            }
-            alert('Valor extra adicionado à fatura do usuário com sucesso!');
-          })
-          .catch((err) => {
-            setError(err.message);
-          });
-        */
-        alert(`Valor extra de ${extraInvoiceValue} adicionado à fatura de ${selectedUser.name} para o mês ${selectedMonth}! (Simulado)`);
+   
 
-    };
-
-    const handleCreateSubscription = () => {
-        // Chamada de API comentada
-        /*
-        fetch('/api/subscriptions/new', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(newSubscription),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error('Erro ao cadastrar nova assinatura');
-            }
-            alert('Nova assinatura cadastrada com sucesso!');
-            // Atualizar a lista de usuários
-          })
-          .catch((err) => {
-            setError(err.message);
-          });
-        */
-        alert('Nova assinatura cadastrada com sucesso! (Simulado)');
-        // Atualizar a lista de usuários com a nova assinatura
-    };
+    
 
     const handleCreatePromotion = () => {
         // ... (lógica de criação de promoção)
@@ -240,13 +156,7 @@ export function SubscriptionManagement() {
         setPromotions([...promotions, newPromo]);
         alert('Promoção criada com sucesso! (Simulado)');
     };
-    const handleUpdateUserPlan = (userId: number, newPlanId: number) => {
-        // Simulação: atualiza o plano do usuário
-        setUsers(users.map(user =>
-            user.id === userId ? { ...user, planId: newPlanId } : user
-        ));
-        alert(`Plano do usuário ${userId} atualizado para ${newPlanId}! (Simulado)`);
-    };
+   
 
 
     const handleDeletePromotion = (id: number) => {
@@ -260,10 +170,7 @@ export function SubscriptionManagement() {
         alert('Funcionalidade de alterar o valor da assinatura de usuários já existentes. (Simulado)');
     };
 
-    const handleIncreaseInvoiceValue = () => {
-        if (!selectedUser) return;
-        alert('Funcionalidade de aumentar o valor da fatura de um usuário específico manualmente. (Simulado)');
-    };
+   
 
     if (loading) {
         return (
@@ -282,39 +189,25 @@ export function SubscriptionManagement() {
             <header className="bg-indigo-700 text-white py-4 shadow-md">
                 <nav className="flex justify-center items-center">
                     <ul className="flex space-x-6">
-                        <li>
-                            {/* <button className={`px-4 py-2 hover:bg-indigo-600 rounded transition-colors duration-300 ${selectedItem === 'subscriptions' ? 'bg-indigo-600' : ''}`} onClick={() => setSelectedItem('subscriptions')}>Novos Usuarios</button> */}
-                        </li>
+                        
                         <li>
                             <button className={`px-4 py-2 hover:bg-indigo-600 rounded transition-colors duration-300 ${selectedItem === 'promotions' ? 'bg-indigo-600' : ''}`} onClick={() => setSelectedItem('promotions')}>Promoções</button>
                         </li>
+                        
                         <li>
-                            <button className={`px-4 py-2 hover:bg-indigo-600 rounded transition-colors duration-300 ${selectedItem === 'users' ? 'bg-indigo-600' : ''}`} onClick={() => setSelectedItem('users')}>Usuários e Planos</button>
-                        </li>
-                        <li>
-                            <button className={`px-4 py-2 hover:bg-indigo-600 rounded transition-colors duration-300 ${selectedItem === 'settings' ? 'bg-indigo-600' : ''}`} onClick={() => setSelectedItem('settings')}>Configuração</button>
+                            <button className={`px-4 py-2 hover:bg-indigo-600 rounded transition-colors duration-300 ${selectedItem === 'settings' ? 'bg-indigo-600' : ''}`} onClick={() => setSelectedItem('settings')}>Configurações</button>
                         </li>
                     </ul>
                 </nav>
             </header>
 
             <main className="flex-1 p-10 space-y-8">
-                {/* {selectedItem === 'subscriptions' && <h1 className="text-3xl font-semibold mb-6 text-gray-900">Gerenciar Inscrições</h1>} */}
+               
                 {selectedItem === 'promotions' && <h1 className="text-3xl font-semibold mb-6 text-gray-900">Gerenciar Promoções</h1>}
-                {selectedItem === 'users' && <h1 className="text-3xl font-semibold mb-6 text-gray-900">Lista de Usuários</h1>}
+                
                 {selectedItem === 'settings' && <h1 className="text-3xl font-semibold mb-6 text-gray-900">Configurações dos Planos</h1>}
 
-                {/* {selectedItem === 'subscriptions' && (
-                    <div className="mb-8 p-8 bg-white rounded-lg shadow-md">
-                        <Typography variant="body2" className="mb-4 text-gray-700">Vincule um usuário a um plano de assinatura existente.</Typography>
-                        <TextField label="Nome" value={newSubscription.name} onChange={(e) => setNewSubscription({ ...newSubscription, name: e.target.value })} fullWidth margin="normal" className="mb-4 border border-gray-300 focus:ring-indigo-500" />
-                        <TextField label="Email" type="email" value={newSubscription.email} onChange={(e) => setNewSubscription({ ...newSubscription, email: e.target.value })} fullWidth margin="normal" className="mb-4 border border-gray-300 focus:ring-indigo-500" />
-                        <Select value={newSubscription.planId} onChange={(e) => setNewSubscription({ ...newSubscription, planId: Number(e.target.value) })} fullWidth className="mb-4 border border-gray-300 focus:ring-indigo-500">
-                            {plans.map((plan) => (<MenuItem key={plan.id} value={plan.id}>{plan.name}</MenuItem>))}
-                        </Select>
-                        <Button variant="contained" onClick={handleCreateSubscription} className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition-colors duration-300">Criar Inscrição</Button>
-                    </div>
-                )} */}
+               
 
                 {selectedItem === 'promotions' && (
                     <div className="p-8 space-y-8">
@@ -369,30 +262,7 @@ export function SubscriptionManagement() {
                         </div>
                     </div>
                 )}
-                {selectedItem === 'users' && (
-                    <div className="bg-white rounded-lg shadow-md p-8">
-                        <ul className="space-y-4">
-                            {users.map((user) => {
-                                const plan = plans.find((p) => p.id === user.planId);
-                                return (
-                                    <li key={user.id} className="flex items-center justify-between border border-gray-300 rounded-lg p-6">
-                                        <div>
-                                            <span className="font-semibold text-gray-900">{user.name}</span> ({user.email})
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <Select value={user.planId} onChange={(e) => handleUpdateUserPlan(user.id, Number(e.target.value))} className="border border-gray-300 focus:ring-indigo-500">
-                                                {plans.map((p) => (<MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>))}
-                                            </Select>
-                                            <Button variant="contained" color="primary" onClick={() => handleUpdateUserPlan(user.id, user.planId)} className="transition-colors duration-300">
-                                                Atualizar Plano
-                                            </Button>
-                                        </div>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </div>
-                )}
+               
 
                 {selectedItem === 'settings' && (
                     <div className="space-y-6">

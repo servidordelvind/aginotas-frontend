@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import io from 'socket.io-client';
+// import io from 'socket.io-client';
 import { Send as SendIcon, Trash2 as TrashIcon } from 'lucide-react';
 
-const socket = io('http://localhost:3001');
+// const socket = io('http://localhost:3001');
 
 interface Message {
   text: string;
@@ -48,28 +48,28 @@ export function AdminReports() {
     'Qual seu email para contato?',
   ]);
 
-  useEffect(() => {
-    socket.on('chatMessage', (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
-    });
+  // useEffect(() => {
+  //   socket.on('chatMessage', (message) => {
+  //     setMessages((prevMessages) => [...prevMessages, message]);
+  //   });
 
-    return () => {
-      socket.off('chatMessage');
-    };
-  }, []);
+  //   return () => {
+  //     socket.off('chatMessage');
+  //   };
+  // }, []);
 
   
-  const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      const timestamp = Date.now(); // Obtém o timestamp atual
-      socket.emit('chatMessage', { text: newMessage, sender: 'admin', timestamp });
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: newMessage, sender: 'admin', timestamp },
-      ]);
-      setNewMessage('');
-    }
-  };
+  // const handleSendMessage = () => {
+  //   if (newMessage.trim()) {
+  //     const timestamp = Date.now(); // Obtém o timestamp atual
+  //     socket.emit('chatMessage', { text: newMessage, sender: 'admin', timestamp });
+  //     setMessages((prevMessages) => [
+  //       ...prevMessages,
+  //       { text: newMessage, sender: 'admin', timestamp },
+  //     ]);
+  //     setNewMessage('');
+  //   }
+  // };
 
   const handleUserSelect = (user: User) => {
     setSelectedUser(user);
@@ -102,21 +102,21 @@ export function AdminReports() {
     }
   };
 
-  const handleStandardResponse = (response: string) => {
-    const now = Date.now(); // Obtém o timestamp atual
-    socket.emit('chatMessage', { text: response, sender: 'admin', timestamp: now }); // Envia a mensagem com timestamp
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { text: response, sender: 'admin', timestamp: now }, // Adiciona a mensagem com timestamp ao estado
-    ]);
-  };
+  // const handleStandardResponse = (response: string) => {
+  //   const now = Date.now(); // Obtém o timestamp atual
+  //   socket.emit('chatMessage', { text: response, sender: 'admin', timestamp: now }); // Envia a mensagem com timestamp
+  //   setMessages((prevMessages) => [
+  //     ...prevMessages,
+  //     { text: response, sender: 'admin', timestamp: now }, // Adiciona a mensagem com timestamp ao estado
+  //   ]);
+  // };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    // Envia a mensagem quando a tecla Enter é pressionada
-    if (event.key === 'Enter') {
-      handleSendMessage();
-    }
-  };
+  // const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  //   // Envia a mensagem quando a tecla Enter é pressionada
+  //   if (event.key === 'Enter') {
+  //     handleSendMessage();
+  //   }
+  // };
 
 
 
@@ -185,7 +185,7 @@ export function AdminReports() {
               <button
                 key={index}
                 className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded transition-all duration-200"
-                onClick={() => handleStandardResponse(response)}
+                // onClick={() => handleStandardResponse(response)}
               >
                 {response}
               </button>
@@ -200,11 +200,11 @@ export function AdminReports() {
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Digite sua mensagem..."
-              onKeyDown={handleKeyDown}
+              // onKeyDown={handleKeyDown}
             />
             <button
               className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-r-lg transition-all duration-300"
-              onClick={handleSendMessage}
+              // onClick={handleSendMessage}
             >
               <SendIcon className="w-5 h-5" />
             </button>

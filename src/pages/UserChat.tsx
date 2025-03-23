@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import io from 'socket.io-client';
+// import io from 'socket.io-client';
 import { Send as SendIcon } from 'lucide-react';
 
-const socket = io('http://localhost:3001');
+// const socket = io('http://localhost:3001');
 
 interface Message {
   text: string;
@@ -51,73 +51,73 @@ export function UserChat() {
   const [showAdminList, setShowAdminList] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  useEffect(() => {
-    socket.on('chatMessage', (message: Message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
-    });
+  // useEffect(() => {
+  //   socket.on('chatMessage', (message: Message) => {
+  //     setMessages((prevMessages) => [...prevMessages, message]);
+  //   });
 
-    return () => {
-      socket.off('chatMessage');
-    };
-  }, []);
+  //   return () => {
+  //     socket.off('chatMessage');
+  //   };
+  // }, []);
 
-  const handleSendMessage = () => {
-    if (newMessage.trim() && selectedAdmin) {
-      const timestamp = Date.now();
-      const message: Message = {
-        text: newMessage,
-        sender: 'user',
-        adminId: selectedAdmin.id,
-        timestamp: timestamp,
-      };
-      socket.emit('chatMessage', message);
-      setMessages((prevMessages) => [...prevMessages, message]);
-      setNewMessage('');
-    }
-  };
+  // const handleSendMessage = () => {
+  //   if (newMessage.trim() && selectedAdmin) {
+  //     const timestamp = Date.now();
+  //     const message: Message = {
+  //       text: newMessage,
+  //       sender: 'user',
+  //       adminId: selectedAdmin.id,
+  //       timestamp: timestamp,
+  //     };
+  //     socket.emit('chatMessage', message);
+  //     setMessages((prevMessages) => [...prevMessages, message]);
+  //     setNewMessage('');
+  //   }
+  // };
 
-  const handleAdminSelect = (admin: Admin) => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setSelectedAdmin(admin);
-      setMessages([]);
-      const now = Date.now();
+  // const handleAdminSelect = (admin: Admin) => {
+  //   setIsTransitioning(true);
+  //   setTimeout(() => {
+  //     setSelectedAdmin(admin);
+  //     setMessages([]);
+  //     const now = Date.now();
 
-      setIsTyping(true);
-      setTimeout(() => {
-        if (admin.id === 1) {
-          setMessages([{ text: 'Olá, como posso ajudar?', sender: 'admin', timestamp: now }]);
-        } else if (admin.id === 2) {
-          setMessages([{ text: 'Em que posso ser útil?', sender: 'admin', timestamp: now }]);
-        } else if (admin.id === 3) {
-          setMessages([{ text: 'Qual a sua dúvida?', sender: 'admin', timestamp: now }]);
-        } else {
-          setMessages([{ text: 'Em que posso ser útil?', sender: 'admin', timestamp: now }]);
-        }
-        setIsTyping(false);
-      }, 1500);
+  //     setIsTyping(true);
+  //     setTimeout(() => {
+  //       if (admin.id === 1) {
+  //         setMessages([{ text: 'Olá, como posso ajudar?', sender: 'admin', timestamp: now }]);
+  //       } else if (admin.id === 2) {
+  //         setMessages([{ text: 'Em que posso ser útil?', sender: 'admin', timestamp: now }]);
+  //       } else if (admin.id === 3) {
+  //         setMessages([{ text: 'Qual a sua dúvida?', sender: 'admin', timestamp: now }]);
+  //       } else {
+  //         setMessages([{ text: 'Em que posso ser útil?', sender: 'admin', timestamp: now }]);
+  //       }
+  //       setIsTyping(false);
+  //     }, 1500);
 
-      setIsTransitioning(false);
-      setShowAdminList(true);
-    }, 2000);
-  };
+  //     setIsTransitioning(false);
+  //     setShowAdminList(true);
+  //   }, 2000);
+  // };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && newMessage.trim() && selectedAdmin) {
-      handleSendMessage();
-      event.preventDefault();
-    }
-  };
+  // const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  //   if (event.key === 'Enter' && newMessage.trim() && selectedAdmin) {
+  //     handleSendMessage();
+  //     event.preventDefault();
+  //   }
+  // };
 
-  const handleRandomAdminSelect = () => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      const randomIndex = Math.floor(Math.random() * admins.length);
-      const randomAdmin = admins[randomIndex];
-      handleAdminSelect(randomAdmin);
-      setIsTransitioning(false);
-    }, 2000);
-  };
+  // const handleRandomAdminSelect = () => {
+  //   setIsTransitioning(true);
+  //   setTimeout(() => {
+  //     const randomIndex = Math.floor(Math.random() * admins.length);
+  //     const randomAdmin = admins[randomIndex];
+  //     handleAdminSelect(randomAdmin);
+  //     setIsTransitioning(false);
+  //   }, 2000);
+  // };
 
   return (
     <div className="flex h-screen bg-gray-100">

@@ -15,22 +15,35 @@ dayjs.extend(isoWeek);
 dayjs.extend(timezone);
 dayjs.extend(utc);
 
+
+
+
+
+
 interface Nota {
-  customer: string;
+  customer: {
+  _id: string;
+  name: string;
   user: string;
+},
   content: {
     file: string;
     date: string;
     status: string;
     download: string;
+    value: string;
+    link: string;
   };
 }
+
+
+
 
 export function Dashboard() {
 
   const [customer, setCustomer] = useState([]);
   const [customeractive, setCustomerActive] = useState([]);
-  const [invoice, setInvoice] = useState([]);
+  const [invoice, setInvoice] = useState<Nota[]>([]);
   const [dayInvoicetoday, setDayInvoiceToday] = useState(0);
   const [dayInvoicelast7days, setDayInvoiceLast7Days] = useState(0);
 
@@ -79,6 +92,10 @@ export function Dashboard() {
       notas: contagemPorDia[dia],
     }));
   };
+
+
+
+  
   
 
   const getNotasPorPeriodo = (notas: Nota[]) => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Trash2, XCircle, Calendar, File, Check, Ban} from 'lucide-react';
+import { Plus, Search, Trash2, XCircle, Calendar, File, Check, Ban } from 'lucide-react';
 import { toast } from 'sonner';
 import { api } from '../lib/api.ts';
 
@@ -10,7 +10,7 @@ interface Customer {
   email: string;
   phone: string;
   status: 'active' | 'inactive';
-  user:{
+  user: {
     _id: string;
     email: string;
   }
@@ -26,7 +26,7 @@ interface Customer {
   inscricaoMunicipal?: string;
 }
 
-interface Schedule{
+interface Schedule {
   customer_id: string;
 }
 
@@ -41,14 +41,14 @@ export function Customers() {
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isGerating, setIsGerating] = useState(false);
-  
+
   const [newCustomer, setNewCustomer] = useState({
     name: '',
     cnpj: '',
     email: '',
     phone: '',
     inscricaoMunicipal: '',
-    user:{
+    user: {
       _id: '',
       email: '',
     },
@@ -89,7 +89,7 @@ export function Customers() {
     loadCustomers();
   }, []);
 
-  const loadCustomers = async () => { 
+  const loadCustomers = async () => {
     try {
       const data = await api.find_customers();
       const scheduledata = await api.find_schedulings();
@@ -112,13 +112,13 @@ export function Customers() {
   const handleAddCustomer = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try{
+    try {
       await api.create_customer(newCustomer);
       toast.success('Cliente adicionado com sucesso!');
       location.reload();
-    }catch(error){
+    } catch (error) {
       toast.error('Erro ao adicionar cliente');
-      console.error('Erro ao adicionar cliente:', error);      
+      console.error('Erro ao adicionar cliente:', error);
     }
   };
 
@@ -184,7 +184,7 @@ export function Customers() {
 
   const handleSaveSubscription = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedCustomer) return;
     //configurar agendamento da emissao das notas fiscais
     const data = {
@@ -198,7 +198,7 @@ export function Customers() {
 
       item_lista_servico: subscription.itemListaServico,
       codigo_cnae: subscription.codigoCnae,
-      
+
       customer_data: {
         cpfCnpj: selectedCustomer.cnpj.replace(/[^\d]/g, ''),
         razaoSocial: selectedCustomer.name,
@@ -218,63 +218,63 @@ export function Customers() {
     }
 
     try {
-      if(selectedCustomer.status === 'active'){
-      setIsGerating(true);
-      await api.create_scheduling(data);
-      toast.success('Agendamento configurado com sucesso!');
-      setIsSubscriptionModalOpen(false);   
-      setIsGerating(false);   
-      location.reload();
-      }else{
-      toast.success('O contrato está inativo!');
+      if (selectedCustomer.status === 'active') {
+        setIsGerating(true);
+        await api.create_scheduling(data);
+        toast.success('Agendamento configurado com sucesso!');
+        setIsSubscriptionModalOpen(false);
+        setIsGerating(false);
+        location.reload();
+      } else {
+        toast.success('O contrato está inativo!');
       }
     } catch (error) {
       toast.error('Erro ao agendar emissão');
-      console.error('Erro ao agendar emissão:', error);      
+      console.error('Erro ao agendar emissão:', error);
     }
 
-/*     try {
-      const { error } = await supabase
-        .from('subscriptions')
-        .insert([{
-          customer_id: selectedCustomer._id,
-          billing_day: subscription.billingDay,
-          amount: subscription.amount,
-          start_date: subscription.startDate,
-          end_date: subscription.endDate,
-          description: subscription.description,
-          item_lista_servico: subscription.itemListaServico,
-          codigo_cnae: subscription.codigoCnae,
-          customer_data: {
-            cpfCnpj: selectedCustomer.cnpj.replace(/[^\d]/g, ''),
-            razaoSocial: selectedCustomer.name,
-            inscricaoMunicipal: selectedCustomer.inscricaoMunicipal,
-            endereco: {
-              endereco: selectedCustomer.address.street,
-              numero: selectedCustomer.address.number,
-              bairro: selectedCustomer.address.neighborhood,
-              codigoMunicipio: selectedCustomer.address.cityCode,
-              cidadeNome: selectedCustomer.address.city,
-              uf: selectedCustomer.address.state,
-              cep: selectedCustomer.address.zipCode.replace(/[^\d]/g, '')
-            },
-            telefone: selectedCustomer.phone.replace(/[^\d]/g, '')
-          }
-        }]);
-
-      if (error) throw error;
-
-      toast.success('Assinatura configurada com sucesso!');
-      setIsSubscriptionModalOpen(false);
-    } catch (error) {
-      toast.error('Erro ao configurar assinatura');
-      console.error('Erro ao configurar assinatura:', error);
-    } */
+    /*     try {
+          const { error } = await supabase
+            .from('subscriptions')
+            .insert([{
+              customer_id: selectedCustomer._id,
+              billing_day: subscription.billingDay,
+              amount: subscription.amount,
+              start_date: subscription.startDate,
+              end_date: subscription.endDate,
+              description: subscription.description,
+              item_lista_servico: subscription.itemListaServico,
+              codigo_cnae: subscription.codigoCnae,
+              customer_data: {
+                cpfCnpj: selectedCustomer.cnpj.replace(/[^\d]/g, ''),
+                razaoSocial: selectedCustomer.name,
+                inscricaoMunicipal: selectedCustomer.inscricaoMunicipal,
+                endereco: {
+                  endereco: selectedCustomer.address.street,
+                  numero: selectedCustomer.address.number,
+                  bairro: selectedCustomer.address.neighborhood,
+                  codigoMunicipio: selectedCustomer.address.cityCode,
+                  cidadeNome: selectedCustomer.address.city,
+                  uf: selectedCustomer.address.state,
+                  cep: selectedCustomer.address.zipCode.replace(/[^\d]/g, '')
+                },
+                telefone: selectedCustomer.phone.replace(/[^\d]/g, '')
+              }
+            }]);
+    
+          if (error) throw error;
+    
+          toast.success('Assinatura configurada com sucesso!');
+          setIsSubscriptionModalOpen(false);
+        } catch (error) {
+          toast.error('Erro ao configurar assinatura');
+          console.error('Erro ao configurar assinatura:', error);
+        } */
   };
 
   const handleGenerateInvoice = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedCustomer) return;
     const data = {
       invoice: invoice,
@@ -304,23 +304,23 @@ export function Customers() {
           cep: selectedCustomer.address.zipCode.replace(/[^\d]/g, '')
         },
         telefone: selectedCustomer.phone.replace(/[^\d]/g, '')
-      } 
+      }
     }
 
     try {
-      if(selectedCustomer.status === 'active'){
-      setIsGerating(true);
-      await api.create_invoice(data);
-      toast.success('Nota Fiscal gerada com sucesso!');
-      setIsInvoiceModalOpen(false);  
-      setIsGerating(true);
-      location.reload();
-      }else{
-      toast.success('O contrato está inativo!');
-      }    
+      if (selectedCustomer.status === 'active') {
+        setIsGerating(true);
+        await api.create_invoice(data);
+        toast.success('Nota Fiscal gerada com sucesso!');
+        setIsInvoiceModalOpen(false);
+        setIsGerating(true);
+        location.reload();
+      } else {
+        toast.success('O contrato está inativo!');
+      }
     } catch (error) {
       toast.error('Erro ao Gerar Nota Fiscal');
-      console.error('Erro ao Gerar Nota Fiscal:', error);      
+      console.error('Erro ao Gerar Nota Fiscal:', error);
     }
 
   };
@@ -337,7 +337,37 @@ export function Customers() {
       </div>
     );
   }
+
   
+  const handleCnpjBlur = async () => {
+    const cnpj = newCustomer.cnpj.replace(/\D/g, ""); // Remove caracteres não numéricos
+    if (cnpj.length === 14) {
+      try {
+        const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
+        const data = await response.json();
+
+        if (data) {
+          setNewCustomer({
+            ...newCustomer,
+            name: data.razao_social,
+            address: {
+              street: data.logradouro,
+              number: data.numero || "",
+              neighborhood: data.bairro,
+              city: data.municipio,
+              state: data.uf,
+              zipCode: data.cep,
+              cityCode: data.codigo_municipio,
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Erro ao buscar o CNPJ:", error);
+        alert("Não foi possível buscar informações do CNPJ. Verifique o número e tente novamente.");
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -383,65 +413,64 @@ export function Customers() {
                   <td className="py-3 px-4 text-gray-600">{customer.email}</td>
                   <td className="py-3 px-4 text-gray-600">{customer.phone}</td>
                   <td className="py-3 px-4">
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      customer.status === 'active'
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${customer.status === 'active'
                         ? 'bg-green-100 text-green-700'
                         : 'bg-gray-100 text-gray-700'
-                    }`}>
+                      }`}>
                       {customer.status === 'active' ? 'Ativo' : 'Inativo'}
                     </span>
                   </td>
                   <td className="py-3 px-4 text-right">
                     <div className="flex justify-end gap-2">
-                      
+
                       <button
                         onClick={() => handleConfigureInvoice(customer)}
                         className="text-blue-600 hover:text-blue-700"
                         title="Gerar Nota Fiscal"
                       >
                         <File className="w-5 h-5" />
-                      </button>     
+                      </button>
 
-                        {/* BOTAO AGENDAR */}
-                       <button
+                      {/* BOTAO AGENDAR */}
+                      <button
                         onClick={() => handleConfigureSubscription(customer)}
                         className="text-blue-600 hover:text-blue-700"
                         title="Emissão automizada"
                       >
                         <Calendar className="w-5 h-5" />
-                        </button>    
-
-                        {schedulings.map((schedule) => (
-                          <>
-                        {/* BOTAO CANCELAR AGENDAMENTO */}
-                        {schedule.customer_id === customer._id && 
-                        <button
-                        onClick={() => handleCancelSchedule(customer._id)}
-                        className="text-blue-600 hover:text-blue-700"
-                        title="Cancelar agendamento"
-                      >
-                        <Ban className="w-5 h-5" />
-                        </button> 
-                          } 
-                        </>
-                        ))}
-
-                      {customer.status ===  'active' ? (
-                      <button
-                        onClick={() => handleDeactivateCustomer(customer._id)}
-                        className="text-gray-600 hover:text-gray-900"
-                        title="Finalizar Contrato"
-                      >
-                        <XCircle className="w-5 h-5" />
                       </button>
-                      ):(
+
+                      {schedulings.map((schedule) => (
+                        <>
+                          {/* BOTAO CANCELAR AGENDAMENTO */}
+                          {schedule.customer_id === customer._id &&
+                            <button
+                              onClick={() => handleCancelSchedule(customer._id)}
+                              className="text-blue-600 hover:text-blue-700"
+                              title="Cancelar agendamento"
+                            >
+                              <Ban className="w-5 h-5" />
+                            </button>
+                          }
+                        </>
+                      ))}
+
+                      {customer.status === 'active' ? (
                         <button
-                        onClick={() => handleActiveCustomer(customer._id)}
-                        className="text-gray-600 hover:text-gray-900"
-                        title="Ativar Contrato"
-                      >
-                        <Check className="w-5 h-5" />
-                      </button>                        
+                          onClick={() => handleDeactivateCustomer(customer._id)}
+                          className="text-gray-600 hover:text-gray-900"
+                          title="Finalizar Contrato"
+                        >
+                          <XCircle className="w-5 h-5" />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleActiveCustomer(customer._id)}
+                          className="text-gray-600 hover:text-gray-900"
+                          title="Ativar Contrato"
+                        >
+                          <Check className="w-5 h-5" />
+                        </button>
                       )}
 
                       <button
@@ -470,10 +499,9 @@ export function Customers() {
 
             <div className="p-6 overflow-y-auto flex-1">
               <form id="newCustomerForm" onSubmit={handleAddCustomer} className="space-y-6">
-                {/* Informações Básicas */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium text-gray-900">Informações Básicas</h3>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Nome da Empresa
@@ -488,13 +516,13 @@ export function Customers() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      CNPJ
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
                     <input
                       type="text"
                       value={newCustomer.cnpj}
                       onChange={(e) => setNewCustomer({ ...newCustomer, cnpj: e.target.value })}
+                      onBlur={handleCnpjBlur}
+                      placeholder="Digite o CNPJ e saia do campo para buscar"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
@@ -507,158 +535,143 @@ export function Customers() {
                     <input
                       type="text"
                       value={newCustomer.inscricaoMunicipal}
-                      onChange={(e) => setNewCustomer({ ...newCustomer, inscricaoMunicipal: e.target.value })}
+                      onChange={(e) =>
+                        setNewCustomer({ ...newCustomer, inscricaoMunicipal: e.target.value })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
                     <input
                       type="email"
                       value={newCustomer.email}
                       onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Telefone
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
                     <input
                       type="tel"
                       value={newCustomer.phone}
                       onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
                     />
                   </div>
                 </div>
 
-                {/* Endereço */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium text-gray-900">Endereço</h3>
-                  
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Rua
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Rua</label>
                     <input
                       type="text"
                       value={newCustomer.address.street}
-                      onChange={(e) => setNewCustomer({
-                        ...newCustomer,
-                        address: { ...newCustomer.address, street: e.target.value }
-                      })}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, street: e.target.value },
+                        })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Número
-                      </label>
-                      <input
-                        type="text"
-                        value={newCustomer.address.number}
-                        onChange={(e) => setNewCustomer({
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Número</label>
+                    <input
+                      type="text"
+                      value={newCustomer.address.number}
+                      onChange={(e) =>
+                        setNewCustomer({
                           ...newCustomer,
-                          address: { ...newCustomer.address, number: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Bairro
-                      </label>
-                      <input
-                        type="text"
-                        value={newCustomer.address.neighborhood}
-                        onChange={(e) => setNewCustomer({
-                          ...newCustomer,
-                          address: { ...newCustomer.address, neighborhood: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        required
-                      />
-                    </div>
+                          address: { ...newCustomer.address, number: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Cidade
-                      </label>
-                      <input
-                        type="text"
-                        value={newCustomer.address.city}
-                        onChange={(e) => setNewCustomer({
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Bairro</label>
+                    <input
+                      type="text"
+                      value={newCustomer.address.neighborhood}
+                      onChange={(e) =>
+                        setNewCustomer({
                           ...newCustomer,
-                          address: { ...newCustomer.address, city: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Estado
-                      </label>
-                      <input
-                        type="text"
-                        value={newCustomer.address.state}
-                        onChange={(e) => setNewCustomer({
-                          ...newCustomer,
-                          address: { ...newCustomer.address, state: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        required
-                      />
-                    </div>
+                          address: { ...newCustomer.address, neighborhood: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        CEP
-                      </label>
-                      <input
-                        type="text"
-                        value={newCustomer.address.zipCode}
-                        onChange={(e) => setNewCustomer({
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
+                    <input
+                      type="text"
+                      value={newCustomer.address.city}
+                      onChange={(e) =>
+                        setNewCustomer({
                           ...newCustomer,
-                          address: { ...newCustomer.address, zipCode: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        required
-                      />
-                    </div>
+                          address: { ...newCustomer.address, city: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Código do Município
-                      </label>
-                      <input
-                        type="text"
-                        value={newCustomer.address.cityCode}
-                        onChange={(e) => setNewCustomer({
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                    <input
+                      type="text"
+                      value={newCustomer.address.state}
+                      onChange={(e) =>
+                        setNewCustomer({
                           ...newCustomer,
-                          address: { ...newCustomer.address, cityCode: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        required
-                      />
-                    </div>
+                          address: { ...newCustomer.address, state: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">CEP</label>
+                    <input
+                      type="text"
+                      value={newCustomer.address.zipCode}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, zipCode: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Código do Município
+                    </label>
+                    <input
+                      type="text"
+                      value={newCustomer.address.cityCode}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, cityCode: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
                   </div>
                 </div>
               </form>
