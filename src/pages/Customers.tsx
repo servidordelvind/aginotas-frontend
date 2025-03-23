@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Trash2, XCircle, Calendar, File, Check, Ban } from 'lucide-react';
 import { toast } from 'sonner';
+import { FaEye } from 'react-icons/fa';
 import { api } from '../lib/api.ts';
 
 interface Customer {
@@ -41,6 +42,13 @@ export function Customers() {
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isGerating, setIsGerating] = useState(false);
+  const [invoiceHistory, setInvoiceHistory] = useState<any[]>([]);
+
+  const [activeModal, setActiveModal] = useState<'none' | 'invoice' | 'subscription' | 'history'>('none');
+
+  // const [showInvoiceHistoryModal, setShowInvoiceHistoryModal] = useState(false);
+  // const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  // const [currentCustomer, setCurrentCustomer] = useState<Customer | null>(null);
 
   const [newCustomer, setNewCustomer] = useState({
     name: '',
@@ -83,6 +91,31 @@ export function Customers() {
     itemListaServico: '801',
     codigoCnae: '8531700'
   });
+
+
+
+
+  //carrega o historico de notas geradas para um cliente
+  const loadInvoiceHistory = async (customerId: string) => {
+    try {
+      const data = await api.find_invoices_by_customer(customerId); // Supondo que você tenha uma API que retorna as faturas de um cliente.
+      setInvoiceHistory(data || []);
+    } catch (error) {
+      toast.error('Erro ao carregar histórico de notas fiscais');
+      console.error('Erro ao carregar histórico de notas fiscais:', error);
+    }
+  };
+
+
+
+
+
+  const handleViewInvoiceHistory = (customer: Customer) => {
+    setActiveModal('history');  // Alterando para 'history' ao abrir o modal de histórico
+    loadInvoiceHistory(customer._id);
+    setSelectedCustomer(customer);
+  };
+
 
 
   useEffect(() => {
@@ -173,13 +206,12 @@ export function Customers() {
   };
 
   const handleConfigureSubscription = (customer: Customer) => {
+    setActiveModal('subscription');  // Alterando para 'subscription' ao abrir o modal de assinatura
     setSelectedCustomer(customer);
-    setIsSubscriptionModalOpen(true);
   };
-
   const handleConfigureInvoice = (customer: Customer) => {
+    setActiveModal('invoice');  // Alterando para 'invoice' ao abrir o modal de gerar NF
     setSelectedCustomer(customer);
-    setIsInvoiceModalOpen(true);
   };
 
   const handleSaveSubscription = async (e: React.FormEvent) => {
@@ -338,7 +370,7 @@ export function Customers() {
     );
   }
 
-  
+
   const handleCnpjBlur = async () => {
     const cnpj = newCustomer.cnpj.replace(/\D/g, ""); // Remove caracteres não numéricos
     if (cnpj.length === 14) {
@@ -367,6 +399,14 @@ export function Customers() {
       }
     }
   };
+
+
+  const closeAllModals = () => {
+    setActiveModal('none');  // Fechando todos os modais
+  };
+
+
+  const customer = customers[0];
 
   return (
     <div className="space-y-6">
@@ -414,8 +454,8 @@ export function Customers() {
                   <td className="py-3 px-4 text-gray-600">{customer.phone}</td>
                   <td className="py-3 px-4">
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${customer.status === 'active'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-700'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-gray-100 text-gray-700'
                       }`}>
                       {customer.status === 'active' ? 'Ativo' : 'Inativo'}
                     </span>
@@ -455,6 +495,16 @@ export function Customers() {
                         </>
                       ))}
 
+
+                      <button
+                        onClick={() => handleViewInvoiceHistory(customer)}
+                        className="text-blue-600 hover:text-blue-800"
+                        title="Ver Histórico"
+                      >
+                        <FaEye /> {/* Ícone de olho */}
+                      </button>
+
+
                       {customer.status === 'active' ? (
                         <button
                           onClick={() => handleDeactivateCustomer(customer._id)}
@@ -484,6 +534,7 @@ export function Customers() {
                   </td>
                 </tr>
               ))}
+
             </tbody>
           </table>
         </div>
@@ -696,21 +747,60 @@ export function Customers() {
           </div>
         </div>
       )}
+      {/* Modal para exibir a lista de notas geradas */}
+      {/* Modal Histórico de Notas Fiscais */}
+      {selectedCustomer && activeModal === 'history' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-96">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-gray-900">Histórico de Notas Fiscais</h2>
+              <button onClick={closeAllModals} className="text-gray-500 hover:text-gray-700">
+                <XCircle className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold text-gray-800">{selectedCustomer.name}</h3>
+              <table className="mt-4 w-full table-auto">
+                <thead>
+                  <tr className="border-b">
+                    <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Data</th>
+                    <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Valor</th>
+                    <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Descrição</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {invoiceHistory.length === 0 ? (
+                    <tr>
+                      <td colSpan={3} className="py-2 px-4 text-center text-sm text-gray-500">Nenhuma nota fiscal encontrada</td>
+                    </tr>
+                  ) : (
+                    invoiceHistory.map((invoice) => (
+                      <tr key={invoice.id} className="border-b">
+                        <td className="py-2 px-4 text-sm text-gray-700">{invoice.date}</td>
+                        <td className="py-2 px-4 text-sm text-gray-700">{invoice.amount}</td>
+                        <td className="py-2 px-4 text-sm text-gray-700">{invoice.description}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal de Configuração de Assinatura */}
-      {isSubscriptionModalOpen && selectedCustomer && (
+      {activeModal === 'subscription' && selectedCustomer && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl max-h-[90vh] w-full max-w-md flex flex-col">
             <div className="p-6 border-b border-gray-200">
               <h2 className="text-xl font-bold text-gray-900">Emita suas Notas de Forma Programada</h2>
             </div>
-
             <div className="p-6 overflow-y-auto flex-1">
               <form id="subscriptionForm" onSubmit={handleSaveSubscription} className="space-y-4">
+                {/* Campos para configurar assinatura */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Dia do Faturamento
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Dia do Faturamento</label>
                   <input
                     type="number"
                     min="1"
@@ -723,9 +813,7 @@ export function Customers() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Valor Mensal
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Valor Mensal</label>
                   <input
                     type="number"
                     step="0.01"
@@ -737,9 +825,7 @@ export function Customers() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Data de Início
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Data de Início</label>
                   <input
                     type="date"
                     value={subscription.startDate}
@@ -750,9 +836,7 @@ export function Customers() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Data de Término
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Data de Término</label>
                   <input
                     type="date"
                     value={subscription.endDate}
@@ -763,9 +847,7 @@ export function Customers() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Descrição do Serviço
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
                   <textarea
                     value={subscription.description}
                     onChange={(e) => setSubscription({ ...subscription, description: e.target.value })}
@@ -775,13 +857,8 @@ export function Customers() {
                 </div>
               </form>
             </div>
-
             <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => setIsSubscriptionModalOpen(false)}
-                className="px-4 py-2 text-gray-700 hover:text-gray-900"
-              >
+              <button type="button" onClick={closeAllModals} className="px-4 py-2 text-gray-700 hover:text-gray-900">
                 Cancelar
               </button>
               <button
@@ -798,19 +875,16 @@ export function Customers() {
       )}
 
       {/* Modal Gerar Nota Fiscal */}
-      {isInvoiceModalOpen && selectedCustomer && (
+      {activeModal === 'invoice' && selectedCustomer && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl max-h-[90vh] w-full max-w-md flex flex-col">
             <div className="p-6 border-b border-gray-200">
               <h2 className="text-xl font-bold text-gray-900">Gerar Nota Fiscal</h2>
             </div>
-
             <div className="p-6 overflow-y-auto flex-1">
               <form id="invoiceForm" onSubmit={handleGenerateInvoice} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Valor Mensal
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Valor Mensal</label>
                   <input
                     type="number"
                     step="0.01"
@@ -820,10 +894,9 @@ export function Customers() {
                     required
                   />
                 </div>
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Descrição do Serviço
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
                   <textarea
                     value={invoice.description}
                     onChange={(e) => setInvoice({ ...invoice, description: e.target.value })}
@@ -833,13 +906,8 @@ export function Customers() {
                 </div>
               </form>
             </div>
-
             <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => setIsInvoiceModalOpen(false)}
-                className="px-4 py-2 text-gray-700 hover:text-gray-900"
-              >
+              <button type="button" onClick={closeAllModals} className="px-4 py-2 text-gray-700 hover:text-gray-900">
                 Cancelar
               </button>
               <button
@@ -854,6 +922,7 @@ export function Customers() {
           </div>
         </div>
       )}
+
     </div>
   );
 }
