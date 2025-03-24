@@ -56,7 +56,9 @@ export function Layout() {
     { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
     { icon: Users, label: 'Clientes', path: '/customers' },
     { icon: CreditCard, label: 'Assinaturas', path: '/subscriptions' },
+    
     ...(isAdmin ? [] : [{ icon: MessageSquare, label: 'Chat com Suporte', path: '/chat' }]),
+    ...(isAdmin ? [] : [{ icon: Settings, label: 'Configurações', path: '/UserConfig' }]),
     ...(isAdmin
       ? [
         { icon: ShieldCheck, label: 'Admin Dashboard', path: '/admin/dashboard' },

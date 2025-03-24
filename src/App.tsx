@@ -10,6 +10,7 @@ import { Dashboard } from './pages/Dashboard';
 import { Customers } from './pages/Customers';
 import { History } from './pages/History';
 import { Subscriptions } from './pages/Subscriptions';
+import { UserConfig } from './pages/UserConfig';
 import { Recover } from './pages/Recover';
 import { AdminLogin } from './pages/AdminLogin';
 import { AdminDashboard } from './pages/AdminDashboard';
@@ -38,7 +39,8 @@ function App() {
           <Route path="/subscriptions" element={<Subscriptions />} />
           <Route path="/history" element={<History />} />
           <Route path="/chat" element={<UserChat />} />
-<Route element={<AdminPrivateRoute />}>
+          <Route path="/UserConfig" element={<UserConfig />} />
+          <Route element={<AdminPrivateRoute />}>
         {/* <Route path="/admin/metrics" element={<DashboardMetrics />} /> */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<AdminUsers />} />
