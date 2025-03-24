@@ -64,7 +64,7 @@ export function Register() {
     }
 
     try {
-      await api.create_user({ name, cnpj, municipalRegistration, email, password, city: selectedCity });
+      await api.create_user({ name, cnpj, inscricaoMunicipal:municipalRegistration, email, password, estado:selectedState, cidade: selectedCity });
       navigate('/login');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ocorreu um erro');
