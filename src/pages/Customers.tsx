@@ -271,7 +271,8 @@ export function Customers() {
     e.preventDefault();
 
     if (!selectedCustomer) return;
-    const data = {
+   
+/*     const data = {
       invoice: {
         discriminacao: invoice.discriminacao,
         descricao: invoice.descricao,
@@ -306,6 +307,24 @@ export function Customers() {
         },
         telefone: selectedCustomer.phone.replace(/[^\d]/g, '')
       }
+    } */
+
+    const data = {
+      customer_id: selectedCustomer._id,
+      servico: {
+        Discriminacao: invoice.discriminacao,
+        descricao: invoice.descricao,
+        item_lista: invoice.item_lista,
+        cnae: invoice.cnae,
+        quantidade: invoice.quantidade,
+        valor_unitario: invoice.valor_unitario,
+        desconto: invoice.desconto
+      },
+      tributacao: {
+        iss_retido: invoice.iss_retido,        
+        aliquota_iss: invoice.aliquota_iss,       
+        retencoes: invoice.retencoes
+      }          
     }
 
     try {
@@ -563,6 +582,7 @@ export function Customers() {
                       value={newCustomer.email}
                       onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
                     />
                   </div>
 
@@ -573,6 +593,7 @@ export function Customers() {
                       value={newCustomer.phone}
                       onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
                     />
                   </div>
                 </div>
@@ -608,6 +629,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
                     />
                   </div>
 
@@ -623,6 +645,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
                     />
                   </div>
 
@@ -638,6 +661,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
                     />
                   </div>
 
@@ -653,6 +677,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
                     />
                   </div>
 
@@ -668,6 +693,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
                     />
                   </div>
 
@@ -685,6 +711,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
                     />
                   </div>
                 </div>
