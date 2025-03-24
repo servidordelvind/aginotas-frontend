@@ -202,7 +202,7 @@ export const api = {
   },
 
   async find_invoices(){
-    const response = await fetch(`${API_URL}/invoice/find`, {
+    const response = await fetch(`${API_URL}/invoice/findinvoices`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
