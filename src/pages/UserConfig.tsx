@@ -1,14 +1,16 @@
 import Cookies from "js-cookie";
 import React, { useState, useEffect, useRef } from "react";
 import { api } from "../lib/api";
-import { HiOutlineQuestionMarkCircle, HiEye, HiEyeOff } from "react-icons/hi"; 
+import { HiOutlineQuestionMarkCircle, HiEye, HiEyeOff } from "react-icons/hi";
 import { usePopper } from "react-popper";
 
 export function UserConfig() {
   const [senhaElotech, setSenhaElotech] = useState("");
   const [homologacao, setHomologacao] = useState("");
+  const [regimeEspecialTributacao, setRegimeEspecialTributacao] = useState(0);//valores padrões 
+  const [incentivoFiscal, setIncentivoFiscal] = useState(0); //valores padrões 
   const [showPopover, setShowPopover] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
   const referenceRef = useRef(null);
   const popperRef = useRef(null);
 
@@ -27,11 +29,13 @@ export function UserConfig() {
           return;
         }
 
-        const response = await api.find_user(userId); 
+        const response = await api.find_user(userId);
 
         if (response) {
           setHomologacao(response.homologacao ? "Sim" : "Não");
           setSenhaElotech(response.senhaElotech);
+          setRegimeEspecialTributacao(response.regimeEspecialTributacao || 0);
+          setIncentivoFiscal(response.incentivoFiscal || 0); //
         }
       } catch (error) {
         console.error("Erro ao carregar configurações do usuário:", error);
@@ -70,6 +74,8 @@ export function UserConfig() {
       const updatedSettings = {
         homologacao: homologacao === "Sim",
         senhaElotech: senhaElotech,
+        regimeEspecialTributacao: regimeEspecialTributacao,
+        incentivoFiscal: incentivoFiscal,
       };
 
       await api.saveUserSettings(userId, updatedSettings);
@@ -99,7 +105,7 @@ export function UserConfig() {
               className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <HiEyeOff /> : <HiEye />}
+              {showPassword ? <HiEyeOff size={24} /> : <HiEye size={24} />}
             </button>
           </div>
 
@@ -138,6 +144,26 @@ export function UserConfig() {
               </p>
             </div>
           )}
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-600">Regime Especial de Tributação</label>
+            <input
+              type="number"
+              className="w-full mt-2 p-3 border border-gray-300 rounded-md"
+              value={regimeEspecialTributacao}
+              onChange={(e) => setRegimeEspecialTributacao(parseInt(e.target.value, 10))}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-600">Incentivo Fiscal</label>
+            <input
+              type="number"
+              className="w-full mt-2 p-3 border border-gray-300 rounded-md"
+              value={incentivoFiscal}
+              onChange={(e) => setIncentivoFiscal(parseInt(e.target.value, 10))}
+            />
+          </div>
 
           <div>
             <button

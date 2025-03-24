@@ -14,7 +14,7 @@ interface Customer {
   user: {
     _id: string;
     email: string;
-  }
+  };
   address: {
     street: string;
     number: string;
@@ -85,38 +85,43 @@ export function Customers() {
 
   //Criando NF na hora
   const [invoice, setInvoice] = useState({
-    amount: 0,
+    discriminacao: '',
+    descricao: '',
+    item_lista: '',
+    cnae: '',
+    quantidade: 0,
+    valor_unitario: 0,
+    desconto: 0.00,
+    iss_retido: false,
+    aliquota_iss: 0,
+    retencoes: {
+      irrf: 0,
+      pis: 0,
+      cofins: 0,
+    },
+    amount: 0, 
     description: '',
-
-    itemListaServico: '801',
-    codigoCnae: '8531700'
+    issueDate: new Date().toISOString().split('T')[0],
+    dueDate: new Date().toISOString().split('T')[0],
+    observations: '',
   });
-
-
-
 
   //carrega o historico de notas geradas para um cliente
   const loadInvoiceHistory = async (customerId: string) => {
-    try {
-      const data = await api.find_invoices_by_customer(customerId); // Supondo que você tenha uma API que retorna as faturas de um cliente.
-      setInvoiceHistory(data || []);
-    } catch (error) {
-      toast.error('Erro ao carregar histórico de notas fiscais');
-      console.error('Erro ao carregar histórico de notas fiscais:', error);
-    }
+    // try {
+    //   const data = await api.find_invoices_by_customer(customerId); // Supondo que você tenha uma API que retorna as faturas de um cliente.
+    //   setInvoiceHistory(data || []);
+    // } catch (error) {
+    //   toast.error('Erro ao carregar histórico de notas fiscais');
+    //   console.error('Erro ao carregar histórico de notas fiscais:', error);
+    // }
   };
-
-
-
-
 
   const handleViewInvoiceHistory = (customer: Customer) => {
     setActiveModal('history');  // Alterando para 'history' ao abrir o modal de histórico
     loadInvoiceHistory(customer._id);
     setSelectedCustomer(customer);
   };
-
-
 
   useEffect(() => {
     loadCustomers();
@@ -168,11 +173,9 @@ export function Customers() {
 
   const handleDeactivateCustomer = async (id: string) => {
     try {
-
       const status = 'inactive';
       await api.changestatus_customer(id, status);
       location.reload();
-
       toast.success('Cliente desativado com sucesso!');
     } catch (error) {
       toast.error('Erro ao desativar cliente');
@@ -182,11 +185,9 @@ export function Customers() {
 
   const handleActiveCustomer = async (id: string) => {
     try {
-
       const status = 'active';
       await api.changestatus_customer(id, status);
       location.reload();
-
       toast.success('Cliente ativado com sucesso!');
     } catch (error) {
       toast.error('Erro ao ativar cliente');
@@ -264,44 +265,6 @@ export function Customers() {
       toast.error('Erro ao agendar emissão');
       console.error('Erro ao agendar emissão:', error);
     }
-
-    /*     try {
-          const { error } = await supabase
-            .from('subscriptions')
-            .insert([{
-              customer_id: selectedCustomer._id,
-              billing_day: subscription.billingDay,
-              amount: subscription.amount,
-              start_date: subscription.startDate,
-              end_date: subscription.endDate,
-              description: subscription.description,
-              item_lista_servico: subscription.itemListaServico,
-              codigo_cnae: subscription.codigoCnae,
-              customer_data: {
-                cpfCnpj: selectedCustomer.cnpj.replace(/[^\d]/g, ''),
-                razaoSocial: selectedCustomer.name,
-                inscricaoMunicipal: selectedCustomer.inscricaoMunicipal,
-                endereco: {
-                  endereco: selectedCustomer.address.street,
-                  numero: selectedCustomer.address.number,
-                  bairro: selectedCustomer.address.neighborhood,
-                  codigoMunicipio: selectedCustomer.address.cityCode,
-                  cidadeNome: selectedCustomer.address.city,
-                  uf: selectedCustomer.address.state,
-                  cep: selectedCustomer.address.zipCode.replace(/[^\d]/g, '')
-                },
-                telefone: selectedCustomer.phone.replace(/[^\d]/g, '')
-              }
-            }]);
-    
-          if (error) throw error;
-    
-          toast.success('Assinatura configurada com sucesso!');
-          setIsSubscriptionModalOpen(false);
-        } catch (error) {
-          toast.error('Erro ao configurar assinatura');
-          console.error('Erro ao configurar assinatura:', error);
-        } */
   };
 
   const handleGenerateInvoice = async (e: React.FormEvent) => {
@@ -309,18 +272,24 @@ export function Customers() {
 
     if (!selectedCustomer) return;
     const data = {
-      invoice: invoice,
-
+      invoice: {
+        discriminacao: invoice.discriminacao,
+        descricao: invoice.descricao,
+        item_lista: invoice.item_lista,
+        cnae: invoice.cnae,
+        quantidade: invoice.quantidade,
+        valor_unitario: invoice.valor_unitario,
+        desconto: invoice.desconto,
+        iss_retido: invoice.iss_retido,
+        aliquota_iss: invoice.aliquota_iss,
+        retencoes: invoice.retencoes,
+        issueDate: invoice.issueDate,
+        dueDate: invoice.dueDate,
+        observations: invoice.observations,
+        amount: invoice.quantidade * invoice.valor_unitario - invoice.desconto, // Calculate amount
+      },
       customer_id: selectedCustomer._id,
       user_id: customers[0]?.user._id,
-      billing_day: subscription.billingDay,
-      amount: subscription.amount,
-      start_date: subscription.startDate,
-      end_date: subscription.endDate,
-      description: subscription.description,
-
-      item_lista_servico: subscription.itemListaServico,
-      codigo_cnae: subscription.codigoCnae,
       customer_data: {
         cpfCnpj: selectedCustomer.cnpj.replace(/[^\d]/g, ''),
         razaoSocial: selectedCustomer.name,
@@ -344,8 +313,8 @@ export function Customers() {
         setIsGerating(true);
         await api.create_invoice(data);
         toast.success('Nota Fiscal gerada com sucesso!');
-        setIsInvoiceModalOpen(false);
-        setIsGerating(true);
+        setActiveModal('none'); // Close the modal after successful generation
+        setIsGerating(false);
         location.reload();
       } else {
         toast.success('O contrato está inativo!');
@@ -354,7 +323,6 @@ export function Customers() {
       toast.error('Erro ao Gerar Nota Fiscal');
       console.error('Erro ao Gerar Nota Fiscal:', error);
     }
-
   };
 
   const filteredCustomers = customers.filter(customer =>
@@ -369,7 +337,6 @@ export function Customers() {
       </div>
     );
   }
-
 
   const handleCnpjBlur = async () => {
     const cnpj = newCustomer.cnpj.replace(/\D/g, ""); // Remove caracteres não numéricos
@@ -400,13 +367,9 @@ export function Customers() {
     }
   };
 
-
   const closeAllModals = () => {
     setActiveModal('none');  // Fechando todos os modais
   };
-
-
-  const customer = customers[0];
 
   return (
     <div className="space-y-6">
@@ -747,7 +710,7 @@ export function Customers() {
           </div>
         </div>
       )}
-      {/* Modal para exibir a lista de notas geradas */}
+
       {/* Modal Histórico de Notas Fiscais */}
       {selectedCustomer && activeModal === 'history' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -884,12 +847,21 @@ export function Customers() {
             <div className="p-6 overflow-y-auto flex-1">
               <form id="invoiceForm" onSubmit={handleGenerateInvoice} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Valor Mensal</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Cliente</label>
                   <input
-                    type="number"
-                    step="0.01"
-                    value={invoice.amount}
-                    onChange={(e) => setInvoice({ ...invoice, amount: parseFloat(e.target.value) })}
+                    type="text"
+                    value={selectedCustomer.name}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    readOnly
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Discriminação do Serviço</label>
+                  <input
+                    type="text"
+                    value={invoice.discriminacao || ''}
+                    onChange={(e) => setInvoice({ ...invoice, discriminacao: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
@@ -898,10 +870,148 @@ export function Customers() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
                   <textarea
-                    value={invoice.description}
-                    onChange={(e) => setInvoice({ ...invoice, description: e.target.value })}
+                    value={invoice.descricao || ''}
+                    onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Item da Lista de Serviço</label>
+                  <input
+                    type="text"
+                    value={invoice.item_lista || ''}
+                    onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">CNAE</label>
+                  <input
+                    type="text"
+                    value={invoice.cnae || ''}
+                    onChange={(e) => setInvoice({ ...invoice, cnae: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Quantidade</label>
+                  <input
+                    type="number"
+                    value={invoice.quantidade || 0}
+                    onChange={(e) => setInvoice({ ...invoice, quantidade: parseInt(e.target.value) || 1 })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Valor Unitário</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={invoice.valor_unitario || 0.00}
+                    onChange={(e) => setInvoice({ ...invoice, valor_unitario: parseFloat(e.target.value) })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Desconto</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={invoice.desconto || 0.00}
+                    onChange={(e) => setInvoice({ ...invoice, desconto: parseFloat(e.target.value) })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">ISS Retido</label>
+                  <input
+                    type="checkbox"
+                    checked={invoice.iss_retido}
+                    onChange={(e) => setInvoice({ ...invoice, iss_retido: e.target.checked })}
+                    className="form-checkbox h-4 w-4 text-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Alíquota ISS</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={invoice.aliquota_iss || 0.0}
+                    onChange={(e) => setInvoice({ ...invoice, aliquota_iss: parseFloat(e.target.value) })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  /></div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">IRRF (Retenção)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={invoice.retencoes?.irrf || 0.0}
+                    onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, irrf: parseFloat(e.target.value) } })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  <p className="text-xs text-gray-500">1,5% se houver retenção</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">PIS (Retenção)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={invoice.retencoes?.pis || 0}
+                    onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, pis: parseFloat(e.target.value) } })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">COFINS (Retenção)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={invoice.retencoes?.cofins || 0}
+                    onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, cofins: parseFloat(e.target.value) } })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Data de Emissão</label>
+                  <input
+                    type="date"
+                    value={invoice.issueDate}
+                    onChange={(e) => setInvoice({ ...invoice, issueDate: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Vencimento</label>
+                  <input
+                    type="date"
+                    value={invoice.dueDate}
+                    onChange={(e) => setInvoice({ ...invoice, dueDate: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Observações</label>
+                  <textarea
+                    value={invoice.observations}
+                    onChange={(e) => setInvoice({ ...invoice, observations: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </form>
