@@ -129,12 +129,12 @@ export function Customers() {
         ...prevInvoice,
         cnpj: selectedCustomer.cnpj,
       }));
-  
+
       if (selectedCustomer.cnpj.replace(/\D/g, "").length === 14) { // Remove formatação antes de chamar a API
         fetchCompanyData(selectedCustomer.cnpj);
       }
     }
-  }, [selectedCustomer]); 
+  }, [selectedCustomer]);
 
   const handleViewInvoiceHistory = (customer: Customer) => {
     setActiveModal('history');  // Alterando para 'history' ao abrir o modal de histórico
@@ -404,8 +404,8 @@ export function Customers() {
         method: "GET",
         headers: {
           "Authorization": API,
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       });
 
       if (!response.ok) {
@@ -415,29 +415,32 @@ export function Customers() {
       const data = await response.json();
       console.log("Dados da API:", data);
 
+      const sideActivities = data.sideActivities || [];
+      const mainActivity = data.mainActivity?.id || ''; // A CNAE principal
+
+      // Encontrando o texto da atividade principal (descrição)
+      const atividadePrincipal = sideActivities.find(activity => activity.id === mainActivity);
+      const descricaoCnae = atividadePrincipal ? atividadePrincipal.text : '';
+
+      // Atualizando o estado com a descrição da CNAE
       setInvoice((prevInvoice) => ({
         ...prevInvoice,
         razao_social: data.company?.name || "",
         nome_fantasia: data.alias || "",
-        cnae: data.mainActivity?.id || "",
+        cnae: mainActivity, // Definindo a CNAE principal como id
+        sideActivities: sideActivities, // Salva todas as atividades secundárias
         endereco: `${data.address?.street || ""}, ${data.address?.number || ""} - ${data.address?.district || ""}, ${data.address?.municipality || ""} - ${data.address?.state || ""}, ${data.address?.zip || ""}`,
-        descricao: data.mainActivity?.text || "", // Preenche com a descrição da atividade principal
-        // item_lista: data.mainActivity?.id || "", // Usa o CNAE como referência
+        descricao: descricaoCnae, // Preenche com a descrição da CNAE
       }));
-
     } catch (error) {
       console.error("Erro ao buscar dados do CNPJ:", error);
       alert(`Erro ao consultar o CNPJ: ${error.message}`);
     }
   };
 
-
   const closeAllModals = () => {
     setActiveModal('none');  // Fechando todos os modais
   };
-
-
-  
 
   // Chama a API diretamente ao inicializar o componente, se houver um CNPJ válido
   if (selectedCustomer?.cnpj && invoice.cnpj === "") {
@@ -449,7 +452,27 @@ export function Customers() {
   }
 
 
+  const handleCnaeChange = (e) => {
+    const selectedCnaeId = e.target.value;
+
+    // Encontre a atividade selecionada no array sideActivities
+    const selectedActivity = invoice.sideActivities.find(
+      (activity) => activity.id === parseInt(selectedCnaeId)
+    );
+
+    // Atualize o estado com o índice e descrição
+    setInvoice((prevInvoice) => ({
+      ...prevInvoice,
+      cnae: selectedCnaeId, // Armazena o ID da CNAE selecionada
+      item_lista: invoice.sideActivities.indexOf(selectedActivity) + 1, // Índice do item +1
+      descricao: selectedActivity?.text || '', // Descrição da CNAE selecionada
+    }));
+  };
+
+
+
   
+
 
   return (
     <div className="space-y-6">
@@ -947,55 +970,55 @@ export function Customers() {
                   />
                 </div>
                 <div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
-  <input
-    type="text"
-    value={invoice.cnpj || ""}
-    onChange={(e) => {
-      const cnpj = e.target.value;
-      setInvoice({ ...invoice, cnpj });
-
-      if (cnpj.length === 18) { // Formato completo do CNPJ (com pontos e barras)
-        fetchCompanyData(cnpj);
-      }
-    }}
-    placeholder="Digite o CNPJ"
-    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-  />
-</div>
-
-
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
-                  <textarea
-                    value={invoice.descricao || ''}
-                    onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
+                  <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
+                  <input
+                    type="text"
+                    value={invoice.cnpj || ""}
+                    onChange={(e) => {
+                      const cnpj = e.target.value;
+                      setInvoice({ ...invoice, cnpj });
+                      if (cnpj.length === 18) { // Formato completo do CNPJ (com pontos e barras)
+                        fetchCompanyData(cnpj);
+                      }
+                    }}
+                    placeholder="Digite o CNPJ"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">CNAE</label>
+                  <select
+                    value={invoice.cnae || ''}
+                    onChange={handleCnaeChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="" disabled>Selecione uma atividade CNAE</option>
+                    {invoice.sideActivities?.map((activity) => (
+                      <option key={activity.id} value={activity.id}>
+                        {activity.id} {/* Exibe o ID e o nome da CNAE */}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Item da Lista de Serviço</label>
                   <input
                     type="text"
-                    value={invoice.item_lista || ''}
+                    value={invoice.item_lista || ''} // Posição do item, se necessário
                     onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">CNAE</label>
-                  <input
-                    type="text"
-                    value={invoice.cnae || ''}
-                    onChange={(e) => setInvoice({ ...invoice, cnae: e.target.value })}
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
+                  <textarea
+                    value={invoice.descricao || ''} // Passa a descrição da CNAE para o campo de texto
+                    onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
                   />
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Quantidade</label>
                   <input
@@ -1112,15 +1135,6 @@ export function Customers() {
                     onChange={(e) => setInvoice({ ...invoice, dueDate: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Observações</label>
-                  <textarea
-                    value={invoice.observations}
-                    onChange={(e) => setInvoice({ ...invoice, observations: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </form>
