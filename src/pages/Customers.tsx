@@ -471,7 +471,7 @@ export function Customers() {
 
 
 
-  
+
 
 
   return (
@@ -864,7 +864,172 @@ export function Customers() {
             </div>
             <div className="p-6 overflow-y-auto flex-1">
               <form id="subscriptionForm" onSubmit={handleSaveSubscription} className="space-y-4">
-                {/* Campos para configurar assinatura */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Cliente</label>
+                  <input
+                    type="text"
+                    value={selectedCustomer.name}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    readOnly
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Discriminação do Serviço</label>
+                  <input
+                    type="text"
+                    value={invoice.discriminacao || ''}
+                    onChange={(e) => setInvoice({ ...invoice, discriminacao: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
+                  <input
+                    type="text"
+                    value={invoice.cnpj || ""}
+                    onChange={(e) => {
+                      const cnpj = e.target.value;
+                      setInvoice({ ...invoice, cnpj });
+                      if (cnpj.length === 18) { // Formato completo do CNPJ (com pontos e barras)
+                        fetchCompanyData(cnpj);
+                      }
+                    }}
+                    placeholder="Digite o CNPJ"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">CNAE</label>
+                  <select
+                    value={invoice.cnae || ''}
+                    onChange={handleCnaeChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="" disabled>Selecione uma atividade CNAE</option>
+                    {invoice.sideActivities?.map((activity) => (
+                      <option key={activity.id} value={activity.id}>
+                        {activity.id} {/* Exibe o ID e o nome da CNAE */}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Item da Lista de Serviço</label>
+                  <input
+                    type="text"
+                    value={invoice.item_lista || ''} // Posição do item, se necessário
+                    onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
+                  <textarea
+                    value={invoice.descricao || ''} // Passa a descrição da CNAE para o campo de texto
+                    onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Quantidade</label>
+                  <input
+                    type="number"
+                    value={invoice.quantidade || 0}
+                    onChange={(e) => setInvoice({ ...invoice, quantidade: parseInt(e.target.value) || 1 })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Valor Unitário</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={invoice.valor_unitario || 0.00}
+                    onChange={(e) => setInvoice({ ...invoice, valor_unitario: parseFloat(e.target.value) })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Desconto</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={invoice.desconto || 0.00}
+                    onChange={(e) => setInvoice({ ...invoice, desconto: parseFloat(e.target.value) })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                <div className="border-t pt-4">
+                  <h3 className="text-md font-semibold text-gray-900 mb-2">ISS</h3>
+                  <div className="flex items-center space-x-4">
+                    <div>
+                      <input
+                        type="checkbox"
+                        id="iss_retido"
+                        checked={invoice.iss_retido || false}
+                        onChange={(e) => setInvoice({ ...invoice, iss_retido: e.target.checked })}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <label htmlFor="iss_retido" className="ml-2 text-sm font-medium text-gray-700">ISS Retido</label>
+                    </div>
+                    {invoice.iss_retido && (
+                      <div>
+                        <label htmlFor="aliquota_iss" className="block text-sm font-medium text-gray-700 mb-1">Alíquota ISS (%)</label>
+                        <input
+                          type="number"
+                          id="aliquota_iss"
+                          value={invoice.aliquota_iss || 0}
+                          onChange={(e) => setInvoice({ ...invoice, aliquota_iss: parseFloat(e.target.value) || 0 })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h3 className="text-md font-semibold text-gray-900 mb-2">Retenções</h3>
+                  <div className="flex items-center space-x-4">
+                    <div>
+                      <input
+                        type="checkbox"
+                        id="irrf"
+                        checked={invoice.retencoes?.irrf || false}
+                        onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, irrf: e.target.checked } })}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <label htmlFor="irrf" className="ml-2 text-sm font-medium text-gray-700">IRRF</label>
+                    </div>
+                    <div>
+                      <input
+                        type="checkbox"
+                        id="pis"
+                        checked={invoice.retencoes?.pis || false}
+                        onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, pis: e.target.checked } })}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <label htmlFor="pis" className="ml-2 text-sm font-medium text-gray-700">PIS</label>
+                    </div>
+                    <div>
+                      <input
+                        type="checkbox"
+                        id="cofins"
+                        checked={invoice.retencoes?.cofins || false}
+                        onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, cofins: e.target.checked } })}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <label htmlFor="cofins" className="ml-2 text-sm font-medium text-gray-700">COFINS</label>
+                    </div>
+                  </div>
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Dia do Faturamento</label>
                   <input
@@ -877,19 +1042,6 @@ export function Customers() {
                     required
                   />
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Valor Mensal</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={subscription.amount}
-                    onChange={(e) => setSubscription({ ...subscription, amount: parseFloat(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Data de Início</label>
                   <input
@@ -911,17 +1063,9 @@ export function Customers() {
                     required
                   />
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
-                  <textarea
-                    value={subscription.description}
-                    onChange={(e) => setSubscription({ ...subscription, description: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
               </form>
+              {/* Campos para configurar assinatura */}
+
             </div>
             <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
               <button type="button" onClick={closeAllModals} className="px-4 py-2 text-gray-700 hover:text-gray-900">
