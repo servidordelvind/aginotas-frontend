@@ -44,6 +44,8 @@ export function Customers() {
   const [isGerating, setIsGerating] = useState(false);
   const [invoiceHistory, setInvoiceHistory] = useState<any[]>([]);
 
+  
+
   const [activeModal, setActiveModal] = useState<'none' | 'invoice' | 'subscription' | 'history'>('none');
 
   // const [showInvoiceHistoryModal, setShowInvoiceHistoryModal] = useState(false);
@@ -88,6 +90,7 @@ export function Customers() {
     discriminacao: '',
     descricao: '',
     item_lista: '',
+    cnpj: selectedCustomer?.cnpj || "",
     cnae: '',
     quantidade: 0,
     valor_unitario: 0,
@@ -99,11 +102,17 @@ export function Customers() {
       pis: 0,
       cofins: 0,
     },
-    amount: 0, 
+    amount: 0,
     description: '',
     issueDate: new Date().toISOString().split('T')[0],
     dueDate: new Date().toISOString().split('T')[0],
     observations: '',
+    razao_social: '',
+    nome_fantasia: '',
+    endereco: '',
+    logradouro: '',
+    numero: '',
+
   });
 
   //carrega o historico de notas geradas para um cliente
@@ -386,9 +395,67 @@ export function Customers() {
     }
   };
 
+
+
+  const API = "04154e23-17ce-4581-9b07-902b233d0b33-03919378-bef0-4d0c-bded-912ee5c50c49"; //chave teste, existe um limite de cnpj para busca
+
+
+  const fetchCompanyData = async (cnpj) => {
+    const cleanCNPJ = cnpj.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+    if (cleanCNPJ.length !== 14) {
+      alert("CNPJ inválido! Digite um CNPJ com 14 dígitos.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://api.cnpja.com/office/${cleanCNPJ}`, {
+        method: "GET",
+        headers: {
+          "Authorization": API,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar dados do CNPJ. Código: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Dados da API:", data);
+
+      setInvoice((prevInvoice) => ({
+        ...prevInvoice,
+        razao_social: data.company?.name || "",
+        nome_fantasia: data.alias || "",
+        cnae: data.mainActivity?.id || "",
+        endereco: `${data.address?.street || ""}, ${data.address?.number || ""} - ${data.address?.district || ""}, ${data.address?.municipality || ""} - ${data.address?.state || ""}, ${data.address?.zip || ""}`,
+        descricao: data.mainActivity?.text || "", // Preenche com a descrição da atividade principal
+        // item_lista: data.mainActivity?.id || "", // Usa o CNAE como referência
+      }));
+
+    } catch (error) {
+      console.error("Erro ao buscar dados do CNPJ:", error);
+      alert(`Erro ao consultar o CNPJ: ${error.message}`);
+    }
+  };
+
+
   const closeAllModals = () => {
     setActiveModal('none');  // Fechando todos os modais
   };
+
+
+  
+
+  // Chama a API diretamente ao inicializar o componente, se houver um CNPJ válido
+  if (selectedCustomer?.cnpj && invoice.cnpj === "") {
+    const cleanCNPJ = selectedCustomer.cnpj.replace(/\D/g, ''); // Remove caracteres não numéricos
+    if (cleanCNPJ.length === 14) {
+      fetchCompanyData(cleanCNPJ);
+      setInvoice((prev) => ({ ...prev, cnpj: selectedCustomer.cnpj }));
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -893,6 +960,24 @@ export function Customers() {
                     required
                   />
                 </div>
+                <div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
+  <input
+    type="text"
+    value={invoice.cnpj || ''}
+    onChange={(e) => {
+      const cnpj = e.target.value;
+      setInvoice({ ...invoice, cnpj });
+
+      if (cnpj.length === 18) { // Formato completo do CNPJ
+        fetchCompanyData(cnpj);
+      }
+    }}
+    placeholder="Digite o CNPJ"
+    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+  />
+</div>
+
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
@@ -957,58 +1042,68 @@ export function Customers() {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">ISS Retido</label>
-                  <input
-                    type="checkbox"
-                    checked={invoice.iss_retido}
-                    onChange={(e) => setInvoice({ ...invoice, iss_retido: e.target.checked })}
-                    className="form-checkbox h-4 w-4 text-blue-500"
-                  />
+                <div className="border-t pt-4">
+                  <h3 className="text-md font-semibold text-gray-900 mb-2">ISS</h3>
+                  <div className="flex items-center space-x-4">
+                    <div>
+                      <input
+                        type="checkbox"
+                        id="iss_retido"
+                        checked={invoice.iss_retido || false}
+                        onChange={(e) => setInvoice({ ...invoice, iss_retido: e.target.checked })}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <label htmlFor="iss_retido" className="ml-2 text-sm font-medium text-gray-700">ISS Retido</label>
+                    </div>
+                    {invoice.iss_retido && (
+                      <div>
+                        <label htmlFor="aliquota_iss" className="block text-sm font-medium text-gray-700 mb-1">Alíquota ISS (%)</label>
+                        <input
+                          type="number"
+                          id="aliquota_iss"
+                          value={invoice.aliquota_iss || 0}
+                          onChange={(e) => setInvoice({ ...invoice, aliquota_iss: parseFloat(e.target.value) || 0 })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Alíquota ISS</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={invoice.aliquota_iss || 0.0}
-                    onChange={(e) => setInvoice({ ...invoice, aliquota_iss: parseFloat(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  /></div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">IRRF (Retenção)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={invoice.retencoes?.irrf || 0.0}
-                    onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, irrf: parseFloat(e.target.value) } })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                  <p className="text-xs text-gray-500">1,5% se houver retenção</p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">PIS (Retenção)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={invoice.retencoes?.pis || 0}
-                    onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, pis: parseFloat(e.target.value) } })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">COFINS (Retenção)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={invoice.retencoes?.cofins || 0}
-                    onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, cofins: parseFloat(e.target.value) } })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
+                <div className="border-t pt-4">
+                  <h3 className="text-md font-semibold text-gray-900 mb-2">Retenções</h3>
+                  <div className="flex items-center space-x-4">
+                    <div>
+                      <input
+                        type="checkbox"
+                        id="irrf"
+                        checked={invoice.retencoes?.irrf || false}
+                        onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, irrf: e.target.checked } })}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <label htmlFor="irrf" className="ml-2 text-sm font-medium text-gray-700">IRRF</label>
+                    </div>
+                    <div>
+                      <input
+                        type="checkbox"
+                        id="pis"
+                        checked={invoice.retencoes?.pis || false}
+                        onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, pis: e.target.checked } })}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <label htmlFor="pis" className="ml-2 text-sm font-medium text-gray-700">PIS</label>
+                    </div>
+                    <div>
+                      <input
+                        type="checkbox"
+                        id="cofins"
+                        checked={invoice.retencoes?.cofins || false}
+                        onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, cofins: e.target.checked } })}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <label htmlFor="cofins" className="ml-2 text-sm font-medium text-gray-700">COFINS</label>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
