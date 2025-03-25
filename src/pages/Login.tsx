@@ -19,7 +19,7 @@ export function Login() {
       
       const data = await api.login_user({ email, password });
       Cookies.set("token", data.token, { secure: true, sameSite: 'Strict', expires: 1 });
-      localStorage.setItem("user", data.userdb); //Nova implementação
+      localStorage.setItem("user", JSON.stringify(data.userdb)); //Nova implementação
 
       toast.success('Login realizado com sucesso!');
       navigate('/dashboard');

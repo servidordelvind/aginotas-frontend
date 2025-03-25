@@ -1,13 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { Receipt, AlertCircle, XCircle, FileText } from 'lucide-react';
-import { api } from '../lib/api'; // Função para chamadas de API, como getSubscriptions
+import { api } from '../lib/api';
 
 interface Subscription {
-  id: string;
-  plan: string;
-  price: number;
-  status: 'active' | 'cancelled';
-  nextBillingDate: string;
+  id: string; 
+  billing_day: number;
+  card: {
+    brand: string;
+    exp_month: number;
+    exp_year: number;
+    first_six_digits: string;
+    holder_name: string;
+    last_four_digits: string;
+    status: string;
+    type: string;
+  },
+  items: {
+    name: string;
+    description: string;
+    pricing_scheme: {
+      price: number;
+    },
+    status: string;
+  }[], 
+  status: string;
 }
 
 interface Invoice {
@@ -19,30 +35,37 @@ interface Invoice {
 
 export function Subscriptions() {
   const [showInvoices, setShowInvoices] = useState(false);
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
-  
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchSubscriptions = async () => {
+    try {
+      const user = localStorage.getItem("user");
+      if (!user) throw new Error("Usuário não encontrado");
+      
+      const userConvertido = JSON.parse(user);
+      if (!userConvertido.subscription_id) throw new Error("ID de assinatura não encontrado");
+
+      const response = await api.find_subscription(userConvertido.subscription_id);
+
+      const subscriptionsData = Array.isArray(response) ? response : [response];
+      setSubscriptions(subscriptionsData);
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao carregar assinaturas');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchSubscriptions();
-    fetchInvoices();
+    //fetchInvoices();
   }, []);
 
-  const fetchSubscriptions = async () => {
-    // Simulando resposta do backend com a assinatura de exemplo
-    const response = [
-      {
-        id: '64ea432c57f12345678a567d',
-        plan: 'Plano Profissional',
-        price: 49.90,
-        status: 'active',
-        nextBillingDate: '2024-03-01'
-      }
-    ];
-    setSubscriptions(response);
-  };
-
-  const fetchInvoices = async () => {
+/*   const fetchInvoices = async () => {
     // Simulando faturas para o histórico
     const response = [
       {
@@ -64,20 +87,26 @@ export function Subscriptions() {
   const handleCancelSubscription = async (id: string) => {
     // Lógica para cancelar assinatura no backend
     setSubscriptions(subscriptions.map(sub => sub.id === id ? { ...sub, status: 'cancelled' } : sub));
-  };
-  
+  }; */
+  if (loading) return <div>Carregando...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
+  if (subscriptions.length === 0) return <div>Nenhuma assinatura encontrada</div>;
+
   return (
     <div className="space-y-8">
       <h1 className="text-2xl font-bold text-gray-900">Minha Assinatura</h1>
 
-      {/* Exibindo a assinatura existente */}
       {subscriptions.map((subscription) => (
         <div className="bg-white rounded-xl shadow-sm p-6" key={subscription.id}>
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">{subscription.plan}</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                {subscription.items[0]?.name || 'Assinatura'}
+              </h2>
               <div className="flex items-baseline gap-2 mb-4">
-                <span className="text-3xl font-bold text-gray-900">{`R$ ${subscription.price.toFixed(2)}`}</span>
+                <span className="text-3xl font-bold text-gray-900">
+                  {`R$ ${subscription.items[0]?.pricing_scheme.price.toFixed(2) || '0,00'}`}
+                </span>
                 <span className="text-gray-500">/mês</span>
               </div>
               <div className="space-y-2">
@@ -87,26 +116,16 @@ export function Subscriptions() {
                 </div>
                 <div className="flex items-center gap-2 text-gray-600">
                   <AlertCircle className="w-5 h-5" />
-                  <span>Próxima cobrança em {subscription.nextBillingDate}</span>
+                  <span>Cobrança realizada no dia {subscription.billing_day} de cada mês</span>
                 </div>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              
-              <button
-                onClick={() => handleCancelSubscription(subscription.id)}
-                className="text-red-600 hover:text-red-700"
-              >
-                Cancelar
-              </button>
-            
-            </div>
+            </div> 
           </div>
         </div>
-      ))}
+        ))}
       {/* Histórico de Faturas */}
       
-      <div>
+{/*       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">Histórico de Faturas</h2>
           <button
@@ -166,7 +185,7 @@ export function Subscriptions() {
             </table>
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }
