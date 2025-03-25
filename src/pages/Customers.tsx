@@ -43,9 +43,6 @@ export function Customers() {
   const [isLoading, setIsLoading] = useState(true);
   const [isGerating, setIsGerating] = useState(false);
   const [invoiceHistory, setInvoiceHistory] = useState<any[]>([]);
-
-  
-
   const [activeModal, setActiveModal] = useState<'none' | 'invoice' | 'subscription' | 'history'>('none');
 
   // const [showInvoiceHistoryModal, setShowInvoiceHistoryModal] = useState(false);
@@ -125,6 +122,19 @@ export function Customers() {
     //   console.error('Erro ao carregar histórico de notas fiscais:', error);
     // }
   };
+
+  useEffect(() => {
+    if (selectedCustomer && selectedCustomer.cnpj) {
+      setInvoice((prevInvoice) => ({
+        ...prevInvoice,
+        cnpj: selectedCustomer.cnpj,
+      }));
+  
+      if (selectedCustomer.cnpj.replace(/\D/g, "").length === 14) { // Remove formatação antes de chamar a API
+        fetchCompanyData(selectedCustomer.cnpj);
+      }
+    }
+  }, [selectedCustomer]); 
 
   const handleViewInvoiceHistory = (customer: Customer) => {
     setActiveModal('history');  // Alterando para 'history' ao abrir o modal de histórico
@@ -280,8 +290,7 @@ export function Customers() {
     e.preventDefault();
 
     if (!selectedCustomer) return;
-   
-/*     const data = {
+    const data = {
       invoice: {
         discriminacao: invoice.discriminacao,
         descricao: invoice.descricao,
@@ -316,24 +325,6 @@ export function Customers() {
         },
         telefone: selectedCustomer.phone.replace(/[^\d]/g, '')
       }
-    } */
-
-    const data = {
-      customer_id: selectedCustomer._id,
-      servico: {
-        Discriminacao: invoice.discriminacao,
-        descricao: invoice.descricao,
-        item_lista: invoice.item_lista,
-        cnae: invoice.cnae,
-        quantidade: invoice.quantidade,
-        valor_unitario: invoice.valor_unitario,
-        desconto: invoice.desconto
-      },
-      tributacao: {
-        iss_retido: invoice.iss_retido,        
-        aliquota_iss: invoice.aliquota_iss,       
-        retencoes: invoice.retencoes
-      }          
     }
 
     try {
@@ -456,6 +447,9 @@ export function Customers() {
       setInvoice((prev) => ({ ...prev, cnpj: selectedCustomer.cnpj }));
     }
   }
+
+
+  
 
   return (
     <div className="space-y-6">
@@ -649,7 +643,6 @@ export function Customers() {
                       value={newCustomer.email}
                       onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
                     />
                   </div>
 
@@ -660,7 +653,6 @@ export function Customers() {
                       value={newCustomer.phone}
                       onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
                     />
                   </div>
                 </div>
@@ -696,7 +688,6 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
                     />
                   </div>
 
@@ -712,7 +703,6 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
                     />
                   </div>
 
@@ -728,7 +718,6 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
                     />
                   </div>
 
@@ -744,7 +733,6 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
                     />
                   </div>
 
@@ -760,7 +748,6 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
                     />
                   </div>
 
@@ -778,7 +765,6 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
                     />
                   </div>
                 </div>
@@ -964,12 +950,12 @@ export function Customers() {
   <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
   <input
     type="text"
-    value={invoice.cnpj || ''}
+    value={invoice.cnpj || ""}
     onChange={(e) => {
       const cnpj = e.target.value;
       setInvoice({ ...invoice, cnpj });
 
-      if (cnpj.length === 18) { // Formato completo do CNPJ
+      if (cnpj.length === 18) { // Formato completo do CNPJ (com pontos e barras)
         fetchCompanyData(cnpj);
       }
     }}
@@ -977,6 +963,7 @@ export function Customers() {
     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
   />
 </div>
+
 
 
                 <div>
