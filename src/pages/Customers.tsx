@@ -44,7 +44,7 @@ export function Customers() {
   const [isGerating, setIsGerating] = useState(false);
   const [invoiceHistory, setInvoiceHistory] = useState<any[]>([]);
 
-
+  
 
   const [activeModal, setActiveModal] = useState<'none' | 'invoice' | 'subscription' | 'history'>('none');
 
@@ -446,7 +446,7 @@ export function Customers() {
   };
 
 
-
+  
 
   // Chama a API diretamente ao inicializar o componente, se houver um CNPJ válido
   if (selectedCustomer?.cnpj && invoice.cnpj === "") {
@@ -961,22 +961,22 @@ export function Customers() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
-                  <input
-                    type="text"
-                    value={invoice.cnpj || ''}
-                    onChange={(e) => {
-                      const cnpj = e.target.value;
-                      setInvoice({ ...invoice, cnpj });
+  <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
+  <input
+    type="text"
+    value={invoice.cnpj || ''}
+    onChange={(e) => {
+      const cnpj = e.target.value;
+      setInvoice({ ...invoice, cnpj });
 
-                      if (cnpj.length === 18) { // Formato completo do CNPJ
-                        fetchCompanyData(cnpj);
-                      }
-                    }}
-                    placeholder="Digite o CNPJ"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
+      if (cnpj.length === 18) { // Formato completo do CNPJ
+        fetchCompanyData(cnpj);
+      }
+    }}
+    placeholder="Digite o CNPJ"
+    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+  />
+</div>
 
 
                 <div>
