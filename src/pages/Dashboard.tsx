@@ -15,22 +15,24 @@ dayjs.extend(isoWeek);
 dayjs.extend(timezone);
 dayjs.extend(utc);
 
+
 interface Nota {
-  customer: string;
+  customer: {
+  _id: string;
+  name: string;
   user: string;
-  content: {
-    file: string;
-    date: string;
-    status: string;
-    download: string;
-  };
+},
+  valor: number;
+  status: string;
+  date: string;
 }
+
 
 export function Dashboard() {
 
   const [customer, setCustomer] = useState([]);
   const [customeractive, setCustomerActive] = useState([]);
-  const [invoice, setInvoice] = useState([]);
+  const [invoice, setInvoice] = useState<Nota[]>([]);
   const [dayInvoicetoday, setDayInvoiceToday] = useState(0);
   const [dayInvoicelast7days, setDayInvoiceLast7Days] = useState(0);
 
@@ -64,7 +66,7 @@ export function Dashboard() {
     notas.forEach((nota) => {
       // Faz o parsing da data usando o formato customizado
       const dataNota = dayjs
-        .utc(nota.content.date, 'DD/MM/YYYY, HH:mm:ss')
+        .utc(nota.date, 'DD/MM/YYYY, HH:mm:ss')
         .tz('America/Sao_Paulo');
       
       if (dataNota.isValid() && dataNota.isBetween(seteDiasAtras, hoje, 'day', '[]')) {
@@ -79,6 +81,10 @@ export function Dashboard() {
       notas: contagemPorDia[dia],
     }));
   };
+
+
+
+  
   
 
   const getNotasPorPeriodo = (notas: Nota[]) => {
@@ -87,17 +93,17 @@ export function Dashboard() {
     const trintaDiasAtras = hoje.subtract(30, 'day').startOf('day');
   
     const notasHoje = notas.filter((nota) => {
-      const dataNota = dayjs.utc(nota.content.date,'DD/MM/YYYY, HH:mm:ss').tz('America/Sao_Paulo').startOf('day'); 
+      const dataNota = dayjs.utc(nota.date,'DD/MM/YYYY, HH:mm:ss').tz('America/Sao_Paulo').startOf('day'); 
       return dataNota.isSame(hoje, 'day');
     });
   
     const notasUltimos7Dias = notas.filter((nota) => {
-      const dataNota = dayjs.utc(nota.content.date,'DD/MM/YYYY, HH:mm:ss').tz('America/Sao_Paulo').startOf('day');
+      const dataNota = dayjs.utc(nota.date,'DD/MM/YYYY, HH:mm:ss').tz('America/Sao_Paulo').startOf('day');
       return dataNota.isBetween(seteDiasAtras, hoje, 'day', '[]');
     });
 
     const notasUltimos30Dias = notas.filter((nota) => {
-      const dataNota = dayjs.utc(nota.content.date,'DD/MM/YYYY, HH:mm:ss').tz('America/Sao_Paulo').startOf('day');
+      const dataNota = dayjs.utc(nota.date,'DD/MM/YYYY, HH:mm:ss').tz('America/Sao_Paulo').startOf('day');
       return dataNota.isBetween(trintaDiasAtras, hoje, 'day', '[]');
     });
   
@@ -110,7 +116,7 @@ export function Dashboard() {
   
   function somarValoresNotas(notas: Nota[]): number {
     return notas.reduce((acumulador, nota) => {
-      const valor = Number(nota.content.value) || 0;
+      const valor = Number(nota.valor) || 0;
       return acumulador + valor;
     }, 0);
   }
@@ -206,7 +212,7 @@ export function Dashboard() {
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Status</th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Cliente</th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Data/Hora</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Ações</th>
+{/*                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Ações</th> */}
               </tr>
             </thead>
             <tbody>
@@ -214,16 +220,15 @@ export function Dashboard() {
                 <tr key={item.customer._id} className="border-b border-gray-100">
                   <td className="py-3 px-4">
                     <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm ${
-                      item.content.status === 'Entregue' 
+                      item.status === 'Emitida' 
                         ? 'bg-green-100 text-green-700'
                         : 'bg-red-100 text-red-700'
                     }`}>
-                      {item.content.status === 'Entregue' ? '✓' : '!'} {item.content.status}
+                      {item.status === 'Emitida' ? '✓' : '!'} {item.status}
                     </span>
                   </td>
                   <td className="py-3 px-4 text-gray-700">{item.customer.name}</td>
-                  <td className="py-3 px-4 text-gray-500">{item.content.date}</td>
-                  <td className="py-3 px-4 text-gray-500"><a href={item.content.link}>Visualizar</a></td>
+                  <td className="py-3 px-4 text-gray-500">{item.date}</td>
                 </tr>
               ))}
             </tbody>

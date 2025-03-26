@@ -19,7 +19,24 @@ export const api = {
     return response.json();
   },
 
-   async login_user(data: any) {
+  async update_user(data: any) {
+    const response = await fetch(`${API_URL}/user/update`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Cookies.get('token')}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao atualizar dados');
+    }
+
+    return response.json();
+  },  
+
+  async login_user(data: any) {
     const response = await fetch(`${API_URL}/user/auth`, {
       method: 'POST',
       headers: {
@@ -115,7 +132,23 @@ export const api = {
 
     return response.json();
   },
+  
+  async find_subscription(id: string) {
+    const response = await fetch(`${API_URL}/pagarme/get-subscription/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Cookies.get('token')}`,
+      },
+    });
 
+    if (!response.ok) {
+      throw new Error('Falha ao assinatura');
+    }
+
+    return response.json();
+  },
+  
   async find_customers_actives() {
     const response = await fetch(`${API_URL}/customer/actives`, {
       method: 'GET',
@@ -202,7 +235,7 @@ export const api = {
   },
 
   async find_invoices(){
-    const response = await fetch(`${API_URL}/invoice/find`, {
+    const response = await fetch(`${API_URL}/invoice/findinvoices`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -266,4 +299,37 @@ export const api = {
 
     return response.json();
   },
+
+  async login_admin(data: any){
+    const response = await fetch(`${API_URL}/admin/auth`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao autenticar usuário');
+    }
+
+    return response.json();
+  },
+
+  async find_all_users(){
+    const response = await fetch(`${API_URL}/admin/findallusers`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao buscar usuários cadastrados no sistema');
+    }
+
+    return response.json();
+  },
+
+  
 };

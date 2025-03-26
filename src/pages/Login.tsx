@@ -15,14 +15,17 @@ export function Login() {
     e.preventDefault();
     setIsLoading(true);
 
-    try{
-      const token = await api.login_user({email,password})
-      Cookies.set("token", token.token, { secure: true, sameSite: 'Strict', expires: 1 });
+    try {
+      
+      const data = await api.login_user({ email, password });
+      Cookies.set("token", data.token, { secure: true, sameSite: 'Strict', expires: 1 });
+      localStorage.setItem("user", JSON.stringify(data.userdb)); //Nova implementação
+
       toast.success('Login realizado com sucesso!');
       navigate('/dashboard');
-    }catch(err){
+    } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Erro ao fazer login');
-    }finally {
+    } finally {
       setIsLoading(false);
     }
   };
@@ -75,8 +78,14 @@ export function Login() {
         </form>
 
         <div className="mt-6 text-center">
-          <a onClick={()=> navigate('/recover')} className="cursor-pointer text-sm text-blue-600 hover:text-blue-700">
+          <a onClick={() => navigate('/recover')} className="cursor-pointer text-sm text-black-600 hover:text-blue-700">
             Esqueceu sua senha?
+          </a>
+        </div>
+
+        <div className="mt-2 text-center">
+          <a onClick={() => navigate('/admin/login')} className="cursor-pointer text-sm text-black-600 hover:text-blue-700">
+            Acesso administrativo
           </a>
         </div>
       </div>
