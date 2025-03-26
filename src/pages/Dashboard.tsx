@@ -64,10 +64,7 @@ export function Dashboard() {
     };
   
     notas.forEach((nota) => {
-      // Faz o parsing da data usando o formato customizado
-      const dataNota = dayjs
-        .utc(nota.date, 'DD/MM/YYYY, HH:mm:ss')
-        .tz('America/Sao_Paulo');
+      const dataNota = dayjs(nota.date).tz('America/Sao_Paulo');
       
       if (dataNota.isValid() && dataNota.isBetween(seteDiasAtras, hoje, 'day', '[]')) {
         const indiceDia = dataNota.day(); 
@@ -82,31 +79,26 @@ export function Dashboard() {
     }));
   };
 
-
-
-  
-  
-
   const getNotasPorPeriodo = (notas: Nota[]) => {
     const hoje = dayjs().tz('America/Sao_Paulo').startOf('day');
     const seteDiasAtras = hoje.subtract(7, 'day').startOf('day');
     const trintaDiasAtras = hoje.subtract(30, 'day').startOf('day');
   
-    const notasHoje = notas.filter((nota) => {
-      const dataNota = dayjs.utc(nota.date,'DD/MM/YYYY, HH:mm:ss').tz('America/Sao_Paulo').startOf('day'); 
+    const notasHoje = notas.filter((nota) => { 
+      const dataNota = dayjs(nota.date).tz('America/Sao_Paulo').startOf('day'); 
       return dataNota.isSame(hoje, 'day');
     });
   
     const notasUltimos7Dias = notas.filter((nota) => {
-      const dataNota = dayjs.utc(nota.date,'DD/MM/YYYY, HH:mm:ss').tz('America/Sao_Paulo').startOf('day');
+      const dataNota = dayjs(nota.date).tz('America/Sao_Paulo').startOf('day');
       return dataNota.isBetween(seteDiasAtras, hoje, 'day', '[]');
     });
 
     const notasUltimos30Dias = notas.filter((nota) => {
-      const dataNota = dayjs.utc(nota.date,'DD/MM/YYYY, HH:mm:ss').tz('America/Sao_Paulo').startOf('day');
+      const dataNota = dayjs(nota.date).tz('America/Sao_Paulo').startOf('day');
       return dataNota.isBetween(trintaDiasAtras, hoje, 'day', '[]');
     });
-  
+
     return {
       notasHoje,
       notasUltimos7Dias,
@@ -121,6 +113,8 @@ export function Dashboard() {
     }, 0);
   }
 
+
+
   const data = processarNotasParaGrafico(invoice);
   const days = getNotasPorPeriodo(invoice);
   const valorAreceber = somarValoresNotas(days.notasUltimos30Dias);
@@ -131,6 +125,7 @@ export function Dashboard() {
     setDayInvoiceLast7Days(days.notasUltimos7Dias.length);
   },[days])
 
+  console.log(invoice);
 
   return (
     <div className="space-y-6">
@@ -221,15 +216,17 @@ export function Dashboard() {
                 <tr key={item.customer._id} className="border-b border-gray-100">
                   <td className="py-3 px-4">
                     <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm ${
-                      item.status === 'Emitida' 
+                      item.status.toLowerCase() === 'emitida' 
                         ? 'bg-green-100 text-green-700'
                         : 'bg-red-100 text-red-700'
                     }`}>
-                      {item.status === 'Emitida' ? '✓' : '!'} {item.status}
+                      {item.status.toLowerCase() === 'emitida' ? '✓' : '!'} {item.status}
                     </span>
                   </td>
                   <td className="py-3 px-4 text-gray-700">{item.customer.name}</td>
-                  <td className="py-3 px-4 text-gray-500">{item.date}</td>
+                    <td className="py-3 px-4 text-gray-500">
+                    {dayjs(item.date).format('DD/MM/YYYY HH:mm')}
+                    </td>
                 </tr>
               ))}
             </tbody>
