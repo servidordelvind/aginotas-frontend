@@ -92,7 +92,7 @@ export function Customers() {
     quantidade: 0,
     valor_unitario: 0,
     desconto: 0.00,
-    iss_retido: false,
+    iss_retido: 2,
     aliquota_iss: 0,
     retencoes: {
       irrf: 0,
@@ -290,7 +290,7 @@ export function Customers() {
     e.preventDefault();
 
     if (!selectedCustomer) return;
-    const data = {
+/*     const data = {
       invoice: {
         discriminacao: invoice.discriminacao,
         descricao: invoice.descricao,
@@ -325,7 +325,26 @@ export function Customers() {
         },
         telefone: selectedCustomer.phone.replace(/[^\d]/g, '')
       }
-    }
+    } */
+
+      //USAR ESSE!!
+      const data = {
+          customer_id: selectedCustomer._id,
+          servico: {
+            Discriminacao: invoice.discriminacao,
+            descricao: invoice.descricao,
+            item_lista: invoice.item_lista,
+            cnae: invoice.cnae,
+            quantidade: invoice.quantidade,
+            valor_unitario: invoice.valor_unitario,
+            desconto: invoice.desconto
+          },
+          tributacao: {
+            iss_retido: invoice.iss_retido, 
+            aliquota_iss: invoice.aliquota_iss, 
+            retencoes: invoice.retencoes
+          }          
+      }   
 
     try {
       if (selectedCustomer.status === 'active') {
@@ -1209,7 +1228,6 @@ export function Customers() {
                       />
                       <label htmlFor="iss_retido" className="ml-2 text-sm font-medium text-gray-700">ISS Retido</label>
                     </div>
-                    {invoice.iss_retido && (
                       <div>
                         <label htmlFor="aliquota_iss" className="block text-sm font-medium text-gray-700 mb-1">Alíquota ISS (%)</label>
                         <input
@@ -1220,7 +1238,6 @@ export function Customers() {
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
                       </div>
-                    )}
                   </div>
                 </div>
 
