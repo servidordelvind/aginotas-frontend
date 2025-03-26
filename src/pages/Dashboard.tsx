@@ -131,6 +131,7 @@ export function Dashboard() {
     setDayInvoiceLast7Days(days.notasUltimos7Dias.length);
   },[days])
 
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">Painel de Controle</h1>

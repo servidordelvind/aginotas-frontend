@@ -92,12 +92,12 @@ export function Customers() {
     quantidade: 0,
     valor_unitario: 0,
     desconto: 0.00,
-    iss_retido: 2,
-    aliquota_iss: 0,
+    iss_retido: false,
+    aliquota_iss: 4.41,
     retencoes: {
-      irrf: 0,
-      pis: 0,
-      cofins: 0,
+      irrf: false,
+      pis: false,
+      cofins: false,
     },
     amount: 0,
     description: '',
@@ -288,44 +288,7 @@ export function Customers() {
 
   const handleGenerateInvoice = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!selectedCustomer) return;
-/*     const data = {
-      invoice: {
-        discriminacao: invoice.discriminacao,
-        descricao: invoice.descricao,
-        item_lista: invoice.item_lista,
-        cnae: invoice.cnae,
-        quantidade: invoice.quantidade,
-        valor_unitario: invoice.valor_unitario,
-        desconto: invoice.desconto,
-        iss_retido: invoice.iss_retido,
-        aliquota_iss: invoice.aliquota_iss,
-        retencoes: invoice.retencoes,
-        issueDate: invoice.issueDate,
-        dueDate: invoice.dueDate,
-        observations: invoice.observations,
-        amount: invoice.quantidade * invoice.valor_unitario - invoice.desconto, // Calculate amount
-      },
-      customer_id: selectedCustomer._id,
-      user_id: customers[0]?.user._id,
-      customer_data: {
-        cpfCnpj: selectedCustomer.cnpj.replace(/[^\d]/g, ''),
-        razaoSocial: selectedCustomer.name,
-        inscricaoMunicipal: selectedCustomer.inscricaoMunicipal,
-        email: selectedCustomer.email,
-        endereco: {
-          endereco: selectedCustomer.address.street,
-          numero: selectedCustomer.address.number,
-          bairro: selectedCustomer.address.neighborhood,
-          codigoMunicipio: selectedCustomer.address.cityCode,
-          cidadeNome: selectedCustomer.address.city,
-          uf: selectedCustomer.address.state,
-          cep: selectedCustomer.address.zipCode.replace(/[^\d]/g, '')
-        },
-        telefone: selectedCustomer.phone.replace(/[^\d]/g, '')
-      }
-    } */
 
       //USAR ESSE!!
       const data = {
@@ -340,9 +303,13 @@ export function Customers() {
             desconto: invoice.desconto
           },
           tributacao: {
-            iss_retido: invoice.iss_retido, 
+            iss_retido: invoice.iss_retido === true ? 1 : 2, 
             aliquota_iss: invoice.aliquota_iss, 
-            retencoes: invoice.retencoes
+            retencoes: {
+              irrf: invoice.retencoes.irrf === true ? 1.5 : 0, 
+              pis: invoice.retencoes.pis === true ? 0 : 0,
+              cofins: invoice.retencoes.cofins === true ? 0 : 0            
+            }
           }          
       }   
 
@@ -353,7 +320,7 @@ export function Customers() {
         toast.success('Nota Fiscal gerada com sucesso!');
         setActiveModal('none'); // Close the modal after successful generation
         setIsGerating(false);
-        location.reload();
+        //location.reload();
       } else {
         toast.success('O contrato está inativo!');
       }
@@ -487,10 +454,6 @@ export function Customers() {
       descricao: selectedActivity?.text || '', // Descrição da CNAE selecionada
     }));
   };
-
-
-
-
 
 
   return (
@@ -1005,7 +968,7 @@ export function Customers() {
                         <input
                           type="number"
                           id="aliquota_iss"
-                          value={invoice.aliquota_iss || 0}
+                          value={invoice.aliquota_iss || false}
                           onChange={(e) => setInvoice({ ...invoice, aliquota_iss: parseFloat(e.target.value) || 0 })}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
@@ -1222,7 +1185,7 @@ export function Customers() {
                       <input
                         type="checkbox"
                         id="iss_retido"
-                        checked={invoice.iss_retido || false}
+                        checked={invoice.iss_retido || 0}
                         onChange={(e) => setInvoice({ ...invoice, iss_retido: e.target.checked })}
                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
@@ -1248,7 +1211,7 @@ export function Customers() {
                       <input
                         type="checkbox"
                         id="irrf"
-                        checked={invoice.retencoes?.irrf || false}
+                        checked={invoice.retencoes?.irrf || 0}
                         onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, irrf: e.target.checked } })}
                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
@@ -1258,7 +1221,7 @@ export function Customers() {
                       <input
                         type="checkbox"
                         id="pis"
-                        checked={invoice.retencoes?.pis || false}
+                        checked={invoice.retencoes?.pis || 0}
                         onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, pis: e.target.checked } })}
                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
@@ -1268,7 +1231,7 @@ export function Customers() {
                       <input
                         type="checkbox"
                         id="cofins"
-                        checked={invoice.retencoes?.cofins || false}
+                        checked={invoice.retencoes?.cofins || 0}
                         onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, cofins: e.target.checked } })}
                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
