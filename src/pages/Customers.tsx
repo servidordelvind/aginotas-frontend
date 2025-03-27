@@ -38,16 +38,13 @@ export function Customers() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [isGerating, setIsGerating] = useState(false);
   const [invoiceHistory, setInvoiceHistory] = useState<any[]>([]);
   const [activeModal, setActiveModal] = useState<'none' | 'invoice' | 'subscription' | 'history'>('none');
 
-  // const [showInvoiceHistoryModal, setShowInvoiceHistoryModal] = useState(false);
-  // const [showInvoiceModal, setShowInvoiceModal] = useState(false);
-  // const [currentCustomer, setCurrentCustomer] = useState<Customer | null>(null);
 
   const [newCustomer, setNewCustomer] = useState({
     name: '',
@@ -112,21 +109,6 @@ export function Customers() {
 
   });
 
-
-  useEffect(() => {
-    if (selectedCustomer && selectedCustomer.cnpj) {
-      setInvoice((prevInvoice) => ({
-        ...prevInvoice,
-        cnpj: selectedCustomer.cnpj,
-      }));
-
-      if (selectedCustomer.cnpj.replace(/\D/g, "").length === 14) { // Remove formatação antes de chamar a API
-        fetchCompanyData(selectedCustomer.cnpj);
-      }
-    }
-  }, [selectedCustomer]);
-
-
   const handleViewInvoiceHistory = async (customer: Customer) => {
     try {
       const response = await api.find_all_invoices_customer(customer._id);
@@ -137,27 +119,6 @@ export function Customers() {
       toast.error('Erro ao buscar notas fiscais do cliente');
     }
   };
-
-  const loadCustomers = async () => {
-    try {
-      const data = await api.find_customers();
-      const scheduledata = await api.find_schedulings();
-      setCustomers(data || []);
-      setSchedulings(scheduledata || []);
-    } catch (error) {
-      toast.error('Erro ao carregar clientes');
-      console.error('Erro ao carregar clientes:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadCustomers();
-  }, []);
-
-  useEffect(() => {
-  }, [schedulings]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -327,115 +288,30 @@ export function Customers() {
     );
   }
 
-  const handleCnpjBlur = async () => {
-    const cnpj = newCustomer.cnpj.replace(/\D/g, ""); // Remove caracteres não numéricos
-    if (cnpj.length === 14) {
-      try {
-        const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpj}`);
-        const data = await response.json();
-
-        if (data) {
-          setNewCustomer({
-            ...newCustomer,
-            name: data.razao_social,
-            address: {
-              street: data.logradouro,
-              number: data.numero || "",
-              neighborhood: data.bairro,
-              city: data.municipio,
-              state: data.uf,
-              zipCode: data.cep,
-              cityCode: data.codigo_municipio,
-            },
-          });
-        }
-      } catch (error) {
-        console.error("Erro ao buscar o CNPJ:", error);
-        alert("Não foi possível buscar informações do CNPJ. Verifique o número e tente novamente.");
-      }
-    }
-  };
-  const API = "04154e23-17ce-4581-9b07-902b233d0b33-03919378-bef0-4d0c-bded-912ee5c50c49"; //chave teste, existe um limite de cnpj para busca
-
-
-  const fetchCompanyData = async (cnpj) => {
-    const cleanCNPJ = cnpj.replace(/\D/g, ''); // Remove caracteres não numéricos
-
-    if (cleanCNPJ.length !== 14) {
-      alert("CNPJ inválido! Digite um CNPJ com 14 dígitos.");
-      return;
-    }
-
-    try {
-      const response = await fetch(`https://api.cnpja.com/office/${cleanCNPJ}`, {
-        method: "GET",
-        headers: {
-          "Authorization": API,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erro ao buscar dados do CNPJ. Código: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Dados da API:", data);
-
-      const sideActivities = data.sideActivities || [];
-      const mainActivity = data.mainActivity?.id || ''; // A CNAE principal
-
-      // Encontrando o texto da atividade principal (descrição)
-      const atividadePrincipal = sideActivities.find(activity => activity.id === mainActivity);
-      const descricaoCnae = atividadePrincipal ? atividadePrincipal.text : '';
-
-      // Atualizando o estado com a descrição da CNAE
-      setInvoice((prevInvoice) => ({
-        ...prevInvoice,
-        razao_social: data.company?.name || "",
-        nome_fantasia: data.alias || "",
-        cnae: mainActivity, // Definindo a CNAE principal como id
-        sideActivities: sideActivities, // Salva todas as atividades secundárias
-        endereco: `${data.address?.street || ""}, ${data.address?.number || ""} - ${data.address?.district || ""}, ${data.address?.municipality || ""} - ${data.address?.state || ""}, ${data.address?.zip || ""}`,
-        descricao: descricaoCnae, // Preenche com a descrição da CNAE
-      }));
-    } catch (error) {
-      console.error("Erro ao buscar dados do CNPJ:", error);
-      alert(`Erro ao consultar o CNPJ: ${error.message}`);
-    }
-  };
-
   const closeAllModals = () => {
     setActiveModal('none');  // Fechando todos os modais
   };
 
-  // Chama a API diretamente ao inicializar o componente, se houver um CNPJ válido
-  if (selectedCustomer?.cnpj && invoice.cnpj === "") {
-    const cleanCNPJ = selectedCustomer.cnpj.replace(/\D/g, ''); // Remove caracteres não numéricos
-    if (cleanCNPJ.length === 14) {
-      fetchCompanyData(cleanCNPJ);
-      setInvoice((prev) => ({ ...prev, cnpj: selectedCustomer.cnpj }));
+  const loadCustomers = async () => {
+    try {
+      const data = await api.find_customers();
+      const scheduledata = await api.find_schedulings();
+      setCustomers(data || []);
+      setSchedulings(scheduledata || []);
+    } catch (error) {
+      toast.error('Erro ao carregar clientes');
+      console.error('Erro ao carregar clientes:', error);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
+  useEffect(() => {
+    loadCustomers();
+  }, []);
 
-/*   const handleCnaeChange = (e) => {
-    const selectedCnaeId = e.target.value;
-
-    // Encontre a atividade selecionada no array sideActivities
-    const selectedActivity = invoice.sideActivities.find(
-      (activity) => activity.id === parseInt(selectedCnaeId)
-    );
-
-    // Atualize o estado com o índice e descrição
-    setInvoice((prevInvoice) => ({
-      ...prevInvoice,
-      cnae: selectedCnaeId, // Armazena o ID da CNAE selecionada
-      item_lista: invoice.sideActivities.indexOf(selectedActivity) + 1, // Índice do item +1
-      descricao: selectedActivity?.text || '', // Descrição da CNAE selecionada
-    }));
-  }; */
-
+  useEffect(() => {
+  }, [schedulings]);
 
   return (
     <div className="space-y-6">
@@ -601,27 +477,11 @@ export function Customers() {
                       type="text"
                       value={newCustomer.cnpj}
                       onChange={(e) => setNewCustomer({ ...newCustomer, cnpj: e.target.value })}
-                      onBlur={handleCnpjBlur}
-                      placeholder="Digite o CNPJ e saia do campo para buscar"
+                      /* onBlur={handleCnpjBlur} */
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
                   </div>
-
-{/*                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Inscrição Municipal
-                    </label>
-                    <input
-                      type="text"
-                      value={newCustomer.inscricaoMunicipal}
-                      onChange={(e) =>
-                        setNewCustomer({ ...newCustomer, inscricaoMunicipal: e.target.value })
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div> */}
-
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
                     <input
@@ -850,16 +710,6 @@ export function Customers() {
             <div className="p-6 overflow-y-auto flex-1">
               <form id="subscriptionForm" onSubmit={handleSaveSubscription} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Cliente</label>
-                  <input
-                    type="text"
-                    value={selectedCustomer.name}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    readOnly
-                  />
-                </div>
-
-                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Discriminação do Serviço</label>
                   <input
                     type="text"
@@ -870,35 +720,13 @@ export function Customers() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
-                  <input
-                    type="text"
-                    value={invoice.cnpj || ""}
-                    onChange={(e) => {
-                      const cnpj = e.target.value;
-                      setInvoice({ ...invoice, cnpj });
-                      if (cnpj.length === 18) { // Formato completo do CNPJ (com pontos e barras)
-                        fetchCompanyData(cnpj);
-                      }
-                    }}
-                    placeholder="Digite o CNPJ"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">CNAE</label>
-                  <select
-                    value={invoice.cnae || ''}
-                    onChange={handleCnaeChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="" disabled>Selecione uma atividade CNAE</option>
-                    {invoice.sideActivities?.map((activity) => (
-                      <option key={activity.id} value={activity.id}>
-                        {activity.id} {/* Exibe o ID e o nome da CNAE */}
-                      </option>
-                    ))}
-                  </select>
+                  <input
+                  type="text"
+                  value={invoice.cnae || ''}
+                  onChange={(e) => setInvoice({ ...invoice, cnae: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
                 </div>
 
                 <div>
@@ -952,67 +780,6 @@ export function Customers() {
                   />
                 </div>
 
-                <div className="border-t pt-4">
-                  <h3 className="text-md font-semibold text-gray-900 mb-2">ISS</h3>
-                  <div className="flex items-center space-x-4">
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="iss_retido"
-                        checked={invoice.iss_retido || false}
-                        onChange={(e) => setInvoice({ ...invoice, iss_retido: e.target.checked })}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <label htmlFor="iss_retido" className="ml-2 text-sm font-medium text-gray-700">ISS Retido</label>
-                    </div>
-                      <div>
-                        <label htmlFor="aliquota_iss" className="block text-sm font-medium text-gray-700 mb-1">Alíquota ISS</label>
-                        <input
-                          type="number"
-                          id="aliquota_iss"
-                          value={invoice.aliquota_iss || false}
-                          onChange={(e) => setInvoice({ ...invoice, aliquota_iss: parseFloat(e.target.value) || 0 })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-                  </div>
-                </div>
-
-                <div className="border-t pt-4">
-                  <h3 className="text-md font-semibold text-gray-900 mb-2">Retenções</h3>
-                  <div className="flex items-center space-x-4">
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="irrf"
-                        checked={invoice.retencoes?.irrf || false}
-                        onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, irrf: e.target.checked } })}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <label htmlFor="irrf" className="ml-2 text-sm font-medium text-gray-700">IRRF</label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="pis"
-                        checked={invoice.retencoes?.pis || false}
-                        onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, pis: e.target.checked } })}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <label htmlFor="pis" className="ml-2 text-sm font-medium text-gray-700">PIS</label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cofins"
-                        checked={invoice.retencoes?.cofins || false}
-                        onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, cofins: e.target.checked } })}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <label htmlFor="cofins" className="ml-2 text-sm font-medium text-gray-700">COFINS</label>
-                    </div>
-                  </div>
-                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Dia do Faturamento</label>
                   <input
@@ -1047,8 +814,9 @@ export function Customers() {
                   />
                 </div>
               </form>
-              {/* Campos para configurar assinatura */}
 
+
+              {/* Campos para configurar assinatura */}
             </div>
             <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
               <button type="button" onClick={closeAllModals} className="px-4 py-2 text-gray-700 hover:text-gray-900">
@@ -1076,16 +844,6 @@ export function Customers() {
             </div>
             <div className="p-6 overflow-y-auto flex-1">
               <form id="invoiceForm" onSubmit={handleGenerateInvoice} className="space-y-4">
-{/*                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Cliente</label>
-                  <input
-                    type="text"
-                    value={selectedCustomer.name}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    readOnly
-                  />
-                </div> */}
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Discriminação do Serviço</label>
                   <input
@@ -1096,22 +854,6 @@ export function Customers() {
                     required
                   />
                 </div>
-{/*                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
-                  <input
-                    type="text"
-                    value={invoice.cnpj || ""}
-                    onChange={(e) => {
-                      const cnpj = e.target.value;
-                      setInvoice({ ...invoice, cnpj });
-                      if (cnpj.length === 18) { // Formato completo do CNPJ (com pontos e barras)
-                        fetchCompanyData(cnpj);
-                      }
-                    }}
-                    placeholder="Digite o CNPJ"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div> */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">CNAE</label>
                   <input
@@ -1172,68 +914,6 @@ export function Customers() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-
-{/*                 <div className="border-t pt-4">
-                  <h3 className="text-md font-semibold text-gray-900 mb-2">ISS</h3>
-                  <div className="flex items-center space-x-4">
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="iss_retido"
-                        checked={invoice.iss_retido || 0}
-                        onChange={(e) => setInvoice({ ...invoice, iss_retido: e.target.checked })}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <label htmlFor="iss_retido" className="ml-2 text-sm font-medium text-gray-700">ISS Retido</label>
-                    </div>
-                      <div>
-                        <label htmlFor="aliquota_iss" className="block text-sm font-medium text-gray-700 mb-1">Alíquota ISS</label>
-                        <input
-                          type="number"
-                          id="aliquota_iss"
-                          value={invoice.aliquota_iss || 0}
-                          onChange={(e) => setInvoice({ ...invoice, aliquota_iss: parseFloat(e.target.value) || 0 })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-                  </div>
-                </div>
-
-                <div className="border-t pt-4">
-                  <h3 className="text-md font-semibold text-gray-900 mb-2">Retenções</h3>
-                  <div className="flex items-center space-x-4">
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="irrf"
-                        checked={invoice.retencoes?.irrf || 0}
-                        onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, irrf: e.target.checked } })}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <label htmlFor="irrf" className="ml-2 text-sm font-medium text-gray-700">IRRF</label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="pis"
-                        checked={invoice.retencoes?.pis || 0}
-                        onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, pis: e.target.checked } })}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <label htmlFor="pis" className="ml-2 text-sm font-medium text-gray-700">PIS</label>
-                    </div>
-                    <div>
-                      <input
-                        type="checkbox"
-                        id="cofins"
-                        checked={invoice.retencoes?.cofins || 0}
-                        onChange={(e) => setInvoice({ ...invoice, retencoes: { ...invoice.retencoes, cofins: e.target.checked } })}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <label htmlFor="cofins" className="ml-2 text-sm font-medium text-gray-700">COFINS</label>
-                    </div>
-                  </div>
-                </div> */}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Data de Emissão</label>
