@@ -235,37 +235,35 @@ export function Customers() {
     e.preventDefault();
 
     if (!selectedCustomer) return;
-    //configurar agendamento da emissao das notas fiscais
+
     const data = {
       customer_id: selectedCustomer._id,
       user_id: customers[0]?.user._id,
       billing_day: subscription.billingDay,
-      amount: subscription.amount,
       start_date: subscription.startDate,
       end_date: subscription.endDate,
-      description: subscription.description,
-
-      item_lista_servico: subscription.itemListaServico,
-      codigo_cnae: subscription.codigoCnae,
-
-      customer_data: {
-        cpfCnpj: selectedCustomer.cnpj.replace(/[^\d]/g, ''),
-        razaoSocial: selectedCustomer.name,
-        inscricaoMunicipal: selectedCustomer.inscricaoMunicipal,
-        email: selectedCustomer.email,
-        endereco: {
-          endereco: selectedCustomer.address.street,
-          numero: selectedCustomer.address.number,
-          bairro: selectedCustomer.address.neighborhood,
-          codigoMunicipio: selectedCustomer.address.cityCode,
-          cidadeNome: selectedCustomer.address.city,
-          uf: selectedCustomer.address.state,
-          cep: selectedCustomer.address.zipCode.replace(/[^\d]/g, '')
+      data: {
+        servico: {
+          Discriminacao: invoice.discriminacao,
+          descricao: invoice.descricao,
+          item_lista: invoice.item_lista,
+          cnae: invoice.cnae,
+          quantidade: invoice.quantidade,
+          valor_unitario: invoice.valor_unitario,
+          desconto: invoice.desconto
         },
-        telefone: selectedCustomer.phone.replace(/[^\d]/g, '')
-      }
-    }
-
+        tributacao: {
+          iss_retido: invoice.iss_retido === true ? 1 : 2, 
+          aliquota_iss: invoice.aliquota_iss, 
+          retencoes: {
+            irrf: invoice.retencoes.irrf === true ? 1.5 : 0, 
+            pis: invoice.retencoes.pis === true ? 0 : 0,
+            cofins: invoice.retencoes.cofins === true ? 0 : 0            
+          }
+        }
+      },
+      valor: invoice.quantidade * invoice.valor_unitario,          
+  }  
     try {
       if (selectedCustomer.status === 'active') {
         setIsGerating(true);
@@ -273,7 +271,6 @@ export function Customers() {
         toast.success('Agendamento configurado com sucesso!');
         setIsSubscriptionModalOpen(false);
         setIsGerating(false);
-        location.reload();
       } else {
         toast.success('O contrato está inativo!');
       }
@@ -982,9 +979,8 @@ export function Customers() {
                       />
                       <label htmlFor="iss_retido" className="ml-2 text-sm font-medium text-gray-700">ISS Retido</label>
                     </div>
-                    {invoice.iss_retido && (
                       <div>
-                        <label htmlFor="aliquota_iss" className="block text-sm font-medium text-gray-700 mb-1">Alíquota ISS (%)</label>
+                        <label htmlFor="aliquota_iss" className="block text-sm font-medium text-gray-700 mb-1">Alíquota ISS</label>
                         <input
                           type="number"
                           id="aliquota_iss"
@@ -993,7 +989,6 @@ export function Customers() {
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
                       </div>
-                    )}
                   </div>
                 </div>
 
