@@ -479,6 +479,7 @@ export function Customers() {
                       value={newCustomer.email}
                       onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
                     />
                   </div>
 
@@ -489,6 +490,7 @@ export function Customers() {
                       value={newCustomer.phone}
                       onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
                     />
                   </div>
                 </div>
@@ -524,6 +526,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
                     />
                   </div>
 
@@ -539,6 +542,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
                     />
                   </div>
 
@@ -554,6 +558,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
                     />
                   </div>
 
@@ -569,6 +574,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
                     />
                   </div>
 
@@ -584,6 +590,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
                     />
                   </div>
 
@@ -601,6 +608,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
                     />
                   </div>
                 </div>
@@ -716,7 +724,8 @@ export function Customers() {
                   value={invoice.cnae || ''}
                   onChange={(e) => setInvoice({ ...invoice, cnae: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
+                  required
+                />
                 </div>
 
                 <div>
@@ -726,6 +735,7 @@ export function Customers() {
                     value={invoice.item_lista || ''} // Posição do item, se necessário
                     onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
                   />
                 </div>
                 <div>
@@ -744,6 +754,7 @@ export function Customers() {
                     value={invoice.quantidade || 0}
                     onChange={(e) => setInvoice({ ...invoice, quantidade: parseInt(e.target.value) || 1 })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
                   />
                 </div>
 
@@ -767,6 +778,7 @@ export function Customers() {
                     value={invoice.desconto || 0.00}
                     onChange={(e) => setInvoice({ ...invoice, desconto: parseFloat(e.target.value) })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
                   />
                 </div>
 
@@ -851,7 +863,8 @@ export function Customers() {
                   value={invoice.cnae || ''}
                   onChange={(e) => setInvoice({ ...invoice, cnae: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
+                  required
+                />
                 </div>
 
                 <div>
@@ -861,7 +874,8 @@ export function Customers() {
                   value={invoice.item_lista}
                   onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
+                  required
+                />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
@@ -879,6 +893,7 @@ export function Customers() {
                     value={invoice.quantidade || 0}
                     onChange={(e) => setInvoice({ ...invoice, quantidade: parseInt(e.target.value) || 1 })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
                   />
                 </div>
 
@@ -902,6 +917,7 @@ export function Customers() {
                     value={invoice.desconto || 0.00}
                     onChange={(e) => setInvoice({ ...invoice, desconto: parseFloat(e.target.value) })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
                   />
                 </div>
 
