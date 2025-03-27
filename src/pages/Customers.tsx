@@ -112,16 +112,6 @@ export function Customers() {
 
   });
 
-  //carrega o historico de notas geradas para um cliente
-  const loadInvoiceHistory = async (customerId: string) => {
-    // try {
-    //   const data = await api.find_invoices_by_customer(customerId); // Supondo que você tenha uma API que retorna as faturas de um cliente.
-    //   setInvoiceHistory(data || []);
-    // } catch (error) {
-    //   toast.error('Erro ao carregar histórico de notas fiscais');
-    //   console.error('Erro ao carregar histórico de notas fiscais:', error);
-    // }
-  };
 
   useEffect(() => {
     if (selectedCustomer && selectedCustomer.cnpj) {
@@ -136,15 +126,17 @@ export function Customers() {
     }
   }, [selectedCustomer]);
 
-  const handleViewInvoiceHistory = (customer: Customer) => {
-    setActiveModal('history');  // Alterando para 'history' ao abrir o modal de histórico
-    loadInvoiceHistory(customer._id);
-    setSelectedCustomer(customer);
-  };
 
-  useEffect(() => {
-    loadCustomers();
-  }, []);
+  const handleViewInvoiceHistory = async (customer: Customer) => {
+    try {
+      const response = await api.find_all_invoices_customer(customer._id);
+      setInvoiceHistory(response || []);
+      setActiveModal('history'); 
+      setSelectedCustomer(customer);
+    } catch (error) {
+      toast.error('Erro ao buscar notas fiscais do cliente');
+    }
+  };
 
   const loadCustomers = async () => {
     try {
@@ -159,6 +151,11 @@ export function Customers() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadCustomers();
+  }, []);
+
   useEffect(() => {
   }, [schedulings]);
 
@@ -455,6 +452,7 @@ export function Customers() {
     }));
   };
 
+  console.log(invoice);
 
   return (
     <div className="space-y-6">
@@ -824,9 +822,31 @@ export function Customers() {
                   ) : (
                     invoiceHistory.map((invoice) => (
                       <tr key={invoice.id} className="border-b">
-                        <td className="py-2 px-4 text-sm text-gray-700">{invoice.date}</td>
-                        <td className="py-2 px-4 text-sm text-gray-700">{invoice.amount}</td>
-                        <td className="py-2 px-4 text-sm text-gray-700">{invoice.description}</td>
+                        <td className="py-2 px-4 text-sm text-gray-700">{invoice.discriminacao || ''}</td>
+                        <td className="py-2 px-4 text-sm text-gray-700">{invoice.valor_unitario * invoice.quantidade || 0}</td>
+                        <td className="py-2 px-4 text-sm text-gray-700">
+                          {new Date(invoice.date).toLocaleDateString('pt-BR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          }) || ''}
+                        </td>
+                        <td className="py-3 px-4 text-sm text-gray-700">
+                          <button
+                          onClick={() => console.log(`Substituir nota fiscal ${invoice._id}`)}
+                          className="text-blue-600 hover:text-blue-800 p-1"
+                          title="Substituir Nota Fiscal"
+                          >
+                          <File className="w-4 h-4" />
+                          </button>
+                          <button
+                          onClick={() => console.log(`Cancelar nota fiscal ${invoice._id}`)}
+                          className="text-red-600 hover:text-red-800 ml-2 p-1"
+                          title="Cancelar Nota Fiscal"
+                          >
+                          <XCircle className="w-4 h-4" />
+                          </button>
+                        </td>
                       </tr>
                     ))
                   )}

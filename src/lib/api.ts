@@ -331,5 +331,20 @@ export const api = {
     return response.json();
   },
 
+  async find_all_invoices_customer(id:string){
+    const response = await fetch(`${API_URL}/invoice/findinvoicescustomer/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao buscar notas fiscais geradas no sistema');
+    }
+
+    return response.json();
+  },
+
   
 };
