@@ -210,15 +210,6 @@ export function Customers() {
           quantidade: invoice.quantidade,
           valor_unitario: invoice.valor_unitario,
           desconto: invoice.desconto
-        },
-        tributacao: {
-          iss_retido: invoice.iss_retido === true ? 1 : 2, 
-          aliquota_iss: invoice.aliquota_iss, 
-          retencoes: {
-            irrf: invoice.retencoes.irrf === true ? 1.5 : 0, 
-            pis: invoice.retencoes.pis === true ? 0 : 0,
-            cofins: invoice.retencoes.cofins === true ? 0 : 0            
-          }
         }
       },
       valor: invoice.quantidade * invoice.valor_unitario,          
