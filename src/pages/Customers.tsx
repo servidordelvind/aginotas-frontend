@@ -78,19 +78,19 @@ export function Customers() {
     endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
     description: '',
 
-    itemListaServico: '801',
-    codigoCnae: '8531700'
+    itemListaServico: '',
+    codigoCnae: ''
   });
 
   //Criando NF na hora
   const [invoice, setInvoice] = useState({
-    discriminacao: '',
-    descricao: '',
-    item_lista: '',
+    discriminacao: 'CONTRATO MENSAL',
+    descricao: 'Descrição do serviço',
+    item_lista: '104',
     cnpj: selectedCustomer?.cnpj || "",
-    cnae: '',
-    quantidade: 0,
-    valor_unitario: 0,
+    cnae: '6201501',
+    quantidade: 1,
+    valor_unitario: 100,
     desconto: 0.00,
     iss_retido: false,
     aliquota_iss: 4.41,
@@ -294,16 +294,7 @@ export function Customers() {
             quantidade: invoice.quantidade,
             valor_unitario: invoice.valor_unitario,
             desconto: invoice.desconto
-          },
-          tributacao: {
-            iss_retido: invoice.iss_retido === true ? 1 : 2, 
-            aliquota_iss: invoice.aliquota_iss, 
-            retencoes: {
-              irrf: invoice.retencoes.irrf === true ? 1.5 : 0, 
-              pis: invoice.retencoes.pis === true ? 0 : 0,
-              cofins: invoice.retencoes.cofins === true ? 0 : 0            
-            }
-          }          
+          }        
       }   
 
     try {
@@ -364,9 +355,6 @@ export function Customers() {
       }
     }
   };
-
-
-
   const API = "04154e23-17ce-4581-9b07-902b233d0b33-03919378-bef0-4d0c-bded-912ee5c50c49"; //chave teste, existe um limite de cnpj para busca
 
 
@@ -431,7 +419,7 @@ export function Customers() {
   }
 
 
-  const handleCnaeChange = (e) => {
+/*   const handleCnaeChange = (e) => {
     const selectedCnaeId = e.target.value;
 
     // Encontre a atividade selecionada no array sideActivities
@@ -446,9 +434,8 @@ export function Customers() {
       item_lista: invoice.sideActivities.indexOf(selectedActivity) + 1, // Índice do item +1
       descricao: selectedActivity?.text || '', // Descrição da CNAE selecionada
     }));
-  };
+  }; */
 
-  console.log(invoice);
 
   return (
     <div className="space-y-6">
@@ -793,60 +780,60 @@ export function Customers() {
       {/* Modal Histórico de Notas Fiscais */}
       {selectedCustomer && activeModal === 'history' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-96">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-[32rem]">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-900">Histórico de Notas Fiscais</h2>
               <button onClick={closeAllModals} className="text-gray-500 hover:text-gray-700">
-                <XCircle className="w-6 h-6" />
+          <XCircle className="w-6 h-6" />
               </button>
             </div>
             <div className="mt-4">
               <h3 className="text-lg font-semibold text-gray-800">{selectedCustomer.name}</h3>
               <table className="mt-4 w-full table-auto">
-                <thead>
-                  <tr className="border-b">
-                    <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Data</th>
-                    <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Valor</th>
-                    <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Descrição</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {invoiceHistory.length === 0 ? (
-                    <tr>
-                      <td colSpan={3} className="py-2 px-4 text-center text-sm text-gray-500">Nenhuma nota fiscal encontrada</td>
-                    </tr>
-                  ) : (
-                    invoiceHistory.map((invoice) => (
-                      <tr key={invoice.id} className="border-b">
-                        <td className="py-2 px-4 text-sm text-gray-700">{invoice.discriminacao || ''}</td>
-                        <td className="py-2 px-4 text-sm text-gray-700">{invoice.valor_unitario * invoice.quantidade || 0}</td>
-                        <td className="py-2 px-4 text-sm text-gray-700">
-                          {new Date(invoice.date).toLocaleDateString('pt-BR', {
-                          day: '2-digit',
-                          month: '2-digit',
-                          year: 'numeric',
-                          }) || ''}
-                        </td>
-                        <td className="py-3 px-4 text-sm text-gray-700">
-                          <button
-                          onClick={() => console.log(`Substituir nota fiscal ${invoice._id}`)}
-                          className="text-blue-600 hover:text-blue-800 p-1"
-                          title="Substituir Nota Fiscal"
-                          >
-                          <File className="w-4 h-4" />
-                          </button>
-                          <button
-                          onClick={() => console.log(`Cancelar nota fiscal ${invoice._id}`)}
-                          className="text-red-600 hover:text-red-800 ml-2 p-1"
-                          title="Cancelar Nota Fiscal"
-                          >
-                          <XCircle className="w-4 h-4" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
+          <thead>
+            <tr className="border-b">
+              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Descrição</th>
+              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Valor</th>
+              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Data</th>
+            </tr>
+          </thead>
+          <tbody>
+            {invoiceHistory.length === 0 ? (
+              <tr>
+                <td colSpan={3} className="py-2 px-4 text-center text-sm text-gray-500">Nenhuma nota fiscal encontrada</td>
+              </tr>
+            ) : (
+              invoiceHistory.map((invoice) => (
+                <tr key={invoice.id} className="border-b">
+            <td className="py-2 px-4 text-sm text-gray-700">{invoice.discriminacao || ''}</td>
+            <td className="py-2 px-4 text-sm text-gray-700">{invoice.valor_unitario * invoice.quantidade || 0}</td>
+            <td className="py-2 px-4 text-sm text-gray-700">
+              {new Date(invoice.date).toLocaleDateString('pt-BR', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+              }) || ''}
+            </td>
+            <td className="py-3 px-4 text-sm text-gray-700">
+              <button
+              onClick={() => console.log(`Substituir nota fiscal ${invoice._id}`)}
+              className="text-blue-600 hover:text-blue-800 p-1"
+              title="Substituir Nota Fiscal"
+              >
+              <File className="w-4 h-4" />
+              </button>
+              <button
+              onClick={() => console.log(`Cancelar nota fiscal ${invoice._id}`)}
+              className="text-red-600 hover:text-red-800 ml-2 p-1"
+              title="Cancelar Nota Fiscal"
+              >
+              <XCircle className="w-4 h-4" />
+              </button>
+            </td>
+                </tr>
+              ))
+            )}
+          </tbody>
               </table>
             </div>
           </div>
@@ -1089,7 +1076,7 @@ export function Customers() {
             </div>
             <div className="p-6 overflow-y-auto flex-1">
               <form id="invoiceForm" onSubmit={handleGenerateInvoice} className="space-y-4">
-                <div>
+{/*                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Cliente</label>
                   <input
                     type="text"
@@ -1097,7 +1084,7 @@ export function Customers() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     readOnly
                   />
-                </div>
+                </div> */}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Discriminação do Serviço</label>
@@ -1109,7 +1096,7 @@ export function Customers() {
                     required
                   />
                 </div>
-                <div>
+{/*                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
                   <input
                     type="text"
@@ -1124,36 +1111,30 @@ export function Customers() {
                     placeholder="Digite o CNPJ"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
-                </div>
+                </div> */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">CNAE</label>
-                  <select
-                    value={invoice.cnae || ''}
-                    onChange={handleCnaeChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="" disabled>Selecione uma atividade CNAE</option>
-                    {invoice.sideActivities?.map((activity) => (
-                      <option key={activity.id} value={activity.id}>
-                        {activity.id} {/* Exibe o ID e o nome da CNAE */}
-                      </option>
-                    ))}
-                  </select>
+                  <input
+                  type="text"
+                  value={invoice.cnae || ''}
+                  onChange={(e) => setInvoice({ ...invoice, cnae: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Item da Lista de Serviço</label>
                   <input
-                    type="text"
-                    value={invoice.item_lista || ''} // Posição do item, se necessário
-                    onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  type="text"
+                  value={invoice.item_lista}
+                  onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
                   <textarea
-                    value={invoice.descricao || ''} // Passa a descrição da CNAE para o campo de texto
+                    value={invoice.descricao || ''} 
                     onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
@@ -1192,7 +1173,7 @@ export function Customers() {
                   />
                 </div>
 
-                <div className="border-t pt-4">
+{/*                 <div className="border-t pt-4">
                   <h3 className="text-md font-semibold text-gray-900 mb-2">ISS</h3>
                   <div className="flex items-center space-x-4">
                     <div>
@@ -1252,7 +1233,7 @@ export function Customers() {
                       <label htmlFor="cofins" className="ml-2 text-sm font-medium text-gray-700">COFINS</label>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Data de Emissão</label>

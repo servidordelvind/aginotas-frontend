@@ -50,6 +50,7 @@ export function Layout() {
     navigate('/');
     Cookies.remove('token');
     Cookies.remove('admin_token');
+    localStorage.clear();
   };
 
   const navItems = [
