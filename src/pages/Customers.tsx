@@ -238,7 +238,6 @@ export function Customers() {
 
     const data = {
       customer_id: selectedCustomer._id,
-      user_id: customers[0]?.user._id,
       billing_day: subscription.billingDay,
       start_date: subscription.startDate,
       end_date: subscription.endDate,
