@@ -1212,7 +1212,7 @@ export function Customers() {
                       <label htmlFor="iss_retido" className="ml-2 text-sm font-medium text-gray-700">ISS Retido</label>
                     </div>
                       <div>
-                        <label htmlFor="aliquota_iss" className="block text-sm font-medium text-gray-700 mb-1">Alíquota ISS (%)</label>
+                        <label htmlFor="aliquota_iss" className="block text-sm font-medium text-gray-700 mb-1">Alíquota ISS</label>
                         <input
                           type="number"
                           id="aliquota_iss"
