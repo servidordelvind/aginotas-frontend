@@ -248,20 +248,22 @@ export function Customers() {
           }        
       }   
 
-    try {
-      if (selectedCustomer.status === 'active') {
-        setIsGerating(true);
-        await api.create_invoice(data);
-        toast.success('Nota Fiscal gerada com sucesso!');
-        setActiveModal('none'); // Close the modal after successful generation
-        setIsGerating(false);
-        //location.reload();
-      } else {
-        toast.success('O contrato está inativo!');
-      }
-    } catch (error) {
-      toast.error('Erro ao Gerar Nota Fiscal');
-      console.error('Erro ao Gerar Nota Fiscal:', error);
+  try {
+    if (selectedCustomer.status === 'active') {
+          setIsGerating(true);
+          const response = await api.create_invoice(data);
+          console.log(response);
+          toast.success("Nota Fiscal gerada com sucesso!");
+          setActiveModal('none');
+          setIsGerating(false);
+        } else {
+          toast.success('O contrato está inativo!');
+        }
+  } catch (error: any) {
+      setIsGerating(false);
+      const errorMessage = error?.data?.message || 'Erro desconhecido';
+      toast.error(errorMessage);
+      console.log(error);
     }
   };
 
