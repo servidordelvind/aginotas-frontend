@@ -252,8 +252,7 @@ export function Customers() {
     if (selectedCustomer.status === 'active') {
           setIsGerating(true);
           const response = await api.create_invoice(data);
-          console.log(response);
-          toast.success("Nota Fiscal gerada com sucesso!");
+          toast.success(response.message);
           setActiveModal('none');
           setIsGerating(false);
         } else {
@@ -261,9 +260,6 @@ export function Customers() {
         }
   } catch (error: any) {
       setIsGerating(false);
-      const errorMessage = error?.data?.message || 'Erro desconhecido';
-      toast.error(errorMessage);
-      console.log(error);
     }
   };
 
