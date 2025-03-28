@@ -346,5 +346,22 @@ export const api = {
     return response.json();
   },
 
+  async cancel_invoice(data: any){
+    const response = await fetch(`${API_URL}/invoice/cancel`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Cookies.get('token')}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao cancelar nota fiscal');
+    }
+
+    return response.json();
+  },
+
   
 };

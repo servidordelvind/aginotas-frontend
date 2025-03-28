@@ -264,6 +264,48 @@ export function Customers() {
     }
   };
 
+  function parseNfseXml(xmlString: string) {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+  
+    const nsResolver = (prefix: string | null) => (prefix === "ns2" ? "http://shad.elotech.com.br/schemas/iss/nfse_v2_03.xsd" : null);
+  
+    const getValue = (xpath: string) => {
+        const result = xmlDoc.evaluate(xpath, xmlDoc, nsResolver, XPathResult.STRING_TYPE, null);
+        return result.stringValue || null;
+    };
+  
+    return {
+        numeroNota: getValue("//ns2:InfNfse/ns2:Numero"),
+        cpfCnpj: getValue("//ns2:PrestadorServico/ns2:IdentificacaoPrestador/ns2:CpfCnpj/ns2:Cnpj"),
+        inscricaoMunicipal: getValue("//ns2:PrestadorServico/ns2:IdentificacaoPrestador/ns2:InscricaoMunicipal"),
+        codigoMunicipio: getValue("//ns2:PrestadorServico/ns2:Endereco/ns2:CodigoMunicipio"),
+        chaveAcesso: getValue("//ns2:InfNfse/ns2:ChaveAcesso"),
+        codigoVerificacao: getValue("//ns2:InfNfse/ns2:CodigoVerificacao"),
+    };
+}
+
+  const handleCancelInvoice = async (invoice: any) => {
+    try {
+      const nfseData = parseNfseXml(invoice.xml);
+      const data = {
+        IdInvoice: invoice._id,
+        NumeroNfse: nfseData.numeroNota,
+        CpfCnpjNfse: nfseData.cpfCnpj,
+        InscricaoMunicipalNfse: nfseData.inscricaoMunicipal,
+        CodigoMunicipioNfse: nfseData.codigoMunicipio, 
+        ChaveAcesso: nfseData.chaveAcesso, 
+      }
+
+      console.log(data);
+      const response = await api.cancel_invoice(data);
+      toast.success('Nota fiscal cancelada com sucesso!');
+    } catch (error) {
+      toast.error('Erro ao cancelar nota fiscal');
+      console.error('Erro ao cancelar nota fiscal:', error);
+    }
+  }
+
   const filteredCustomers = customers.filter(customer =>
     customer.cnpj.includes(searchTerm) ||
     customer.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -681,7 +723,7 @@ export function Customers() {
               <File className="w-4 h-4" />
               </button>
               <button
-              onClick={() => console.log(`Cancelar nota fiscal ${invoice._id}`)}
+              onClick={() => handleCancelInvoice(invoice)}
               className="text-red-600 hover:text-red-800 ml-2 p-1"
               title="Cancelar Nota Fiscal"
               >
