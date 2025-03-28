@@ -137,6 +137,10 @@ export function Customers() {
   };
 
   const handleDeleteCustomer = async (id: string) => {
+    if (!window.confirm("Tem certeza que deseja excluir esse cliente?")) {
+      return;
+    }
+
     try {
       await api.delete_customer(id);
       setCustomers(customers.filter(c => c._id !== id));
@@ -172,6 +176,10 @@ export function Customers() {
   };
 
   const handleCancelSchedule = async (id: string) => {
+    if (!window.confirm("Tem certeza que deseja cancelar o agendamento?")) {
+      return;
+    }
+
     try {
       await api.delete_schedule(id);
       toast.success('Agendamento cancelado com sucesso!');
@@ -286,6 +294,11 @@ export function Customers() {
 }
 
   const handleCancelInvoice = async (invoice: any) => {
+
+    if (!window.confirm("Tem certeza que deseja cancelar esta nota fiscal?")) {
+      return;
+    }
+
     try {
       const nfseData = parseNfseXml(invoice.xml);
       const data = {
@@ -680,7 +693,7 @@ export function Customers() {
       {/* Modal Histórico de Notas Fiscais */}
       {selectedCustomer && activeModal === 'history' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-[32rem]">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-[60%]">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-900">Histórico de Notas Fiscais</h2>
               <button onClick={closeAllModals} className="text-gray-500 hover:text-gray-700">
@@ -692,6 +705,7 @@ export function Customers() {
               <table className="mt-4 w-full table-auto">
           <thead>
             <tr className="border-b">
+              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Status</th>
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Descrição</th>
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Valor</th>
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Data</th>
@@ -705,29 +719,30 @@ export function Customers() {
             ) : (
               invoiceHistory.map((invoice) => (
                 <tr key={invoice.id} className="border-b">
+            <td className="py-2 px-4 text-sm text-gray-700">{invoice.status || ''}</td>
             <td className="py-2 px-4 text-sm text-gray-700">{invoice.data.Rps.Servico.Discriminacao || ''}</td>
             <td className="py-2 px-4 text-sm text-gray-700">{invoice.valor * invoice.data.Rps.Servico.ListaItensServico[0].Quantidade}</td>
             <td className="py-2 px-4 text-sm text-gray-700">
               {new Date(invoice.date).toLocaleDateString('pt-BR', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
               }) || ''}
             </td>
             <td className="py-3 px-4 text-sm text-gray-700">
               <button
-              onClick={() => console.log(`Substituir nota fiscal ${invoice._id}`)}
-              className="text-blue-600 hover:text-blue-800 p-1"
-              title="Substituir Nota Fiscal"
+                onClick={() => console.log(`Substituir nota fiscal ${invoice._id}`)}
+                className="text-blue-600 hover:text-blue-800 p-1"
+                title="Substituir Nota Fiscal"
               >
-              <File className="w-4 h-4" />
+                <File className="w-4 h-4" />
               </button>
               <button
-              onClick={() => handleCancelInvoice(invoice)}
-              className="text-red-600 hover:text-red-800 ml-2 p-1"
-              title="Cancelar Nota Fiscal"
+                onClick={() => handleCancelInvoice(invoice)}
+                className="text-red-600 hover:text-red-800 ml-2 p-1"
+                title="Cancelar Nota Fiscal"
               >
-              <XCircle className="w-4 h-4" />
+                <XCircle className="w-4 h-4" />
               </button>
             </td>
                 </tr>
