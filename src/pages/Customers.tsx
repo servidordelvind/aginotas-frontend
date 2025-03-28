@@ -205,8 +205,8 @@ export function Customers() {
         servico: {
           Discriminacao: invoice.discriminacao,
           descricao: invoice.descricao,
-          item_lista: invoice.item_lista,
-          cnae: invoice.cnae,
+          item_lista: parseInt(invoice.item_lista),
+          cnae: parseInt(invoice.cnae),
           quantidade: invoice.quantidade,
           valor_unitario: invoice.valor_unitario,
           desconto: invoice.desconto
@@ -214,6 +214,7 @@ export function Customers() {
       },
       valor: invoice.quantidade * invoice.valor_unitario,          
   }  
+
     try {
       if (selectedCustomer.status === 'active') {
         setIsGerating(true);
@@ -301,6 +302,7 @@ export function Customers() {
   useEffect(() => {
   }, [schedulings]);
 
+ 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -661,8 +663,8 @@ export function Customers() {
             ) : (
               invoiceHistory.map((invoice) => (
                 <tr key={invoice.id} className="border-b">
-            <td className="py-2 px-4 text-sm text-gray-700">{invoice.discriminacao || ''}</td>
-            <td className="py-2 px-4 text-sm text-gray-700">{invoice.valor_unitario * invoice.quantidade || 0}</td>
+            <td className="py-2 px-4 text-sm text-gray-700">{invoice.data.Rps.Servico.Discriminacao || ''}</td>
+            <td className="py-2 px-4 text-sm text-gray-700">{invoice.valor * invoice.data.Rps.Servico.ListaItensServico[0].Quantidade}</td>
             <td className="py-2 px-4 text-sm text-gray-700">
               {new Date(invoice.date).toLocaleDateString('pt-BR', {
               day: '2-digit',
