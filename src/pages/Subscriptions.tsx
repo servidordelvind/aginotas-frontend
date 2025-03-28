@@ -65,6 +65,7 @@ export function Subscriptions() {
     //fetchInvoices();
   }, []);
 
+
 /*   const fetchInvoices = async () => {
     // Simulando faturas para o histórico
     const response = [
@@ -88,6 +89,8 @@ export function Subscriptions() {
     // Lógica para cancelar assinatura no backend
     setSubscriptions(subscriptions.map(sub => sub.id === id ? { ...sub, status: 'cancelled' } : sub));
   }; */
+
+  
   if (loading) return <div>Carregando...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
   if (subscriptions.length === 0) return <div>Nenhuma assinatura encontrada</div>;
@@ -123,6 +126,44 @@ export function Subscriptions() {
           </div>
         </div>
         ))}
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Cartão de Crédito</h2>
+          {subscriptions[0]?.card ? (
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600">
+                  <span className="font-semibold">Nome:</span> {subscriptions[0].card.holder_name}
+                </p>
+                <p className="text-gray-600">
+                  <span className="font-semibold">Número:</span> **** **** **** {subscriptions[0].card.last_four_digits}
+                </p>
+                <p className="text-gray-600">
+                  <span className="font-semibold">Validade:</span> {subscriptions[0].card.exp_month}/{subscriptions[0].card.exp_year}
+                </p>
+                <p className={`text-gray-600 ${subscriptions[0].card.status === 'active' ? 'text-green-600' : 'text-red-600'}`}>
+                  <span className="font-semibold">Status:</span> {subscriptions[0].card.status === 'active' ? 'Ativo' : 'Inativo'}
+                </p>
+              </div>
+              <button
+                onClick={() => alert('Abrir modal para cadastrar novo cartão')}
+                className="text-blue-600 hover:text-blue-700 flex items-center gap-2"
+              >
+                <FileText className="w-5 h-5" />
+                Cadastrar Novo Cartão
+              </button>
+            </div>
+          ) : (
+            <div className="text-gray-600">
+              Nenhum cartão cadastrado.
+              <button
+                onClick={() => alert('Abrir modal para cadastrar novo cartão')}
+                className="text-blue-600 hover:text-blue-700 ml-2"
+              >
+                Cadastrar Novo Cartão
+              </button>
+            </div>
+          )}
+        </div>
       {/* Histórico de Faturas */}
       
 {/*       <div>
