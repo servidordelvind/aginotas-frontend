@@ -79,7 +79,8 @@ export function Customers() {
     }
   });
 
-  const [newCustomer, setNewCustomer] = useState({
+  const [newCustomer, setNewCustomer] = useState<Customer>({
+    _id: '',
     name: '',
     cnpj: '',
     email: '',
@@ -88,6 +89,7 @@ export function Customers() {
     user: {
       _id: '',
       email: '',
+      senhaelotech: '',
     },
     address: {
       street: '',
@@ -97,7 +99,8 @@ export function Customers() {
       city: '',
       state: '',
       zipCode: ''
-    }
+    },
+    status: 'inactive',
   });
 
   //Agendando NF
@@ -174,6 +177,12 @@ export function Customers() {
   };
 
   const handleDeleteCustomer = async (id: string) => {
+    const response = await api.find_all_invoices_customer(id);
+    if (response.length > 0) {
+      toast.error('Não é possível excluir o cliente, pois ele possui notas fiscais emitidas.');
+      return;
+    }
+
     if (!window.confirm("Tem certeza que deseja excluir esse cliente?")) {
       return;
     }
@@ -401,12 +410,23 @@ export function Customers() {
   }
 
   const handleViewModalEditCustomer = async (customer: Customer) => {
-    setNewCustomer(customer);
     setActiveModal('edit'); 
+    setNewCustomer(customer);
   }
-  const handleEditCustomer = (e: React.FormEvent, customer: Customer) => {
+
+
+  const handleEditCustomer = (e: React.FormEvent) => {
     e.preventDefault();
-    // Add your logic for editing the customer here
+
+    try {
+      api.update_customer(newCustomer._id, newCustomer);
+      toast.success('Cliente atualizado com sucesso!');
+      location.reload();
+    } catch (error) {
+      toast.error('Erro ao atualizar cliente');
+      console.error('Erro ao atualizar cliente:', error);
+    }
+
   }
 
   const filteredCustomers = customers.filter(customer =>
@@ -443,9 +463,6 @@ export function Customers() {
   useEffect(() => {
     loadCustomers();
   }, []);
-
-  useEffect(() => {
-  }, [schedulings]);
 
 
   return (
@@ -569,13 +586,15 @@ export function Customers() {
                         <Edit className="w-5 h-5" />
                       </button>
 
-                      <button
-                        onClick={() => handleDeleteCustomer(customer._id)}
-                        className="text-red-600 hover:text-red-700"
-                        title="Excluir"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
+                        {!invoiceHistory.some(invoice => invoice.customer_id === customer._id) && (
+                        <button
+                          onClick={() => handleDeleteCustomer(customer._id)}
+                          className="text-red-600 hover:text-red-700"
+                          title="Excluir"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                        )}
                     </div>
                   </td>
                 </tr>
@@ -787,7 +806,7 @@ export function Customers() {
       )}
 
       {/* Modal de Editar Cliente */}
-      {selectedCustomer && activeModal === 'edit' && (
+      {activeModal === 'edit' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl max-h-[90vh] w-full max-w-2xl flex flex-col">
             <div className="p-6 border-b border-gray-200">
@@ -796,7 +815,8 @@ export function Customers() {
 
             <div className="p-6 overflow-y-auto flex-1">
               <form
-                onSubmit={(e) => handleEditCustomer(e, selectedCustomer)}
+                id="editCustomerForm"
+                onSubmit={(e) => handleEditCustomer(e)}
                 className="space-y-6"
               >
                 <div className="space-y-4">
@@ -811,7 +831,7 @@ export function Customers() {
                       placeholder={newCustomer.name}
                       onChange={(e) => setNewCustomer({ ...newCustomer, name: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
+                      
                     />
                   </div>
 
@@ -822,7 +842,7 @@ export function Customers() {
                       placeholder={newCustomer.cnpj}
                       onChange={(e) => setNewCustomer({ ...newCustomer, cnpj: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
+                      
                     />
                   </div>
                   <div>
@@ -832,7 +852,7 @@ export function Customers() {
                       placeholder={newCustomer.email}
                       onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
+                      
                     />
                   </div>
 
@@ -843,7 +863,7 @@ export function Customers() {
                       placeholder={newCustomer.phone}
                       onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
+                      
                     />
                   </div>
                 </div>
@@ -863,7 +883,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
+                     
                     />
                   </div>
 
@@ -879,7 +899,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
+                      
                     />
                   </div>
 
@@ -895,7 +915,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
+                      
                     />
                   </div>
 
@@ -911,7 +931,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
+                      
                     />
                   </div>
 
@@ -927,7 +947,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
+                      
                     />
                   </div>
 
@@ -943,7 +963,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
+                      
                     />
                   </div>
 
@@ -961,7 +981,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
+                      
                     />
                   </div>
                 </div>

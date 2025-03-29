@@ -36,6 +36,23 @@ export const api = {
     return response.json();
   },  
 
+  async update_customer(id: string, data: any) {
+    const response = await fetch(`${API_URL}/customer/update/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Cookies.get('token')}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao atualizar cliente');
+    }
+
+    return response.json();
+  }, 
+
   async login_user(data: any) {
     const response = await fetch(`${API_URL}/user/auth`, {
       method: 'POST',

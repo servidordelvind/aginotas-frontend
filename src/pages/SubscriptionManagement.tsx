@@ -23,6 +23,8 @@ interface Promotion {
 }
 
 export function SubscriptionManagement() {
+
+
     const [defaultSubscriptionValue, setDefaultSubscriptionValue] = useState(0);
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
@@ -185,7 +187,14 @@ export function SubscriptionManagement() {
     }
 
     return (
-        <div className="flex flex-col h-screen bg-gray-50">
+        <>
+        <div className="flex justify-center items-center h-screen">
+            <Typography variant="h4" className="text-gray-700">
+                Página em construção!
+            </Typography>
+        </div>
+        </>
+/*         <div className="flex flex-col h-screen bg-gray-50">
             <header className="bg-indigo-700 text-white py-4 shadow-md">
                 <nav className="flex justify-center items-center">
                     <ul className="flex space-x-6">
@@ -311,7 +320,7 @@ export function SubscriptionManagement() {
                     </div>
                 )}
             </main>
-        </div>
+        </div> */
     );
 
 }
