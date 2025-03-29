@@ -14,6 +14,7 @@ interface Customer {
   user: {
     _id: string;
     email: string;
+    senhaelotech: string;
   };
   address: {
     street: string;
@@ -235,6 +236,8 @@ export function Customers() {
     e.preventDefault();
 
     if (!selectedCustomer) return;
+    
+    if(selectedCustomer!.user.senhaelotech === 'undefined') return;
 
     const data = {
       customer_id: selectedCustomer._id,
@@ -275,7 +278,8 @@ export function Customers() {
     e.preventDefault();
     if (!selectedCustomer) return;
 
-      //USAR ESSE!!
+    if(selectedCustomer!.user.senhaelotech === 'undefined') return;
+
       const data = {
           customer_id: selectedCustomer._id,
           servico: {
@@ -430,7 +434,7 @@ export function Customers() {
   useEffect(() => {
   }, [schedulings]);
 
- 
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">

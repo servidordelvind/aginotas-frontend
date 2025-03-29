@@ -6,16 +6,6 @@ import { CircularProgress } from '@mui/material'; // Importe CircularProgress
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export function AdminDashboard() {
-  // const [metrics, setMetrics] = useState({
-  //   totalInvoices: 0,
-  //   totalInvoiceValue: 0,
-  //   activeCustomers: 0,
-  //   inactiveCustomers: 0,
-  //   newSubscriptions: 0,
-  //   invoicesByMonth: [], // Inicializado como array vazio
-  //   customersByMonth: [], // Inicializado como array vazio
-  //   subscriptionsByMonth: [], // Inicializado como array vazio
-  // });
 
 interface InvoiceByMonth {
   month: string;
@@ -85,31 +75,7 @@ const [metrics, setMetrics] = useState({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedChart, setSelectedChart] = useState('invoices');
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null); // Adicionado para tratamento de erros
 
-  // useEffect(() => {
-  //   fetch('/api/admin/metrics')
-  //     .then((response) => {
-  //       if (!response.ok) {
-  //         console.error('Erro na resposta da API:', response.status, response.statusText);
-  //         return response.text().then(text => {
-  //           console.error('Conteúdo da resposta:', text);
-  //           throw new Error('Erro na resposta da API');
-  //         });
-  //       }
-  //       return response.json();
-  //     })
-  //     .then((data) => {
-  //       console.log(data);
-  //       setMetrics(data);
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       setError(err.message);
-  //       setLoading(false);
-  //     });
-  // }, []);
 
   const dataInvoices = {
     labels: metrics.invoicesByMonth.map((item) => item.month),
