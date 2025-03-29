@@ -75,57 +75,51 @@ export function Landing() {
   return (
     <div className="min-h-screen bg-[#161e2e] text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       {/* Floating Navigation Header */}
-      <header className={`top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#161e2e]/95 backdrop-blur-sm py-2 shadow-lg' : 'py-2'}`}>
-        <div className="container mx-auto px-4">
-          <div
-            className="flex justify-between items-center pb-2"
-            style={{ borderBottom: '6px solid #2962FF' }}
-          > {/* Adicionei border-b e pb-2 */}
-            <div className="flex items-center">
-              <img
-                src={nomelogodelvind}
-                alt="Nome Logo Delvind"
-                className="h-22 w-22 object-contain"
-              />
-            </div>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-4 items-center">
-              <button>
-                {/* Botão vazio mantido para estrutura */}
-              </button>
-              <Link to="/login" className="text-white text-sm">Login</Link>
-              <Link to="/pricing" className="bg-white text-[#0D47A1] px-3 py-1 sm:px-4 sm:py-1 rounded-full font-semibold hover:bg-gray-200 transition-colors text-sm">
-                Teste Grátis
-              </Link>
-            </nav>
-
-            {/* Mobile Menu Toggle */}
-            <button
-              className="md:hidden text-gray-300 focus:outline-none"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
-            </button>
+      <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#161e2e]/95 backdrop-blur-sm py-2 shadow-lg' : 'py-2'}`}>
+        <div className="container mx-auto px-4 flex justify-between items-center">
+          <div className="flex items-center">
+            <img
+              src={nomelogodelvind}
+              alt="Nome Logo Delvind"
+              className="h-22 w-22 object-contain"
+            />
           </div>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex space-x-4 items-center">
+            {sections.map((section) => (
+              <button
+                key={section.id}
+                onClick={() => scrollToSection(section.id)}
+                className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${activeSection === section.id ? 'text-[#FFFFFF] font-bold' : 'text-gray-500 hover:text-white'}`}
+              >
+                {section.label}
+              </button>
+            ))}
+            <Link to="/login" className="text-white text-sm">Login</Link>
+            <Link to="/pricing" className="bg-white text-[#0D47A1] px-3 py-1 sm:px-4 sm:py-1 rounded-full font-semibold hover:bg-gray-200 transition-colors text-sm">
+              Teste Grátis
+            </Link>
+          </nav>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            className="md:hidden text-gray-300 focus:outline-none"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
+          </button>
         </div>
 
-
-        {/* Mobile Menu - Melhorado */}
+        {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-[#0f172a] px-4 pt-4 pb-6 border-t border-gray-700">
-            <div className="flex flex-col space-y-4">
-              <Link
-                to="/login"
-                className="text-white text-base py-2 hover:text-[#2962FF] transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Login
-              </Link>
+          <div className="md:hidden bg-[#0f172a] px-4 pt-2 pb-4">
+            <div className="flex flex-col space-y-2">
+
               <Link
                 to="/pricing"
-                className="bg-[#2962FF] text-white px-4 py-3 rounded-full font-medium hover:bg-[#1E50D9] transition-colors text-center"
+                className="bg-[#2962FF] text-white px-4 py-2 rounded-full text-sm font-medium text-center hover:bg-[#1E50D9] transition-colors mt-1"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Teste Grátis
@@ -139,8 +133,8 @@ export function Landing() {
       <main className="pt-1">
         {/* Hero Section */}
         <section
-          // id="hero"
-          // ref={el => sectionsRef.current[0] = el}
+          id="hero"
+          ref={el => sectionsRef.current[0] = el}
           className="container mx-auto px-4 sm:px-6 pt-8 pb-16 flex flex-col lg:flex-row items-center justify-between min-h-[90vh] sm:min-h-[100vh] relative"
         >
           <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] h-[300px] right-[50px] top-[-150px] opacity-20 blur-[80px]"></div>
@@ -202,10 +196,7 @@ export function Landing() {
           </div>
         </section>
 
-        <section
-
-          className="py-12 sm:py-16 bg-[#161e2e] relative"
-        >
+        <section className="py-12 sm:py-16 bg-[#161e2e] relative">
           <div className="absolute right-0 bottom-0 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
           <div className="absolute left-10 top-20 w-8 h-8 rounded-full bg-[#d2aae3] opacity-30"></div>
 
@@ -214,39 +205,54 @@ export function Landing() {
               Uma plataforma inovadora pra facilitar a gestão de NFC-se
             </h2>
 
-            <div className="grid grid-cols-1  md:grid-cols-3 gap-6">
-              <div className="bg-[#1e293b] p-6 rounded-xl flex flex-col items-center text-center pt-16 relative">
-                <div className="absolute top-[-30px] bg-[#2962FF] p-4 rounded-full">
-                  <FaFileInvoiceDollar className="w-8 h-8 text-white" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Card 1 */}
+              <div className="bg-[#1e293b] rounded-xl overflow-hidden aspect-[4/3] relative flex flex-col">
+                <div className="flex justify-center pt-8 pb-4">
+                  <div className="bg-[#2962FF] p-4 rounded-full">
+                    <FaFileInvoiceDollar className="w-8 h-8 text-white" />
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold mb-2 mt-4">Faturamento Automático</h3>
-                <p className="text-gray-400">
-                  Configure cobranças recorrentes e deixe nosso sistema fazer o resto.
-                </p>
+                <div className="flex-grow flex flex-col items-center justify-center p-6 text-center">
+                  <h3 className="text-xl font-semibold mb-4">Faturamento Automático</h3>
+                  <p className="text-gray-400">
+                    Configure cobranças recorrentes e deixe nosso sistema fazer o resto.
+                  </p>
+                </div>
               </div>
 
-              <div className="bg-[#1e293b] p-6 rounded-xl flex flex-col items-center text-center pt-16 relative">
-                <div className="absolute top-[-30px] bg-[#2962FF] p-4 rounded-full">
-                  <FaChartLine className="w-8 h-8 text-white" />
+              {/* Card 2 */}
+              <div className="bg-[#1e293b] rounded-xl overflow-hidden aspect-[4/3] relative flex flex-col">
+                <div className="flex justify-center pt-8 pb-4">
+                  <div className="bg-[#2962FF] p-4 rounded-full">
+                    <FaChartLine className="w-8 h-8 text-white" />
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold mb-2 mt-4">Acompanhamento Inteligente</h3>
-                <p className="text-gray-400">
-                  Monitore pagamentos e receba notificações de atualizações.
-                </p>
+                <div className="flex-grow flex flex-col items-center justify-center p-6 text-center">
+                  <h3 className="text-xl font-semibold mb-4">Acompanhamento Inteligente</h3>
+                  <p className="text-gray-400">
+                    Monitore pagamentos e receba notificações de atualizações.
+                  </p>
+                </div>
               </div>
 
-              <div className="bg-[#1e293b] p-6 rounded-xl flex flex-col items-center text-center pt-16 relative">
-                <div className="absolute top-[-30px] bg-[#2962FF] p-4 rounded-full">
-                  <FaUsers className="w-8 h-8 text-white" />
+              {/* Card 3 */}
+              <div className="bg-[#1e293b] rounded-xl overflow-hidden aspect-[4/3] relative flex flex-col">
+                <div className="flex justify-center pt-8 pb-4">
+                  <div className="bg-[#2962FF] p-4 rounded-full">
+                    <FaUsers className="w-8 h-8 text-white" />
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold mb-2 mt-4">Portal do Cliente</h3>
-                <p className="text-gray-400">
-                  Ofereça aos clientes acesso ao histórico de notas fiscais.
-                </p>
+                <div className="flex-grow flex flex-col items-center justify-center p-6 text-center">
+                  <h3 className="text-xl font-semibold mb-4">Portal do Cliente</h3>
+                  <p className="text-gray-400">
+                    Ofereça aos clientes acesso ao histórico de notas fiscais.
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="flex justify-start mt-12"> {/* Alterado de text-center para flex justify-start */}
+            <div className="flex justify-start mt-12">
               <Link to="/pricing" className="bg-[#2962FF] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors relative inline-block">
                 <span className="absolute left-[8px] top-1/2 transform -translate-y-1/2 w-4 h-4 bg-white rounded-full"></span>
                 TESTE GRÁTIS
@@ -259,66 +265,76 @@ export function Landing() {
         <section
           id="mission"
           ref={el => sectionsRef.current[1] = el}
-          className="py-12 sm:py-16 bg-[#161e2e] relative"
+          className="py-12 sm:py-40 bg-[#161e2e] relative"
         >
-          <div className="hidden= lg:block absolute rounded-full b w-[400px] h-[400px] right-[150px] top-[200px] color-[#ffff]">
-            <img
-              src={bolaImagem}
-              alt="Imagem decorativa"
-              className="w-full h-full object-cover opacity-70"
-              loading="lazy"
-            />
-          </div>
-          <div className="absolute left-10 top-20 w-7 h-7 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
+          <div className="absolute left-10  w-7 h-7 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
 
-          <div className="container mx-auto px-4 py-1 relative z-10 flex flex-col lg:flex-row gap-8">
-            <div className="w-full lg:w-1/3 flex flex-col justify-center">
-              <h1 className="text-4xl md:text-6xl font-bold mb-12 text-left">
-                AUTOMATIZE SUA NFC-SE E ESQUEÇA A BUROCRACIA!
-              </h1>
+          <div className="container mx-auto px-4  relative z-10">
+            {/* Título principal centralizado acima de tudo */}
+            <h1 className="text-4xl md:text-6xl font-bold mb-12 text-center">
+              AUTOMATIZE SUA NFC-SE E ESQUEÇA A BUROCRACIA!
+            </h1>
 
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-5 text-center">
-                  NOSSA MISSÃO
-                </h2>
-                <p className="text-xl text-left">
-                  Oferecer uma plataforma inovadora que facilite a gestão de NFC-se para empresas que prestam serviços contínuos, eliminando burocracias e otimizando processos.
-                </p>
+            <div className="flex flex-col lg:flex-row gap-8 items-center">
+              {/* Container para os dois textos (lado a lado) */}
+              <div className="w-full lg:w-2/3 flex flex-col lg:flex-row gap-8">
+                {/* Coluna da Missão */}
+                <div className="w-full lg:w-1/2">
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-bold mb-5 text-center">NOSSA MISSÃO</h2>
+                    <p className="text-xl text-center">
+                      Oferecer uma plataforma inovadora que facilite a gestão de NFC-se para empresas que prestam serviços contínuos, eliminando burocracias e otimizando processos.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Coluna do Propósito */}
+                <div className="w-full lg:w-1/2">
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-bold mb-4 text-center">NOSSO PROPÓSITO</h2>
+                    <p className="text-xl text-center mb-8">
+                      Automatizar a emissão de NFC-se recorrentes, tornando o processo mais ágil, simples e eficiente.
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <div className="w-full flex text justify-start mt-28">
-                <Link to="/pricing" className="bg-[#2962FF] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors relative">
-                  <span className="absolute left-[8px] top-1/2 transform -translate-y-1/2 w-4 h-4 bg-white rounded-full"></span>
-                  TESTE GRÁTIS
-                </Link>
+              {/* Coluna da Imagem (à direita) */}
+              <div className="w-full lg:w-1/3 flex justify-center lg:justify-end">
+                <div className="rounded-full w-[300px] h-[300px] lg:w-[400px] lg:h-[400px]">
+                  <img
+                    src={bolaImagem}
+                    alt="Imagem decorativa"
+                    className="w-full h-full object-cover opacity-70"
+                    loading="lazy"
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="w-full lg:w-1/3 flex flex-col justify-center pt-32">
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-4 text-center">
-                  NOSSO PROPÓSITO
-                </h2>
-                <p className="text-xl text-left mb-8">
-                  Automatizar a emissão de NFC-se recorrentes, tornando o processo mais ágil, simples e eficiente.
-                </p>
-              </div>
+            {/* Botão TESTE GRÁTIS */}
+            <div className="w-full flex  mt-12">
+              <Link to="/pricing" className="bg-[#2962FF] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors relative">
+                <span className="absolute left-[8px] top-1/2 transform -translate-y-1/2 w-4 h-4 bg-white rounded-full"></span>
+                TESTE GRÁTIS
+              </Link>
             </div>
           </div>
         </section>
 
         {/* Simplicity Section */}
         <section
-          // id="simplicity"
-          // ref={el => sectionsRef.current[2] = el}
+          id="simplicity"
+          ref={el => sectionsRef.current[2] = el}
           className="py-12 sm:py-16 bg-[#161e2e] relative"
         >
           <div className="absolute left-20 top-1/2 w-6 h-6 rounded-full bg-[#2962FF] opacity-30"></div>
           <div className="absolute right-32 bottom-32 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
 
           <div className="container mx-auto px-4 sm:px-6">
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 items-start">
-              <div className="lg:col-span-2">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              {/* Texto - ocupa 5 colunas */}
+              <div className="lg:col-span-5">
                 <div className="text-center lg:text-left">
                   <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-white">
                     VEJA COMO É SIMPLES
@@ -329,13 +345,15 @@ export function Landing() {
                 </div>
               </div>
 
+              {/* Espaço vazio - 1 coluna */}
               <div className="hidden lg:block lg:col-span-1"></div>
 
-              <div className="lg:col-span-2">
+              {/* Imagem - ocupa 6 colunas e é alinhada verticalmente */}
+              <div className="lg:col-span-6 flex items-center justify-center">
                 <img
                   src={delvindapp}
                   alt="Tablet com AgiNotas"
-                  className="w-full max-w-[500px] mx-auto lg:mx-0"
+                  className="w-full max-w-[600px] mx-auto lg:mx-0"
                   loading="lazy"
                 />
               </div>
