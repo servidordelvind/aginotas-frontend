@@ -78,25 +78,29 @@ export function Subscriptions() {
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                {subscription.items[0]?.name || 'Assinatura'}
+          {subscription.items[0]?.name || 'Assinatura'}
               </h2>
               <div className="flex items-baseline gap-2 mb-4">
-                <span className="text-3xl font-bold text-gray-900">
-                  {`R$ ${subscription.items[0]?.pricing_scheme.price.toFixed(2) || '0,00'}`}
-                </span>
-                <span className="text-gray-500">/mês</span>
+          <span className="text-3xl font-bold text-gray-900">
+            {`R$ ${subscription.items[0]?.pricing_scheme.price.toFixed(2) || '0,00'}`}
+          </span>
+          <span className="text-gray-500">/mês</span>
               </div>
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Receipt className="w-5 h-5" />
-                  <span>Notas Fiscais Ilimitadas</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600">
-                  <AlertCircle className="w-5 h-5" />
-                  <span>Cobrança realizada no dia {subscription.billing_day} de cada mês</span>
-                </div>
-              </div>
-            </div> 
+          <div className="flex items-center gap-2 text-gray-600">
+            <Receipt className="w-5 h-5" />
+            <span>Notas Fiscais Ilimitadas</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-600">
+            <AlertCircle className="w-5 h-5" />
+            <span>Cobrança realizada no dia {subscription.billing_day} de cada mês</span>
+          </div>
+          <div className={`flex items-center gap-2 ${subscription.status === 'active' ? 'text-green-600' : 'text-red-600'}`}>
+            <XCircle className="w-5 h-5" />
+            <span>Status: {subscription.status === 'active' ? 'Ativo' : 'Inativo'}</span>
+          </div>
+          </div>
+          </div> 
           </div>
         </div>
         ))}
