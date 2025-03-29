@@ -6,7 +6,7 @@ import logodelvind from '../public/logodelvind.png';
 import nomelogodelvind from '../public/nomelogodelvind.png';
 import logocomnome from '../public/logocomnome.png';
 import bolaImagem from '../public/cardimg.png';
-import delvindapp from '../public/9.png';
+import delvindapp from '../public/delvindapp.png';
 
 export function Landing() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -14,9 +14,6 @@ export function Landing() {
   const [activeSection, setActiveSection] = useState('hero');
   const sectionsRef = useRef<(HTMLElement | null)[]>([]);
 
-  
-
-  // Set up intersection observer for sections
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -26,53 +23,52 @@ export function Landing() {
           }
         });
       },
-      { threshold: 0.5, rootMargin: '-50px 0px -50% 0px' }
+      { threshold: 0.5, rootMargin: '-100px 0px -50% 0px' }
     );
 
-    sectionsRef.current.forEach(section => {
+    const currentSections = sectionsRef.current;
+    currentSections.forEach(section => {
       if (section) observer.observe(section);
     });
 
     return () => {
-      sectionsRef.current.forEach(section => {
+      currentSections.forEach(section => {
         if (section) observer.unobserve(section);
       });
     };
   }, []);
 
-  // Handle scroll for floating header
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
+      setIsScrolled(window.scrollY > 50);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Smooth scroll to section
-  const scrollToSection = (id) => {
+  const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
       window.scrollTo({
         top: element.offsetTop - 80,
         behavior: 'smooth'
       });
+      setActiveSection(id);
     }
   };
 
-  // Sections data for navigation
   const sections = [
     { id: 'hero', label: 'Início' },
-    { id: 'features', label: 'Produto' },
+    { id: 'mission', label: 'Missão' },
     { id: 'simplicity', label: 'Como Funciona' },
-    { id: 'mission', label: 'Missão' }
+    { id: 'features', label: 'Produto' },
   ];
 
   return (
     <div className="min-h-screen bg-[#161e2e] text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       {/* Floating Navigation Header */}
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-[#161e2e]/95 backdrop-blur-sm py-2 shadow-lg' : 'py-4'}`}>
+      <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#161e2e]/95 backdrop-blur-sm py-2 shadow-lg' : 'py-2'}`}>
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <img
@@ -87,18 +83,18 @@ export function Landing() {
             />          </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-6 items-center">
+          <nav className="hidden md:flex space-x-4 items-center">
             {sections.map((section) => (
               <button
                 key={section.id}
                 onClick={() => scrollToSection(section.id)}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${activeSection === section.id ? 'text-[#2962FF]' : 'text-gray-300 hover:text-white'}`}
+                className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${activeSection === section.id ? 'text-[#2962FF] font-bold' : 'text-gray-300 hover:text-white'}`}
               >
                 {section.label}
               </button>
             ))}
-            <Link to="/login" className="text-white text-sm sm:text-base">Login</Link>
-            <Link to="/register" className="bg-white text-[#0D47A1] px-4 py-1 sm:px-6 sm:py-2 rounded-full font-semibold hover:bg-gray-200 transition-colors text-sm sm:text-base">
+            <Link to="/login" className="text-white text-sm">Login</Link>
+            <Link to="/register" className="bg-white text-[#0D47A1] px-3 py-1 sm:px-4 sm:py-1 rounded-full font-semibold hover:bg-gray-200 transition-colors text-sm">
               Teste Grátis
             </Link>
           </nav>
@@ -109,14 +105,14 @@ export function Landing() {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+            {mobileMenuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
           </button>
         </div>
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden bg-[#0f172a] px-4 pt-2 pb-4">
-            <div className="flex flex-col space-y-3">
+            <div className="flex flex-col space-y-2">
               {sections.map((section) => (
                 <button
                   key={section.id}
@@ -124,14 +120,14 @@ export function Landing() {
                     scrollToSection(section.id);
                     setMobileMenuOpen(false);
                   }}
-                  className={`px-3 py-2 rounded-md text-left text-sm font-medium ${activeSection === section.id ? 'text-[#2962FF]' : 'text-gray-300'}`}
+                  className={`px-3 py-1 rounded-md text-left text-sm font-medium ${activeSection === section.id ? 'text-[#2962FF] font-bold' : 'text-gray-300'}`}
                 >
                   {section.label}
                 </button>
               ))}
               <Link
                 to="/register"
-                className="bg-[#2962FF] text-white px-4 py-2 rounded-full text-sm font-medium text-center hover:bg-[#1E50D9] transition-colors mt-2"
+                className="bg-[#2962FF] text-white px-4 py-2 rounded-full text-sm font-medium text-center hover:bg-[#1E50D9] transition-colors mt-1"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Teste Grátis
@@ -141,15 +137,14 @@ export function Landing() {
         )}
       </header>
 
-      {/* Main Content with padding for fixed header */}
-      <main className="pt-20 md:pt-24">
-        {/* Hero Section - Optimized for mobile */}
+      {/* Main Content */}
+      <main className="pt-16 md:pt-20">
+        {/* Hero Section */}
         <section
           id="hero"
           ref={el => sectionsRef.current[0] = el}
-          className="container mx-auto px-4 sm:px-6 pt-10 pb-20 flex flex-col lg:flex-row items-center justify-between min-h-[90vh] sm:min-h-[100vh] relative"
+          className="container mx-auto px-4 sm:px-6 pt-8 pb-16 flex flex-col lg:flex-row items-center justify-between min-h-[90vh] sm:min-h-[100vh] relative"
         >
-          {/* Background elements */}
           <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] h-[300px] right-[50px] top-[-150px] opacity-20 blur-[80px]"></div>
           <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] h-[200px] right-[200px] top-[-100px] opacity-15 blur-[60px]"></div>
 
@@ -170,57 +165,164 @@ export function Landing() {
             </div>
           </div>
 
-          {/* Hero Image - Responsive */}
+          
+
           <div className="relative w-full lg:w-1/2 mt-10 lg:mt-0">
-          {/* Efeitos de fundo */}
-          <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[50px] md:right-[280px] top-[-400px] md:top-[-800px]" style={{ filter: 'blur(100px)' }}></div>
-          <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] sm:w-[300px] md:w-[400px] h-[200px] sm:h-[300px] md:h-[400px] right-[200px] md:right-[1300px] top-[-200px] md:top-[-400px]" style={{ filter: 'blur(50px)' }}></div>
-          <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[50px] top-[-250px]"></div>
-          <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] right-[-50px] sm:right-[-100px] top-[-150px] sm:top-[-250px]"></div>
-          <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[-50px] sm:right-[-100px] top-[-100px] sm:top-[-230px]">
-            <img
-              src={lpheroimg}
-              alt="Homem sorrindo usando tablet"
-              className="relative z-10 rounded-lg max-w-full "
-              style={{
-                position: 'absolute', top: '40%', left: '41%', transform: 'translate(-50%, -50%)', filter: 'blur(0px)',
-                maskImage: 'linear-gradient(to top, transparent 7%, black 18%)'
-              }}
-            />
-
-          </div>
-          <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[200px] sm:right-[550px] top-[40px] sm:top-[80px]"></div>
-          <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] left-[-200px] sm:left-[-680px] top-[-100px] sm:top-[-145px]"></div>
-          <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] left-[-200px] sm:left-[-800px] top-[150px] sm:top-[265px]"></div>
-
-          {/* Versão mobile - Bolinha menor */}
-          <div className="lg:hidden absolute inset-0 flex items-center justify-center">
-            <div className="relative w-[250px] h-[250px] sm:w-[300px] sm:h-[300px] rounded-full bg-[#2962FF] overflow-hidden">
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[50px] md:right-[280px] top-[-400px] md:top-[-800px]" style={{ filter: 'blur(100px)' }}></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] sm:w-[300px] md:w-[400px] h-[200px] sm:h-[300px] md:h-[400px] right-[200px] md:right-[1300px] top-[-200px] md:top-[-400px]" style={{ filter: 'blur(50px)' }}></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[50px] top-[-250px]"></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] right-[-50px] sm:right-[-100px] top-[-150px] sm:top-[-250px]"></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[-50px] sm:right-[-100px] top-[-100px] sm:top-[-230px]">
               <img
                 src={lpheroimg}
                 alt="Homem sorrindo usando tablet"
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[80%] rounded-lg"
-              />
-              {/* Efeito de blur na base (mobile) */}
-              <div
-                className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-[#161e2e] to-transparent"
+                className="relative z-10 rounded-lg max-w-full"
                 style={{
-                  filter: 'blur(10px)',
-                  maskImage: 'linear-gradient(to top, transparent 0%, black 30%)'
+                  position: 'absolute', top: '40%', left: '41%', transform: 'translate(-50%, -50%)', filter: 'blur(0px)',
+                  maskImage: 'linear-gradient(to top, transparent 7%, black 18%)'
                 }}
-              ></div>
+              />
+            </div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[200px] sm:right-[550px] top-[40px] sm:top-[80px]"></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] left-[-200px] sm:left-[-680px] top-[-100px] sm:top-[-145px]"></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] left-[-200px] sm:left-[-800px] top-[150px] sm:top-[265px]"></div>
+
+            <div className="lg:hidden absolute inset-0 flex items-center justify-center">
+              <div className="relative w-[250px] h-[250px] sm:w-[300px] sm:h-[300px] rounded-full bg-[#2962FF] overflow-hidden">
+                <img
+                  src={lpheroimg}
+                  alt="Homem sorrindo usando tablet"
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[80%] rounded-lg"
+                />
+                <div
+                  className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-[#161e2e] to-transparent"
+                  style={{
+                    filter: 'blur(10px)',
+                    maskImage: 'linear-gradient(to top, transparent 0%, black 30%)'
+                  }}
+                ></div>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
+
+        {/* Mission Section */}
+        <section
+          id="mission"
+          ref={el => sectionsRef.current[1] = el}
+          className="py-12 sm:py-16 bg-[#161e2e] relative"
+        >
+          <div className="hidden lg:block absolute rounded-full bg-[#d2aae3] w-[300px] h-[300px] right-[150px] top-[100px]">
+            <img
+              src={bolaImagem}
+              alt="Imagem decorativa"
+              className="w-full h-full object-cover opacity-70"
+              loading="lazy"
+            />
+          </div>
+          <div className="absolute left-10 top-20 w-7 h-7 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
+
+          <div className="container mx-auto px-4 py-20 relative z-10 flex flex-col lg:flex-row gap-8">
+            <div className="w-full lg:w-1/3 flex flex-col justify-center">
+              <h1 className="text-4xl md:text-5xl font-bold mb-10 text-left">
+                AUTOMATIZE SUA NFC-SE E ESQUEÇA A BUROCRACIA!
+              </h1>
+  
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4 text-left">
+                  NOSSA MISSÃO
+                </h2>
+                <p className="text-xl text-left">
+                  Oferecer uma plataforma inovadora que facilite a gestão de NFC-se para empresas que prestam serviços contínuos, eliminando burocracias e otimizando processos.
+                </p>
+              </div>
+  
+              <div className="w-full flex justify-start mt-32">
+                <Link to="/register" className="bg-[#2962FF] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors relative">
+                  <span className="absolute left-[8px] top-1/2 transform -translate-y-1/2 w-4 h-4 bg-white rounded-full"></span>
+                  TESTE GRÁTIS
+                </Link>
+              </div>
+            </div>
+  
+            <div className="w-full lg:w-1/3 flex flex-col justify-center pt-16">
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold mb-4 text-left">
+                  NOSSO PROPÓSITO
+                </h2>
+                <p className="text-xl text-left mb-8">
+                  Automatizar a emissão de NFC-se recorrentes, tornando o processo mais ágil, simples e eficiente.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Simplicity Section */}
+        <section
+          id="simplicity"
+          ref={el => sectionsRef.current[2] = el}
+          className="py-12 sm:py-16 bg-[#161e2e] relative"
+        >
+          <div className="absolute left-20 top-1/2 w-6 h-6 rounded-full bg-[#2962FF] opacity-30"></div>
+          <div className="absolute right-32 bottom-32 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
+
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 items-start">
+              <div className="lg:col-span-2">
+                <div className="text-center lg:text-left">
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-white">
+                    VEJA COMO É SIMPLES
+                  </h2>
+                  <p className="text-xl sm:text-2xl mb-8 text-gray-300">
+                    O AgiNotas é simples de usar. Basta assinar o teste grátis, preencher algumas informações de autenticação com sua prefeitura e pronto, você já pode usar.
+                  </p>
+                </div>
+              </div>
+
+              <div className="hidden lg:block lg:col-span-1"></div>
+
+              <div className="lg:col-span-2 relative group">
+                <div className="relative overflow-hidden rounded-xl shadow-2xl transition-all duration-300 transform group-hover:scale-[1.02]">
+                  <img
+                    src={delvindapp}
+                    alt="Tablet com AgiNotas"
+                    className="w-full max-w-[500px] mx-auto lg:mx-0 transition-all duration-500 group-hover:brightness-110"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#2962FF]/30 rounded-xl transition-all duration-300 pointer-events-none"></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-center mt-12 lg:mt-16">
+              <Link
+                to="/manual"
+                className="bg-[#C0C0C0] text-black px-6 py-3 rounded-md font-semibold flex items-center min-w-[280px] hover:bg-gray-300 transition-colors duration-200"
+              >
+                <img
+                  src={logocomnome}
+                  alt="Logo Delvind"
+                  className="h-12 w-12 bg-[#161e2e] rounded-md p-1 mr-4"
+                />
+                <div className="flex flex-col items-start flex-grow">
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-lg font-medium">BAIXAR</span>
+                    <FaChevronRight className="ml-2" />
+                  </div>
+                  <span className="text-sm opacity-70 mt-1">Manual</span>
+                </div>
+              </Link>
+            </div>
+          </div>
         </section>
 
         {/* Features Section */}
         <section
           id="features"
-          ref={el => sectionsRef.current[1] = el}
-          className="py-16 sm:py-20 bg-[#161e2e] relative"
+          ref={el => sectionsRef.current[3] = el}
+          className="py-12 sm:py-16 bg-[#161e2e] relative"
         >
-          {/* Background elements */}
           <div className="absolute right-0 bottom-0 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
           <div className="absolute left-10 top-20 w-8 h-8 rounded-full bg-[#d2aae3] opacity-30"></div>
 
@@ -229,7 +331,6 @@ export function Landing() {
               Uma plataforma inovadora pra facilitar a gestão de NFC-se
             </h2>
 
-            {/* Features Cards - Responsive grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-[#1e293b] p-6 rounded-xl flex flex-col items-center text-center pt-16 relative">
                 <div className="absolute top-[-30px] bg-[#2962FF] p-4 rounded-full">
@@ -270,213 +371,88 @@ export function Landing() {
             </div>
           </div>
         </section>
-
-
-
-        {/* Mission Section */}
-        <section
-          id="mission"
-          ref={el => sectionsRef.current[3] = el}
-          className="py-16 sm:py-20 bg-[#161e2e] relative"
-        >
-          {/* Background elements */}
-          <div className="hidden lg:block absolute rounded-full bg-[#d2aae3] w-[300px] h-[300px] right-[150px] top-[100px]">
-            <img
-              src={bolaImagem}
-              alt="Imagem decorativa"
-              className="w-full h-full object-cover opacity-70"
-              loading="lazy"
-            />
-          </div>
-          <div className="absolute left-10 top-20 w-7 h-7 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
-
-          <div className="container mx-auto px-4 py-20 relative z-10 flex flex-col lg:flex-row gap-8">
-                    {/* Coluna da esquerda - Título e Missão */}
-                    <div className="w-full lg:w-1/3 flex flex-col justify-center">
-                      <h1 className="text-4xl md:text-5xl font-bold mb-10 text-left">
-                        AUTOMATIZE SUA NFC-SE E ESQUEÇA A BUROCRACIA!
-                      </h1>
-          
-                      <div className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4 text-left">
-                          NOSSA MISSÃO
-                        </h2>
-                        <p className="text-xl text-left">
-                          Oferecer uma plataforma inovadora que facilite a gestão de NFC-se para empresas que prestam serviços contínuos, eliminando burocracias e otimizando processos.
-                        </p>
-                      </div>
-          
-                      <div className="w-full flex justify-start mt-32">
-                        <Link to="/register" className="bg-[#2962FF] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors relative">
-                          <span className="absolute left-[8px] top-1/2 transform -translate-y-1/2 w-4 h-4 bg-white rounded-full"></span>
-                          TESTE GRÁTIS
-                        </Link>
-                      </div>
-                    </div>
-          
-          
-          
-                    {/* Coluna da direita - Propósito */}
-                    <div className="w-full lg:w-1/3 flex flex-col justify-center pt-16">
-                      <div className="mb-8">
-                        <h2 className="text-2xl font-bold mb-4 text-left">
-                          NOSSO PROPÓSITO
-                        </h2>
-                        <p className="text-xl text-left mb-8">
-                          Automatizar a emissão de NFC-se recorrentes, tornando o processo mais ágil, simples e eficiente.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-        </section>
       </main>
-
-
-      {/* Simplicity Section */}
-      <section
-        id="simplicity"
-        ref={el => sectionsRef.current[2] = el}
-        className="py-16 sm:py-20 bg-[#161e2e] relative"
-      >
-        {/* Background elements */}
-        <div className="absolute left-20 top-1/2 w-6 h-6 rounded-full bg-[#2962FF] opacity-30"></div>
-        <div className="absolute right-32 bottom-32 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
-
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 items-start">
-            <div className="lg:col-span-2">
-              <div className="text-center lg:text-left">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-white">
-                  VEJA COMO É SIMPLES
-                </h2>
-                <p className="text-xl sm:text-2xl mb-8 text-gray-300">
-                  O AgiNotas é simples de usar. Basta assinar o teste grátis, preencher algumas informações de autenticação com sua prefeitura e pronto, você já pode usar.
-                </p>
-              </div>
-            </div>
-
-            <div className="hidden lg:block lg:col-span-1"></div>
-
-            <div className="lg:col-span-2 relative group">
-              <div className="relative overflow-hidden rounded-xl shadow-2xl transition-all duration-300 transform group-hover:scale-[1.02]">
-                <img
-                  src={delvindapp}
-                  alt="Tablet com AgiNotas"
-                  className="w-full max-w-[500px] mx-auto lg:mx-0 transition-all duration-500 group-hover:brightness-110"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#2962FF]/30 rounded-xl transition-all duration-300 pointer-events-none"></div>
-              </div>
-            </div>
-          </div>
-
-          {/* Download Button */}
-          <div className="flex justify-center mt-12 lg:mt-16">
-            <Link
-              to="/manual"
-              className="bg-[#C0C0C0] text-black px-6 py-3 rounded-md font-semibold flex items-center min-w-[280px] hover:bg-gray-300 transition-colors duration-200"
-            >
-              <img
-                src={logocomnome}
-                alt="Logo Delvind"
-                className="h-12 w-12 bg-[#161e2e] rounded-md p-1 mr-4"
-              />
-              <div className="flex flex-col items-start flex-grow">
-                <div className="flex items-center justify-between w-full">
-                  <span className="text-lg font-medium">BAIXAR</span>
-                  <FaChevronRight className="ml-2" />
-                </div>
-                <span className="text-sm opacity-70 mt-1">Manual</span>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </section>
 
       {/* Footer */}
       <footer className="bg-[#0f172a] py-12">
-  <div className="container mx-auto px-4">
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-      {/* Coluna do Logo */}
-      <div className="flex flex-col items-center md:items-start">
-        <div className="flex items-center mb-4">
-          <img 
-            src={logodelvind} 
-            alt="Logo Delvind" 
-            className="h-10 mr-2"
-          />
-          <img
-            src={nomelogodelvind}
-            alt="Nome Delvind"
-            className="h-8"
-          />
-        </div>
-        <p className="text-gray-400 text-sm">
-          Solução completa para gestão de NFC-se para serviços contínuos.
-        </p>
-      </div>
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="flex flex-col items-center md:items-start">
+              <div className="flex items-center mb-4">
+                <img 
+                  src={logodelvind} 
+                  alt="Logo Delvind" 
+                  className="h-10 mr-2"
+                />
+                <img
+                  src={nomelogodelvind}
+                  alt="Nome Delvind"
+                  className="h-20"
+                />
+              </div>
+              <p className="text-gray-400 text-sm">
+                Solução completa para gestão de NFC-se para serviços contínuos.
+              </p>
+            </div>
 
-      {/* Coluna de Links Rápidos */}
-      <div className="flex flex-col items-center md:items-start">
-        <h3 className="text-white font-semibold mb-4 flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
-          </svg>
-          Links Rápidos
-        </h3>
-        <a href="/politica-cookies" className="text-gray-400 hover:text-white transition-colors duration-200 mb-2 flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-          </svg>
-          Política de Cookies
-        </a>
-        <a href="/politica-privacidade" className="text-gray-400 hover:text-white transition-colors duration-200 mb-2 flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-          </svg>
-          Política de Privacidade
-        </a>
-        <a href="/termos-uso" className="text-gray-400 hover:text-white transition-colors duration-200 flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-            <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
-          </svg>
-          Termos de Uso
-        </a>
-      </div>
+            <div className="flex flex-col items-center md:items-start">
+              <h3 className="text-white font-semibold mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
+                </svg>
+                Links Rápidos
+              </h3>
+              <a href="/politica-cookies" className="text-gray-400 hover:text-white transition-colors duration-200 mb-2 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                </svg>
+                Política de Cookies
+              </a>
+              <a href="/politica-privacidade" className="text-gray-400 hover:text-white transition-colors duration-200 mb-2 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                </svg>
+                Política de Privacidade
+              </a>
+              <a href="/termos-uso" className="text-gray-400 hover:text-white transition-colors duration-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                  <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+                </svg>
+                Termos de Uso
+              </a>
+            </div>
 
-      {/* Coluna de Contato */}
-      <div className="flex flex-col items-center md:items-start">
-        <h3 className="text-white font-semibold mb-4 flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-          </svg>
-          Contato
-        </h3>
-        <p className="text-gray-400 mb-2 flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-          </svg>
-          contato@aginotas.com.br
-        </p>
-        <p className="text-gray-400 flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-          </svg>
-          (40) 4002-8922
-        </p>
-      </div>
+            <div className="flex flex-col items-center md:items-start">
+              <h3 className="text-white font-semibold mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                </svg>
+                Contato
+              </h3>
+              <p className="text-gray-400 mb-2 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                </svg>
+                contato@aginotas.com.br
+              </p>
+              <p className="text-gray-400 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                </svg>
+                (40) 4002-8922
+              </p>
+            </div>
 
-      {/* Coluna de Redes Sociais */}
-      <div className="flex flex-col items-center md:items-start">
-        <h3 className="text-white font-semibold mb-4 flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
-          </svg>
-          Redes Sociais
-        </h3>
+            <div className="flex flex-col items-center md:items-start">
+              <h3 className="text-white font-semibold mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+                </svg>
+                Redes Sociais
+              </h3>
         <div className="flex space-x-4">
           <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
