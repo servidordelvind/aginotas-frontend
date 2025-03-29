@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Send as SendIcon } from 'lucide-react';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:3000');  // Certifique-se de usar a URL correta
+const socket = io('http://localhost:3000');  // Certifique-se de usar a URL correta do seu servidor
 
 interface Message {
   text: string;
@@ -24,30 +24,43 @@ export function UserChat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Verifica a conexão do socket
+    socket.on('connect', () => {
+      console.log('Conectado ao servidor');
+    });
+
+    // Atualiza o ticket com novas mensagens
     socket.on('update_ticket', (updatedTicket: Ticket) => {
       setTicket(updatedTicket);
       setMessages(updatedTicket.messages);
     });
 
+    // Limpeza ao desmontar o componente
     return () => {
       socket.off('update_ticket');
+      socket.off('connect');
     };
   }, []);
 
   const handleSendMessage = () => {
     if (newMessage.trim() && ticket) {
-      const message = {
-        sender: 'user',
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const userId = user._id;
+
+      const message: Message = {
+        sender: 'user',  // O remetente é o usuário
         text: newMessage,
         timestamp: Date.now(),
       };
-      
+
+      // Envia a mensagem para o servidor
       socket.emit('send_message', {
         ticketId: ticket._id,
-        sender: 'user',
+        sender: userId,
         message: newMessage,
       });
-      
+
+      // Adiciona a mensagem à lista de mensagens localmente
       setMessages((prevMessages) => [...prevMessages, message]);
       setNewMessage('');
     }
@@ -69,7 +82,7 @@ export function UserChat() {
       <div className="flex-grow overflow-y-auto p-4 space-y-2">
         {messages.map((message, index) => (
           <div
-            key={index}
+            key={`${message.timestamp}-${index}`}
             className={`max-w-xs p-3 rounded-lg shadow-md ${
               message.sender === 'admin' ? 'bg-blue-100 self-start' : 'bg-gray-200 self-end'
             }`}
@@ -105,6 +118,7 @@ export function UserChat() {
     </div>
   );
 }
+
 
 
 
