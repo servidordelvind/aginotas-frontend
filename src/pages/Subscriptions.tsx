@@ -118,13 +118,13 @@ export function Subscriptions() {
                   <span className="font-semibold">Status:</span> {subscriptions[0].card.status === 'active' ? 'Ativo' : 'Inativo'}
                 </p>
               </div>
-              <button
+{/*               <button
                 onClick={() => alert('Abrir modal para cadastrar novo cartão')}
                 className="text-blue-600 hover:text-blue-700 flex items-center gap-2"
               >
                 <FileText className="w-5 h-5" />
                 Cadastrar Novo Cartão
-              </button>
+              </button> */}
             </div>
           ) : (
             <div className="text-gray-600">
