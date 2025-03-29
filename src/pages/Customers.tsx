@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Trash2, XCircle, Calendar, File, Check, Ban } from 'lucide-react';
+import { Plus, Search, Trash2, XCircle, Calendar, File, Check, Ban, Edit } from 'lucide-react';
 import { toast } from 'sonner';
 import { FaEye } from 'react-icons/fa';
 import { api } from '../lib/api.ts';
@@ -44,7 +44,7 @@ export function Customers() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGerating, setIsGerating] = useState(false);
   const [invoiceHistory, setInvoiceHistory] = useState<any[]>([]);
-  const [activeModal, setActiveModal] = useState<'none' | 'invoice' | 'replace' | 'subscription' | 'scheduling' | 'history'>('none');
+  const [activeModal, setActiveModal] = useState<'none' | 'edit' | 'invoice' | 'replace' | 'subscription' | 'scheduling' | 'history'>('none');
   
   const [handleinvoice, setHandleInvoice] = useState({
     _id: '',
@@ -400,6 +400,15 @@ export function Customers() {
   }
   }
 
+  const handleViewModalEditCustomer = async (customer: Customer) => {
+    setNewCustomer(customer);
+    setActiveModal('edit'); 
+  }
+  const handleEditCustomer = (e: React.FormEvent, customer: Customer) => {
+    e.preventDefault();
+    // Add your logic for editing the customer here
+  }
+
   const filteredCustomers = customers.filter(customer =>
     customer.cnpj.includes(searchTerm) ||
     customer.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -511,6 +520,8 @@ export function Customers() {
                         <Calendar className="w-5 h-5" />
                       </button>
 
+
+                    
                         {schedulings.some(schedule => schedule.customer_id === customer._id) && (
                         <button
                           onClick={() => handleViewScheduleHistory()}
@@ -548,6 +559,15 @@ export function Customers() {
                           <Check className="w-5 h-5" />
                         </button>
                       )}
+
+                      {/* BOTAO EDITAR */}
+                      <button
+                        onClick={() => handleViewModalEditCustomer(customer)}
+                        className="text-blue-600 hover:text-blue-700"
+                        title="Editar Cliente"
+                      >
+                        <Edit className="w-5 h-5" />
+                      </button>
 
                       <button
                         onClick={() => handleDeleteCustomer(customer._id)}
@@ -760,6 +780,208 @@ export function Customers() {
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 Salvar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Editar Cliente */}
+      {selectedCustomer && activeModal === 'edit' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-h-[90vh] w-full max-w-2xl flex flex-col">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-bold text-gray-900">Editar Cliente</h2>
+            </div>
+
+            <div className="p-6 overflow-y-auto flex-1">
+              <form
+                onSubmit={(e) => handleEditCustomer(e, selectedCustomer)}
+                className="space-y-6"
+              >
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900">Informações Básicas</h3>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Nome da Empresa
+                    </label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.name}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, name: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.cnpj}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, cnpj: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                    <input
+                      type="email"
+                      placeholder={newCustomer.email}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                    <input
+                      type="tel"
+                      placeholder={newCustomer.phone}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900">Endereço</h3>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Rua</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.street}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, street: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Número</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.number}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, number: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Bairro</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.neighborhood}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, neighborhood: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.city}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, city: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.state}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, state: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">CEP</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.zipCode}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, zipCode: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Código do Município
+                    </label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.cityCode}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, cityCode: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={closeAllModals}
+                className="px-4 py-2 text-gray-700 hover:text-gray-900"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                form="editCustomerForm"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Editar
               </button>
             </div>
           </div>
