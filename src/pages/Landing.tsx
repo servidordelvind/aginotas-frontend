@@ -3,7 +3,7 @@ import { FaFileInvoiceDollar, FaChartLine, FaUsers, FaBars, FaTimes, FaChevronRi
 import { useEffect, useState, useRef } from 'react';
 import lpheroimg from '../public/lpheroimg.png';
 import logodelvind from '../public/logodelvind.png';
-import nomelogodelvind from '../public/nomelogodelvind.png';
+import nomelogodelvind from '../public/logonomelogo.png';
 import logocomnome from '../public/logocomnome.png';
 import bolaImagem from '../public/cardimg.png';
 import delvindapp from '../public/delvindapp.png';
@@ -57,11 +57,11 @@ export function Landing() {
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      window.scrollTo({
-        top: element.offsetTop - 80,
-        behavior: 'smooth'
+      element.scrollIntoView({
+        behavior: 'smooth',  // Rola suavemente
+        block: 'start'       // Alinha o topo do elemento com o topo da viewport
       });
-      setActiveSection(id);
+      setActiveSection(id);  // Atualiza a seção ativa
     }
   };
 
@@ -75,55 +75,57 @@ export function Landing() {
   return (
     <div className="min-h-screen bg-[#161e2e] text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       {/* Floating Navigation Header */}
-      <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#161e2e]/95 backdrop-blur-sm py-2 shadow-lg' : 'py-2'}`}>
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <img
-              src={logodelvind}
-              alt="Logo Delvind"
-              className="h-12 sm:h-16 md:h-20"
-            />
-            <img
-              src={nomelogodelvind}
-              alt="Nome Logo Delvind"
-              className="h-16 w-32 sm:h-40 sm:w-36 md:h-22 md:w-40"
-            />          </div>
+      <header className={`top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#161e2e]/95 backdrop-blur-sm py-2 shadow-lg' : 'py-2'}`}>
+        <div className="container mx-auto px-4">
+          <div
+            className="flex justify-between items-center pb-2"
+            style={{ borderBottom: '6px solid #2962FF' }}
+          > {/* Adicionei border-b e pb-2 */}
+            <div className="flex items-center">
+              <img
+                src={nomelogodelvind}
+                alt="Nome Logo Delvind"
+                className="h-22 w-22 object-contain"
+              />
+            </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-4 items-center">
-            {sections.map((section) => (
-              <button
-                key={section.id}
-                onClick={() => scrollToSection(section.id)}
-                className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${activeSection === section.id ? 'text-[#FFFFFF] font-bold' : 'text-gray-500 hover:text-white'}`}
-              >
-                {section.label}
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex space-x-4 items-center">
+              <button>
+                {/* Botão vazio mantido para estrutura */}
               </button>
-            ))}
-            <Link to="/login" className="text-white text-sm">Login</Link>
-            <Link to="/pricing" className="bg-white text-[#0D47A1] px-3 py-1 sm:px-4 sm:py-1 rounded-full font-semibold hover:bg-gray-200 transition-colors text-sm">
-              Teste Grátis
-            </Link>
-          </nav>
+              <Link to="/login" className="text-white text-sm">Login</Link>
+              <Link to="/pricing" className="bg-white text-[#0D47A1] px-3 py-1 sm:px-4 sm:py-1 rounded-full font-semibold hover:bg-gray-200 transition-colors text-sm">
+                Teste Grátis
+              </Link>
+            </nav>
 
-          {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden text-gray-300 focus:outline-none"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
-          </button>
+            {/* Mobile Menu Toggle */}
+            <button
+              className="md:hidden text-gray-300 focus:outline-none"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
+            </button>
+          </div>
         </div>
 
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-[#0f172a] px-4 pt-2 pb-4">
-            <div className="flex flex-col space-y-2">
 
+        {/* Mobile Menu - Melhorado */}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-[#0f172a] px-4 pt-4 pb-6 border-t border-gray-700">
+            <div className="flex flex-col space-y-4">
+              <Link
+                to="/login"
+                className="text-white text-base py-2 hover:text-[#2962FF] transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Login
+              </Link>
               <Link
                 to="/pricing"
-                className="bg-[#2962FF] text-white px-4 py-2 rounded-full text-sm font-medium text-center hover:bg-[#1E50D9] transition-colors mt-1"
+                className="bg-[#2962FF] text-white px-4 py-3 rounded-full font-medium hover:bg-[#1E50D9] transition-colors text-center"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Teste Grátis
@@ -134,11 +136,11 @@ export function Landing() {
       </header>
 
       {/* Main Content */}
-      <main className="pt-16 md:pt-20">
+      <main className="pt-1">
         {/* Hero Section */}
         <section
-          id="hero"
-          ref={el => sectionsRef.current[0] = el}
+          // id="hero"
+          // ref={el => sectionsRef.current[0] = el}
           className="container mx-auto px-4 sm:px-6 pt-8 pb-16 flex flex-col lg:flex-row items-center justify-between min-h-[90vh] sm:min-h-[100vh] relative"
         >
           <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] h-[300px] right-[50px] top-[-150px] opacity-20 blur-[80px]"></div>
@@ -151,20 +153,18 @@ export function Landing() {
             <p className="text-base sm:text-lg mb-6 sm:mb-8 text-gray-300">
               Automatizar a emissão de notas fiscais de serviços recorrentes, tornando o processo mais ágil, simples e eficiente.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <a href="#mission" className="bg-[#2962FF] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors inline-block text-center">
-                SAIBA MAIS
-              </a>
-              <Link to="/pricing" className="border border-[#2962FF] text-white px-6 py-3 rounded-full font-medium hover:bg-[#2962FF]/10 transition-colors inline-block text-center">
-                TESTE GRÁTIS
-              </Link>
-            </div>
+            <button
+              onClick={() => scrollToSection('mission')}
+              className="bg-[#2962FF] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors inline-block text-center"
+            >
+              SAIBA MAIS
+            </button>
           </div>
 
 
 
           <div className="relative w-full lg:w-1/2 mt-10 lg:mt-0">
-            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[50px] md:right-[350px] top-[-400px] md:top-[-800px]" style={{ filter: 'blur(100px)' }}></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[50px] md:right-[250px] top-[-400px] md:top-[-800px]" style={{ filter: 'blur(300px)' }}></div>
             <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] sm:w-[300px] md:w-[400px] h-[200px] sm:h-[300px] md:h-[400px] right-[200px] md:right-[1300px] top-[-200px] md:top-[-400px]" style={{ filter: 'blur(50px)' }}></div>
             <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[50px] top-[-250px]"></div>
             <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] right-[-50px] sm:right-[-100px] top-[-150px] sm:top-[-250px]"></div>
@@ -203,18 +203,18 @@ export function Landing() {
         </section>
 
         <section
-          
+
           className="py-12 sm:py-16 bg-[#161e2e] relative"
         >
           <div className="absolute right-0 bottom-0 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
           <div className="absolute left-10 top-20 w-8 h-8 rounded-full bg-[#d2aae3] opacity-30"></div>
 
-          <div className="container mx-auto px-4 relative z-10">
+          <div className="container mx-auto px-5 relative z-10">
             <h2 className="text-3xl font-bold py-10 text-center mb-8">
               Uma plataforma inovadora pra facilitar a gestão de NFC-se
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1  md:grid-cols-3 gap-6">
               <div className="bg-[#1e293b] p-6 rounded-xl flex flex-col items-center text-center pt-16 relative">
                 <div className="absolute top-[-30px] bg-[#2962FF] p-4 rounded-full">
                   <FaFileInvoiceDollar className="w-8 h-8 text-white" />
@@ -261,7 +261,7 @@ export function Landing() {
           ref={el => sectionsRef.current[1] = el}
           className="py-12 sm:py-16 bg-[#161e2e] relative"
         >
-          <div className="hidden lg:block absolute rounded-full bg-[#d2aae3] w-[300px] h-[300px] right-[150px] top-[100px]">
+          <div className="hidden= lg:block absolute rounded-full b w-[400px] h-[400px] right-[150px] top-[200px] color-[#ffff]">
             <img
               src={bolaImagem}
               alt="Imagem decorativa"
@@ -271,14 +271,14 @@ export function Landing() {
           </div>
           <div className="absolute left-10 top-20 w-7 h-7 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
 
-          <div className="container mx-auto px-4 py-20 relative z-10 flex flex-col lg:flex-row gap-8">
+          <div className="container mx-auto px-4 py-1 relative z-10 flex flex-col lg:flex-row gap-8">
             <div className="w-full lg:w-1/3 flex flex-col justify-center">
-              <h1 className="text-4xl md:text-5xl font-bold mb-10 text-left">
+              <h1 className="text-4xl md:text-6xl font-bold mb-12 text-left">
                 AUTOMATIZE SUA NFC-SE E ESQUEÇA A BUROCRACIA!
               </h1>
 
               <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-4 text-left">
+                <h2 className="text-2xl font-bold mb-5 text-center">
                   NOSSA MISSÃO
                 </h2>
                 <p className="text-xl text-left">
@@ -286,7 +286,7 @@ export function Landing() {
                 </p>
               </div>
 
-              <div className="w-full flex justify-start mt-32">
+              <div className="w-full flex text justify-start mt-28">
                 <Link to="/pricing" className="bg-[#2962FF] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors relative">
                   <span className="absolute left-[8px] top-1/2 transform -translate-y-1/2 w-4 h-4 bg-white rounded-full"></span>
                   TESTE GRÁTIS
@@ -294,9 +294,9 @@ export function Landing() {
               </div>
             </div>
 
-            <div className="w-full lg:w-1/3 flex flex-col justify-center pt-16">
+            <div className="w-full lg:w-1/3 flex flex-col justify-center pt-32">
               <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-4 text-left">
+                <h2 className="text-2xl font-bold mb-4 text-center">
                   NOSSO PROPÓSITO
                 </h2>
                 <p className="text-xl text-left mb-8">
@@ -309,8 +309,8 @@ export function Landing() {
 
         {/* Simplicity Section */}
         <section
-          id="simplicity"
-          ref={el => sectionsRef.current[2] = el}
+          // id="simplicity"
+          // ref={el => sectionsRef.current[2] = el}
           className="py-12 sm:py-16 bg-[#161e2e] relative"
         >
           <div className="absolute left-20 top-1/2 w-6 h-6 rounded-full bg-[#2962FF] opacity-30"></div>
@@ -373,11 +373,7 @@ export function Landing() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="flex flex-col items-center md:items-start">
               <div className="flex items-center mb-4">
-                <img
-                  src={logodelvind}
-                  alt="Logo Delvind"
-                  className="h-10 mr-2"
-                />
+
                 <img
                   src={nomelogodelvind}
                   alt="Nome Delvind"
