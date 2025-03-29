@@ -79,7 +79,7 @@ export function UserChat() {
     const fetchTickets = async () => {
       try {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        const response = await fetch('http://localhost:3000/user/tickets', {
+        const response = await fetch(`${API_URL}/user/tickets`, {
           headers: {
             Authorization: `Bearer ${Cookies.get('token')}`,// Certifique-se de que o token está sendo armazenado no localStorage
           },

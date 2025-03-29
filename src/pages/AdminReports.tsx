@@ -95,7 +95,7 @@ export function AdminReports() {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const response = await fetch('http://localhost:3000/admin/tickets');
+        const response = await fetch(`${API_URL}/admin/tickets`);
         if (!response.ok) {
           throw new Error('Erro ao buscar tickets');
         }
