@@ -287,7 +287,7 @@ export function Landing() {
               </div>
 
               <div className="w-full flex justify-start mt-32">
-                <Link to="/register" className="bg-[#2962FF] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors relative">
+                <Link to="/pricing" className="bg-[#2962FF] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors relative">
                   <span className="absolute left-[8px] top-1/2 transform -translate-y-1/2 w-4 h-4 bg-white rounded-full"></span>
                   TESTE GRÁTIS
                 </Link>
