@@ -36,59 +36,6 @@ interface UserDB {
 
 export function AdminUsers() {
 
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: 1,
-      name: 'João Silva',
-      email: 'joao.silva@example.com',
-      subscription: 'Plano Premium',
-      paymentStatus: 'paid',
-      active: true,
-      registrationDate: '2023-01-15', // Exemplo
-      usageTime: '1 ano e 3 meses', // Exemplo
-    },
-    {
-      id: 2,
-      name: 'Maria Oliveira',
-      email: 'maria.oliveira@example.com',
-      subscription: 'Plano Básico',
-      paymentStatus: 'unpaid',
-      active: true,
-      registrationDate: '2023-05-20', // Exemplo
-      usageTime: '9 meses', // Exemplo
-    },
-    {
-      id: 3,
-      name: 'Carlos Pereira',
-      email: 'carlos.pereira@example.com',
-      subscription: 'Plano Premium',
-      paymentStatus: 'paid',
-      active: false,
-      registrationDate: '2023-08-10', // Exemplo
-      usageTime: '6 meses', // Exemplo
-    },
-    {
-      id: 4,
-      name: 'Ana Souza',
-      email: 'ana.souza@example.com',
-      subscription: 'Plano Básico',
-      paymentStatus: 'unpaid',
-      active: true,
-      registrationDate: '2023-11-05', // Exemplo
-      usageTime: '3 meses', // Exemplo
-    },
-    {
-      id: 5,
-      name: 'Pedro Rodrigues',
-      email: 'pedro.rodrigues@example.com',
-      subscription: 'Plano Premium',
-      paymentStatus: 'paid',
-      active: true,
-      registrationDate: '2024-02-28', // Exemplo
-      usageTime: '1 mês', // Exemplo
-    },
-  ]);
-
   const [usersDB, setUsersDB] = useState<UserDB[]>([]);
 
   const [loading, setLoading] = useState(false);
@@ -97,26 +44,8 @@ export function AdminUsers() {
   const [openModal, setOpenModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [infoSubscription, setInfoSubscription] = useState<any>(null);
 
-
-  const handleToggleStatus = (userId: string) => {
-    fetch(`/api/admin/users/${userId}/status`, {
-      method: 'PUT',
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Erro ao atualizar status do usuário');
-        }
-        setUsers((prevUsers) =>
-          prevUsers.map((user) =>
-            user.id === userId ? { ...user, active: !user.active } : user
-          )
-        );
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
-  };
 
   if (loading) {
     return (
@@ -130,9 +59,19 @@ export function AdminUsers() {
     return <p className="text-red-500">Erro: {error}</p>;
   }
 
-  const handleOpenModal = (user: User) => {
-    setSelectedUser(user);
-    setOpenModal(true);
+  const handleOpenModal = async (user: any) => {
+    try {
+
+      const infoSubscription = await api.find_subscription(user.subscription_id);
+      setInfoSubscription(infoSubscription);
+      setSelectedUser(user);
+      setOpenModal(true); 
+
+    } catch (error) {
+      console.error('Error fetching subscription info:', error);
+      setOpenModal(false);
+    }
+  
   };
 
   const handleCloseModal = () => {
@@ -164,7 +103,7 @@ export function AdminUsers() {
     }, 1000);
   }, []);
 
-  console.log(usersDB);
+  console.log(infoSubscription);
 
   return (
     <div className="p-4 md:p-8">
@@ -176,8 +115,6 @@ export function AdminUsers() {
           <tr className="bg-gray-100">
             <th className="p-2 md:p-4 text-left">Nome</th>
             <th className="p-2 md:p-4 text-left hidden sm:table-cell">Email</th>
-            <th className="p-2 md:p-4 text-left hidden md:table-cell">Assinatura</th>
-            <th className="p-2 md:p-4 text-left">Pagamento</th>
             <th className="p-2 md:p-4 text-left">Status</th>
             <th className="p-2 md:p-4 text-left">Ações</th>
           </tr>
@@ -186,23 +123,7 @@ export function AdminUsers() {
           {usersDB.map((user) => (
             <tr key={user._id} className="border-b border-gray-200">
               <td className="p-2 md:p-4">{user.name}</td>
-              <td className="p-2 md:p-4 hidden sm:table-cell">{user.email}</td>
-              <td className="p-2 md:p-4 hidden md:table-cell">{user.subscription}</td>
-              
-              <td className="p-2 md:p-4">
-                {user.paymentStatus === 'paid' ? (
-                  <span className="flex items-center text-green-500">
-                    <CheckCircle className="w-4 h-4 mr-1" />
-                    Em dia
-                  </span>
-                ) : (
-                  <span className="flex items-center text-red-500">
-                    <XCircle className="w-4 h-4 mr-1" />
-                    Atrasado
-                  </span>
-                )}
-              </td>
-
+              <td className="p-2 md:p-4 hidden sm:table-cell">{user.email}</td>      
               <td className="p-2 md:p-4">
                 {user.status ? (
                   <span className="text-green-500">Ativo</span>
@@ -210,7 +131,9 @@ export function AdminUsers() {
                   <span className="text-red-500">Inativo</span>
                 )}
               </td>
-              <td className="p-2 md:p-4">
+
+
+                <td className="p-2 md:p-4">
                 <IconButton
                   aria-label="more"
                   aria-controls={`user-menu-${user._id}`}
@@ -226,15 +149,18 @@ export function AdminUsers() {
                   open={Boolean(anchorEl) && selectedUserId === user._id}
                   onClose={handleMenuClose}
                 >
-                  <MenuItem onClick={() => { handleToggleStatus(user._id); handleMenuClose(); }}>
-                    {user.status ? 'Desativar' : 'Ativar'}
-                  </MenuItem>
-                  <MenuItem onClick={() => { handleOpenModal(user); handleMenuClose(); }}>
-                    <VisibilityIcon sx={{ mr: 1 }} />
-                    Ver Detalhes
+                  <MenuItem
+                  onClick={() => {
+                    handleOpenModal(user);
+                    handleMenuClose();
+                  }}
+                  >
+                  <VisibilityIcon sx={{ mr: 1 }} />
+                  Ver Detalhes
                   </MenuItem>
                 </Menu>
-              </td>
+                </td>
+
             </tr>
           ))}
         </tbody>
@@ -243,33 +169,73 @@ export function AdminUsers() {
 
     <Modal open={openModal} onClose={handleCloseModal}>
       <Box
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          maxWidth: '90%',
-          width: 400,
-          bgcolor: 'background.paper',
-          boxShadow: 24,
-          p: 4,
-        }}
+      sx={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        maxWidth: '90%',
+        width: '100%',
+        maxHeight: '90vh',
+        overflowY: 'auto',
+        bgcolor: 'background.paper',
+        boxShadow: 24,
+        p: 4,
+        borderRadius: 2,
+      }}
       >
-        <Typography variant="h6" component="h2">
-          Detalhes do Usuário
+      <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+        Detalhes completos do Usuário
+      </Typography>
+      {infoSubscription && (
+        <div>
+        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+          Informações da Assinatura
         </Typography>
-        {selectedUser && (
-          <div>
-            <p>ID: {selectedUser.id}</p>
-            <p>Nome: {selectedUser.name}</p>
-            <p>Email: {selectedUser.email}</p>
-            <p>Assinatura: {selectedUser.subscription}</p>
-            <p>Pagamento: {selectedUser.paymentStatus === 'paid' ? 'Em dia' : 'Atrasado'}</p>
-            <p>Status: {selectedUser.active ? 'Ativo' : 'Inativo'}</p>
-            <p>Data de Cadastro: {selectedUser.registrationDate}</p>
-            <p>Tempo de Uso: {selectedUser.usageTime}</p>
-          </div>
-        )}
+        <p><strong>ID da Assinatura:</strong> {infoSubscription.id}</p>
+        <p><strong>Status:</strong> {infoSubscription.status}</p>
+        <p><strong>Data de Criação:</strong> {new Date(infoSubscription.created_at).toLocaleDateString()}</p>
+        <p><strong>Data de Cancelamento:</strong> {infoSubscription.canceled_at ? new Date(infoSubscription.canceled_at).toLocaleDateString() : 'N/A'}</p>
+        <p><strong>Início:</strong> {new Date(infoSubscription.start_at).toLocaleDateString()}</p>
+        <p><strong>Intervalo:</strong> {infoSubscription.interval} ({infoSubscription.interval_count})</p>
+        <p><strong>Dia de Cobrança:</strong> {infoSubscription.billing_day}</p>
+        <p><strong>Método de Pagamento:</strong> {infoSubscription.payment_method}</p>
+        <p><strong>Plano:</strong> {infoSubscription.plan?.name}</p>
+        <p><strong>Cliente:</strong> {infoSubscription.customer?.name} ({infoSubscription.customer?.email})</p>
+        <p><strong>Moeda:</strong> {infoSubscription.currency}</p>
+        <p><strong>Descrição no Extrato:</strong> {infoSubscription.statement_descriptor}</p>
+
+        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+          Detalhes do Cliente
+        </Typography>
+        <p><strong>ID do Cliente:</strong> {infoSubscription.customer?.id}</p>
+        <p><strong>Nome:</strong> {infoSubscription.customer?.name}</p>
+        <p><strong>Email:</strong> {infoSubscription.customer?.email}</p>
+        <p><strong>Tipo:</strong> {infoSubscription.customer?.type}</p>
+        <p><strong>Documento:</strong> {infoSubscription.customer?.document}</p>
+        <p><strong>Tipo de Documento:</strong> {infoSubscription.customer?.document_type}</p>
+        <p><strong>Delinquente:</strong> {infoSubscription.customer?.delinquent ? 'Sim' : 'Não'}</p>
+        <p><strong>Telefone Residencial:</strong> {infoSubscription.customer?.phones?.home_phone?.country_code} {infoSubscription.customer?.phones?.home_phone?.area_code} {infoSubscription.customer?.phones?.home_phone?.number}</p>
+        <p><strong>Telefone Celular:</strong> {infoSubscription.customer?.phones?.mobile_phone?.country_code} {infoSubscription.customer?.phones?.mobile_phone?.area_code} {infoSubscription.customer?.phones?.mobile_phone?.number}</p>
+        <p><strong>Criado em:</strong> {new Date(infoSubscription.customer?.created_at).toLocaleDateString()}</p>
+        <p><strong>Atualizado em:</strong> {new Date(infoSubscription.customer?.updated_at).toLocaleDateString()}</p>
+
+        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+          Detalhes do Cartão
+        </Typography>
+        <p><strong>Marca:</strong> {infoSubscription.card?.brand}</p>
+        <p><strong>ID do Cartão:</strong> {infoSubscription.card?.id}</p>
+        <p><strong>Primeiros Seis Dígitos:</strong> {infoSubscription.card?.first_six_digits}</p>
+        <p><strong>Últimos Quatro Dígitos:</strong> {infoSubscription.card?.last_four_digits}</p>
+        <p><strong>Nome do Titular:</strong> {infoSubscription.card?.holder_name}</p>
+        <p><strong>Status:</strong> {infoSubscription.card?.status}</p>
+        <p><strong>Tipo:</strong> {infoSubscription.card?.type}</p>
+        <p><strong>Mês de Expiração:</strong> {infoSubscription.card?.exp_month}</p>
+        <p><strong>Ano de Expiração:</strong> {infoSubscription.card?.exp_year}</p>
+        <p><strong>Criado em:</strong> {new Date(infoSubscription.card?.created_at).toLocaleDateString()}</p>
+        <p><strong>Atualizado em:</strong> {new Date(infoSubscription.card?.updated_at).toLocaleDateString()}</p>
+        </div>
+      )}
       </Box>
     </Modal>
   </div>
