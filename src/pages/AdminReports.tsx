@@ -110,7 +110,7 @@ export function AdminReports() {
       socket.off('new_ticket');
       socket.off('update_ticket');
     };
-  }, []);
+  }, [selectedTicket]);
 
 
   return (
