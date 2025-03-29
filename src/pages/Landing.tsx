@@ -271,7 +271,7 @@ export function Landing() {
 
           <div className="container mx-auto px-4  relative z-10">
             {/* Título principal centralizado acima de tudo */}
-            <h1 className="text-4xl md:text-6xl font-bold mb-12 text-center">
+            <h1 className="text-4xl md:text-6xl font-bold text-center">
               AUTOMATIZE SUA NFC-SE E ESQUEÇA A BUROCRACIA!
             </h1>
 
@@ -313,7 +313,7 @@ export function Landing() {
             </div>
 
             {/* Botão TESTE GRÁTIS */}
-            <div className="w-full flex  mt-12">
+            <div className="w-full flex">
               <Link to="/pricing" className="bg-[#2962FF] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors relative">
                 <span className="absolute left-[8px] top-1/2 transform -translate-y-1/2 w-4 h-4 bg-white rounded-full"></span>
                 TESTE GRÁTIS
@@ -326,7 +326,7 @@ export function Landing() {
         <section
           id="simplicity"
           ref={el => sectionsRef.current[2] = el}
-          className="py-12 sm:py-16 bg-[#161e2e] relative"
+          className=" bg-[#161e2e] relative"
         >
           <div className="absolute left-20 top-1/2 w-6 h-6 rounded-full bg-[#2962FF] opacity-30"></div>
           <div className="absolute right-32 bottom-32 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
@@ -359,7 +359,7 @@ export function Landing() {
               </div>
             </div>
 
-            <div className="flex justify-center mt-12 lg:mt-16">
+            <div className="flex justify-center mt-12 lg:mt-">
               <Link
                 to="/manual"
                 className="bg-[#C0C0C0] text-black px-6 py-3 rounded-md font-semibold flex items-center min-w-[280px] hover:bg-gray-300 transition-colors duration-200"
