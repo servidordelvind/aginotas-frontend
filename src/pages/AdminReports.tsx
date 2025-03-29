@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Send as SendIcon } from 'lucide-react';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:3000');  // Certifique-se de usar a URL correta
+const socket = io('https://aginotas-backend.onrender.com');  // Certifique-se de usar a URL correta
 
 interface Message {
   text: string;
