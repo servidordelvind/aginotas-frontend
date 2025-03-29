@@ -15,17 +15,24 @@ export function Landing() {
   const sectionsRef = useRef<(HTMLElement | null)[]>([]);
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+              setActiveSection(entry.target.id);
+            }, 100);
           }
         });
       },
-      { threshold: 0.5, rootMargin: '-100px 0px -50% 0px' }
+      {
+        threshold: [0.5],
+        rootMargin: '-10px 0px -10% 0px'
+      }
     );
-
     const currentSections = sectionsRef.current;
     currentSections.forEach(section => {
       if (section) observer.observe(section);
