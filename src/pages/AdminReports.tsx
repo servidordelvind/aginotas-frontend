@@ -25,27 +25,6 @@ export function AdminReports() {
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    socket.on('new_ticket', (ticket: Ticket) => {
-      setTickets((prevTickets) => [...prevTickets, ticket]);
-    });
-
-    socket.on('update_ticket', (updatedTicket: Ticket) => {
-      setTickets((prevTickets) =>
-        prevTickets.map((ticket) =>
-          ticket._id === updatedTicket._id ? updatedTicket : ticket
-        )
-      );
-      if (selectedTicket?._id === updatedTicket._id) {
-        setSelectedTicket(updatedTicket);
-      }
-    });
-
-    return () => {
-      socket.off('new_ticket');
-      socket.off('update_ticket');
-    };
-  }, [selectedTicket]);
 
   const handleSendMessage = () => {
     if (newMessage.trim() && selectedTicket) {
@@ -70,7 +49,11 @@ export function AdminReports() {
   };
 
   const handleTicketSelect = (ticket: Ticket) => {
-    setSelectedTicket(ticket);
+    if (selectedTicket?._id === ticket._id) {
+      setSelectedTicket(null); // Deselect if the same ticket is clicked again
+    } else {
+      setSelectedTicket(ticket); // Select the clicked ticket
+    }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -92,31 +75,41 @@ export function AdminReports() {
     }
   };
 
-  useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        const response = await fetch(`${API_URL}/admin/tickets`);
-        if (!response.ok) {
-          throw new Error('Erro ao buscar tickets');
-        }
-        const data: Ticket[] = await response.json();
-        setTickets(data);
-
-        if (selectedTicket) {
-          const updatedTicket = data.find(ticket => ticket._id === selectedTicket._id);
-          if (updatedTicket) {
-            setSelectedTicket(updatedTicket);
-          }
-        }
-      } catch (error) {
-        console.error('Erro ao buscar tickets:', error);
+  const pollData = async () => {
+    try {
+      const response = await fetch(`${API_URL}/admin/tickets`);
+      if (!response.ok) {
+        throw new Error('Erro ao buscar tickets');
       }
+      const data: Ticket[] = await response.json();
+      setTickets(data);
+    } catch (error) {
+      console.error('Erro ao buscar tickets:', error);
+      setTimeout(pollData, 3000); 
+    }
+  };
+
+  useEffect(() => {
+    pollData(); 
+    socket.on('new_ticket', (ticket: Ticket) => {
+      setTickets((prevTickets) => [...prevTickets, ticket]);
+    });
+
+    socket.on('update_ticket', (updatedTicket: Ticket) => {
+      setTickets((prevTickets) =>
+        prevTickets.map((ticket) =>
+          ticket._id === updatedTicket._id ? updatedTicket : ticket
+        )
+      );
+      if (selectedTicket?._id === updatedTicket._id) {
+        setSelectedTicket(updatedTicket);
+      }
+    });
+
+    return () => {
+      socket.off('new_ticket');
+      socket.off('update_ticket');
     };
-
-    fetchTickets();
-
-    const interval = setInterval(fetchTickets, 5000); // Atualiza a cada 5 segundos
-    return () => clearInterval(interval);
   }, [selectedTicket]);
 
 
