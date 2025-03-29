@@ -44,7 +44,7 @@ export function Customers() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGerating, setIsGerating] = useState(false);
   const [invoiceHistory, setInvoiceHistory] = useState<any[]>([]);
-  const [activeModal, setActiveModal] = useState<'none' | 'invoice' | 'replace' | 'subscription' | 'history'>('none');
+  const [activeModal, setActiveModal] = useState<'none' | 'invoice' | 'replace' | 'subscription' | 'scheduling' | 'history'>('none');
   
   const [handleinvoice, setHandleInvoice] = useState({
     _id: '',
@@ -155,6 +155,10 @@ export function Customers() {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
+
+  const handleViewScheduleHistory = async () => {
+    setActiveModal('scheduling');
+  }
 
   const handleAddCustomer = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -507,20 +511,15 @@ export function Customers() {
                         <Calendar className="w-5 h-5" />
                       </button>
 
-                      {schedulings.map((schedule) => (
-                        <>
-                          {/* BOTAO CANCELAR AGENDAMENTO */}
-                          {schedule.customer_id === customer._id &&
-                            <button
-                              onClick={() => handleCancelSchedule(customer._id)}
-                              className="text-blue-600 hover:text-blue-700"
-                              title="Cancelar agendamento"
-                            >
-                              <Ban className="w-5 h-5" />
-                            </button>
-                          }
-                        </>
-                      ))}
+                        {schedulings.some(schedule => schedule.customer_id === customer._id) && (
+                        <button
+                          onClick={() => handleViewScheduleHistory()}
+                          className="text-blue-600 hover:text-blue-700"
+                          title="Cancelar agendamento"
+                        >
+                          <Ban className="w-5 h-5" />
+                        </button>
+                        )}
 
 
                       <button
@@ -1212,6 +1211,63 @@ export function Customers() {
                 disabled={isGerating}
               >
                 {isGerating ? 'Substituindo...' : 'Substituir'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Agendamentos de Emissão Automatizada */}
+      {activeModal === 'scheduling' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-h-[90vh] w-full max-w-2xl flex flex-col">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-bold text-gray-900">Agendamentos de Emissão Automatizada</h2>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1">
+              {schedulings.length === 0 ? (
+                <div className="text-center text-gray-500">Nenhum agendamento encontrado.</div>
+              ) : (
+                <table className="w-full table-auto">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Cliente</th>
+                      <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Descrição</th>
+                      <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Dia do Faturamento</th>
+                      <th className="py-2 px-4 text-right text-sm font-medium text-gray-600">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {schedulings.map((schedule) => {
+                      const customer = customers.find(c => c._id === schedule.customer_id);
+                      return (
+                        <tr key={schedule.customer_id} className="border-b">
+                          <td className="py-2 px-4 text-sm text-gray-700">{customer?.name || 'Cliente não encontrado'}</td>
+                          <td className="py-2 px-4 text-sm text-gray-700">{schedule.data.servico.Discriminacao}</td>
+                          <td className="py-2 px-4 text-sm text-gray-700">{schedule.billing_day}</td>
+                          <td className="py-2 px-4 text-right">
+                            <button
+                              onClick={() => handleCancelSchedule(schedule.customer_id)}
+                              className="text-red-600 hover:text-red-800"
+                              title="Cancelar Agendamento"
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+            <div className="p-6 border-t border-gray-200 flex justify-end">
+              <button
+                type="button"
+                onClick={closeAllModals}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Fechar
               </button>
             </div>
           </div>
