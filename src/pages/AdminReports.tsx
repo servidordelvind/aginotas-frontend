@@ -1,4 +1,163 @@
+//AdminReports()
+
 import React, { useState, useEffect, useRef } from 'react';
+import { Send as SendIcon } from 'lucide-react';
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:3000');  // Certifique-se de usar a URL correta
+
+interface Message {
+  text: string;
+  sender: 'admin' | 'user';
+  timestamp: number;
+}
+
+interface Ticket {
+  _id: string;
+  userId: string;
+  messages: Message[];
+  status: 'open' | 'closed';
+}
+
+export function AdminReports() {
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+  const [newMessage, setNewMessage] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    socket.on('new_ticket', (ticket: Ticket) => {
+      setTickets((prevTickets) => [...prevTickets, ticket]);
+    });
+
+    socket.on('update_ticket', (updatedTicket: Ticket) => {
+      setTickets((prevTickets) =>
+        prevTickets.map((ticket) =>
+          ticket._id === updatedTicket._id ? updatedTicket : ticket
+        )
+      );
+      if (selectedTicket?._id === updatedTicket._id) {
+        setSelectedTicket(updatedTicket);
+      }
+    });
+
+    return () => {
+      socket.off('new_ticket');
+      socket.off('update_ticket');
+    };
+  }, [selectedTicket]);
+
+  const handleSendMessage = () => {
+    if (newMessage.trim() && selectedTicket) {
+      const message = {
+        sender: 'admin',
+        text: newMessage,
+        timestamp: Date.now(),
+      };
+
+      socket.emit('send_message', {
+        ticketId: selectedTicket._id,
+        sender: 'admin',
+        message: newMessage,
+      });
+
+      setSelectedTicket({
+        ...selectedTicket,
+        messages: [...selectedTicket.messages, message],
+      });
+      setNewMessage('');
+    }
+  };
+
+  const handleTicketSelect = (ticket: Ticket) => {
+    setSelectedTicket(ticket);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter' && newMessage.trim()) {
+      handleSendMessage();
+      event.preventDefault();
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-screen bg-gray-100">
+      <div className="bg-blue-600 text-white p-4 rounded-t-lg">
+        <h1 className="text-lg font-semibold">Admin - Chat de Suporte</h1>
+      </div>
+
+      <div className="flex-grow overflow-y-auto p-4 space-y-2">
+        <h2 className="text-lg font-semibold mb-4">Tickets Abertos</h2>
+        {tickets.map((ticket) => (
+          <div
+            key={ticket._id}
+            className="bg-gray-100 p-3 rounded-lg cursor-pointer hover:bg-gray-200"
+            onClick={() => handleTicketSelect(ticket)}
+          >
+            <p className="font-semibold">Ticket: {ticket._id}</p>
+            <p className="text-sm">Status: {ticket.status}</p>
+          </div>
+        ))}
+        {selectedTicket && (
+          <>
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold">Chat com o Usuário</h3>
+              {selectedTicket.messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`max-w-xs p-3 rounded-lg shadow-md ${
+                    message.sender === 'admin' ? 'bg-blue-100 self-start' : 'bg-gray-200 self-end'
+                  }`}
+                >
+                  <strong className="block mb-1">
+                    {message.sender === 'admin' ? 'Você' : 'Usuário'}:
+                  </strong>
+                  <p className="text-sm">{message.text}</p>
+                  <span className="text-xs text-gray-500">
+                    {new Date(message.timestamp).toLocaleString()}
+                  </span>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+          </>
+        )}
+      </div>
+
+      {selectedTicket && (
+        <div className="flex items-center p-3 border-t border-gray-300 bg-gray-50">
+          <input
+            type="text"
+            className="flex-grow p-3 border rounded-l-lg focus:outline-none focus:ring focus:border-blue-300"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            placeholder="Digite sua mensagem..."
+            onKeyDown={handleKeyDown}
+          />
+          <button
+            className="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-r-lg"
+            onClick={handleSendMessage}
+          >
+            <SendIcon className="w-5 h-5" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+
+
+
+
+
+
+
+
+// 
+
+/* import React, { useState, useEffect, useRef } from 'react';
 // import io from 'socket.io-client';
 import { Send as SendIcon, Trash2 as TrashIcon } from 'lucide-react';
 
@@ -122,7 +281,7 @@ export function AdminReports() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Barra lateral */}
+
       <div className="w-1/3 h-5/6 bg-white border-r border-gray-300 p-4 shadow-lg flex flex-col">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">Atendimentos</h2>
         <ul className="space-y-3 overflow-y-auto">
@@ -151,15 +310,13 @@ export function AdminReports() {
         </ul>
       </div>
 
-      {/* Área do Chat */}
       {selectedUser && (
         <div className="flex flex-col flex-grow h-5/6 bg-gray-50 shadow-inner">
-          {/* Cabeçalho do chat */}
+
           <div className="bg-blue-600 text-white p-5 rounded-t-lg shadow-md flex items-center justify-between">
             <h2 className="text-lg font-semibold">Chat com {selectedUser.name}</h2>
           </div>
 
-          {/* Mensagens */}
           <div className="flex-grow overflow-y-auto p-4 space-y-3">
             {messages.map((message, index) => (
               <div
@@ -179,7 +336,6 @@ export function AdminReports() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Respostas rápidas */}
           <div className="flex flex-wrap gap-2 p-4 border-t bg-white shadow-md">
             {standardResponses.map((response, index) => (
               <button
@@ -192,7 +348,6 @@ export function AdminReports() {
             ))}
           </div>
 
-          {/* Input de mensagem */}
           <div className="flex items-center p-3 border-t bg-gray-100 shadow-lg">
             <input
               type="text"
@@ -214,4 +369,4 @@ export function AdminReports() {
     </div>
   );
 
-}
+} */
