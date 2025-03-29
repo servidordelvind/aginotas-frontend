@@ -113,19 +113,15 @@ export function Dashboard() {
     }, 0);
   }
 
-
-
   const data = processarNotasParaGrafico(invoice);
   const days = getNotasPorPeriodo(invoice);
   const valorAreceber = somarValoresNotas(days.notasUltimos30Dias);
-
 
   useEffect(()=>{
     setDayInvoiceToday(days.notasHoje.length);
     setDayInvoiceLast7Days(days.notasUltimos7Dias.length);
   },[days])
 
-  console.log(invoice);
 
   return (
     <div className="space-y-6">
@@ -214,15 +210,21 @@ export function Dashboard() {
             <tbody>
               {invoice.map((item) => (
                 <tr key={item.customer._id} className="border-b border-gray-100">
-                  <td className="py-3 px-4">
+                    <td className="py-3 px-4">
                     <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm ${
                       item.status.toLowerCase() === 'emitida' 
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-red-100 text-red-700'
+                      ? 'bg-green-100 text-green-700'
+                      : item.status.toLowerCase() === 'substituida'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'bg-red-100 text-red-700'
                     }`}>
-                      {item.status.toLowerCase() === 'emitida' ? '✓' : '!'} {item.status}
+                      {item.status.toLowerCase() === 'emitida' 
+                      ? '✓' 
+                      : item.status.toLowerCase() === 'substituida'
+                      ? '↺'
+                      : '!'} {item.status}
                     </span>
-                  </td>
+                    </td>
                   <td className="py-3 px-4 text-gray-700">{item.customer.name}</td>
                     <td className="py-3 px-4 text-gray-500">
                     {dayjs(item.date).format('DD/MM/YYYY HH:mm')}

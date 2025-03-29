@@ -43,8 +43,40 @@ export function Customers() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGerating, setIsGerating] = useState(false);
   const [invoiceHistory, setInvoiceHistory] = useState<any[]>([]);
-  const [activeModal, setActiveModal] = useState<'none' | 'invoice' | 'subscription' | 'history'>('none');
-
+  const [activeModal, setActiveModal] = useState<'none' | 'invoice' | 'replace' | 'subscription' | 'history'>('none');
+  
+  const [handleinvoice, setHandleInvoice] = useState({
+    _id: '',
+    customer: '',
+    numeroLote: 0,
+    identificacaoRpsnumero: 0,
+    xml: '',
+    data:{
+      Rps: {
+        Servico: {
+          Discriminacao: '',
+          descricao: '',
+          item_lista: '',
+          cnae: '',
+          quantidade: 0,
+          valor_unitario: 0,
+          desconto: 0,
+          ListaItensServico:[
+            {
+              Discriminacao: '',
+              Descricao: '',
+              ItemListaServico: '',
+              CodigoCnae: '',
+              Quantidade: 0,
+              ValorUnitario: 0,
+              ValorLiquido: 0,
+              ValorDesconto: 0
+            }
+          ]
+        }
+      }
+    }
+  });
 
   const [newCustomer, setNewCustomer] = useState({
     name: '',
@@ -310,13 +342,54 @@ export function Customers() {
         ChaveAcesso: nfseData.chaveAcesso, 
       }
 
-      console.log(data);
       const response = await api.cancel_invoice(data);
       toast.success('Nota fiscal cancelada com sucesso!');
     } catch (error) {
       toast.error('Erro ao cancelar nota fiscal');
       console.error('Erro ao cancelar nota fiscal:', error);
     }
+  }
+
+  const handleModalReplaceInvoice = async (invoice: any) => {
+    setActiveModal('replace'); 
+    setHandleInvoice(invoice);
+  }
+
+  const handleReplaceInvoice = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!window.confirm("Tem certeza que deseja substituir esta nota fiscal?")) {
+      return;
+    }
+
+    try {
+    const nfseData = await parseNfseXml(handleinvoice.xml);
+
+    const data = {
+    IdInvoice: handleinvoice._id,
+    customer_id: handleinvoice.customer, 
+    servico:{
+      Discriminacao: invoice.discriminacao,
+      descricao: invoice.descricao,
+      item_lista: invoice.item_lista,
+      cnae: invoice.cnae,
+      quantidade: invoice.quantidade,
+      valor_unitario: invoice.valor_unitario,
+      desconto: invoice.desconto
+    },
+    numeroNfse: nfseData.numeroNota,
+    CodigoMunicipio: nfseData.codigoMunicipio,
+    ChaveAcesso: nfseData.chaveAcesso,
+    NumeroLote: handleinvoice.numeroLote,
+    IdentificacaoRpsnumero: handleinvoice.identificacaoRpsnumero,
+    }
+
+    const response = await api.replace_invoice(data);
+    toast.success('Nota fiscal substituida com sucesso!');
+  } catch (error) {
+    toast.error('Erro ao substituir nota fiscal');
+    console.error('Erro ao substituir nota fiscal:', error);
+  }
   }
 
   const filteredCustomers = customers.filter(customer =>
@@ -731,7 +804,7 @@ export function Customers() {
             </td>
             <td className="py-3 px-4 text-sm text-gray-700">
               <button
-                onClick={() => console.log(`Substituir nota fiscal ${invoice._id}`)}
+                onClick={() => handleModalReplaceInvoice(invoice)}
                 className="text-blue-600 hover:text-blue-800 p-1"
                 title="Substituir Nota Fiscal"
               >
@@ -1018,6 +1091,128 @@ export function Customers() {
         </div>
       )}
 
+      {/* Modal Substituir Nota Fiscal */}
+      {activeModal === 'replace' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-h-[90vh] w-full max-w-md flex flex-col">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-bold text-gray-900">Substituir Nota Fiscal</h2>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1">
+              <form id="invoiceReplaceForm" onSubmit={handleReplaceInvoice} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Discriminação do Serviço</label>
+                  <input
+                    type="text"
+                    placeholder={handleinvoice.data.Rps.Servico.Discriminacao || ''}
+                    onChange={(e) => setInvoice({ ...invoice, discriminacao: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">CNAE</label>
+                  <input
+                  type="text"
+                  placeholder={handleinvoice.data.Rps.Servico.ListaItensServico[0].CodigoCnae || ''}
+                  onChange={(e) => setInvoice({ ...invoice, cnae: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+
+                />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Item da Lista de Serviço</label>
+                  <input
+                  type="text"
+                  placeholder={handleinvoice.data.Rps.Servico.ListaItensServico[0].ItemListaServico}
+                  onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  
+                />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
+                  <textarea
+                    placeholder={handleinvoice.data.Rps.Servico.ListaItensServico[0].Descricao || ''}
+                    onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Quantidade</label>
+                  <input
+                    type="number"
+                    placeholder={(handleinvoice.data.Rps.Servico.ListaItensServico[0].Quantidade).toString()}
+                    onChange={(e) => setInvoice({ ...invoice, quantidade: parseInt(e.target.value) || 1 })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Valor Unitário</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    placeholder={(handleinvoice.data.Rps.Servico.ListaItensServico[0].ValorUnitario || 0.00).toString()}
+                    onChange={(e) => setInvoice({ ...invoice, valor_unitario: parseFloat(e.target.value) })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Desconto</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    placeholder={(handleinvoice.data.Rps.Servico.ListaItensServico[0].ValorDesconto || 0.00).toString()}
+                    onChange={(e) => setInvoice({ ...invoice, desconto: parseFloat(e.target.value) })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Data de Emissão</label>
+                  <input
+                    type="date"
+                    value={invoice.issueDate}
+                    onChange={(e) => setInvoice({ ...invoice, issueDate: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Vencimento</label>
+                  <input
+                    type="date"
+                    value={invoice.dueDate}
+                    onChange={(e) => setInvoice({ ...invoice, dueDate: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    
+                  />
+                </div>
+              </form>
+            </div>
+            <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+              <button type="button" onClick={closeAllModals} className="px-4 py-2 text-gray-700 hover:text-gray-900">
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                form="invoiceReplaceForm"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                disabled={isGerating}
+              >
+                {isGerating ? 'Substituindo...' : 'Substituir'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
