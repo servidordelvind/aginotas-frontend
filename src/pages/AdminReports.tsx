@@ -71,7 +71,22 @@ export function AdminReports() {
     }
   };
 
+  const pollData = async () => {
+    try {
+      const response = await fetch(`${API_URL}/admin/tickets`);
+      if (!response.ok) {
+        throw new Error('Erro ao buscar tickets');
+      }
+      const data: Ticket[] = await response.json();
+      setTickets(data);
+    } catch (error) {
+      console.error('Erro ao buscar tickets:', error);
+      setTimeout(pollData, 3000); // Retry after 3 seconds
+    }
+  };
+
   useEffect(() => {
+    pollData(); // Start polling data
     socket.on('new_ticket', (ticket: Ticket) => {
       setTickets((prevTickets) => [...prevTickets, ticket]);
     });
@@ -92,49 +107,8 @@ export function AdminReports() {
       socket.off('update_ticket');
     };
   }, [selectedTicket]);
-  
-  useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        const response = await fetch(`${API_URL}/admin/tickets`);
-        if (!response.ok) {
-          throw new Error('Erro ao buscar tickets');
-        }
-        const data: Ticket[] = await response.json();
-        setTickets(data);
-      } catch (error) {
-        console.error('Erro ao buscar tickets:', error);
-      }
-    };
 
-    fetchTickets();
-  }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (selectedTicket) {
-        fetch(`${API_URL}/admin/tickets/${selectedTicket._id}`)
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error('Erro ao atualizar mensagens');
-            }
-            return response.json();
-          })
-          .then((updatedTicket: Ticket) => {
-            setSelectedTicket(updatedTicket);
-            setTickets((prevTickets) =>
-              prevTickets.map((ticket) =>
-                ticket._id === updatedTicket._id ? updatedTicket : ticket
-              )
-            );
-          })
-          .catch((error) => console.error('Erro ao atualizar mensagens:', error));
-      }
-    }, 3000); // Atualiza a cada 3 segundos
-
-    return () => clearInterval(interval);
-  }, [selectedTicket]);
-  
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       <div className="bg-blue-600 text-white p-4 rounded-t-lg">
