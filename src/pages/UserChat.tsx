@@ -26,24 +26,6 @@ export function UserChat() {
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    // Verifica a conexão do socket
-    socket.on('connect', () => {
-      console.log('Conectado ao servidor');
-    });
-
-    // Atualiza o ticket com novas mensagens
-    socket.on('update_ticket', (updatedTicket: Ticket) => {
-      setTicket(updatedTicket);
-      setMessages(updatedTicket.messages);
-    });
-
-    // Limpeza ao desmontar o componente
-    return () => {
-      socket.off('update_ticket');
-      socket.off('connect');
-    };
-  }, []);
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
@@ -75,37 +57,6 @@ export function UserChat() {
     }
   };
 
-  useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        const response = await fetch(`${API_URL}/user/tickets`, {
-          headers: {
-            Authorization: `Bearer ${Cookies.get('token')}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Erro ao buscar tickets');
-        }
-
-        const tickets: Ticket[] = await response.json();
-        if (tickets.length > 0) {
-          setTicket(tickets[0]);
-          setMessages(tickets[0].messages);
-        }
-      } catch (error) {
-        console.error('Erro ao buscar tickets:', error);
-      }
-    };
-
-    fetchTickets();
-
-    const interval = setInterval(fetchTickets, 5000); // Atualiza a cada 5 segundos
-
-    return () => clearInterval(interval); // Limpa o intervalo ao desmontar o componente
-  }, []);
-
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' && newMessage.trim()) {
       handleSendMessage();
@@ -125,6 +76,52 @@ export function UserChat() {
 
 
   useEffect(() => {
+    // Verifica a conexão do socket
+    socket.on('connect', () => {
+      console.log('Conectado ao servidor');
+    });
+
+    // Atualiza o ticket com novas mensagens
+    socket.on('update_ticket', (updatedTicket: Ticket) => {
+      setTicket(updatedTicket);
+      setMessages(updatedTicket.messages);
+    });
+
+    // Limpeza ao desmontar o componente
+    return () => {
+      socket.off('update_ticket');
+      socket.off('connect');
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchTickets = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const response = await fetch(`${API_URL}/user/tickets`, {
+          headers: {
+            Authorization: `Bearer ${Cookies.get('token')}`,// Certifique-se de que o token está sendo armazenado no localStorage
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Erro ao buscar tickets');
+        }
+
+        const tickets: Ticket[] = await response.json();
+        if (tickets.length > 0) {
+          setTicket(tickets[0]);
+          setMessages(tickets[0].messages);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar tickets:', error);
+      }
+    };
+
+    fetchTickets();
+  }, []);
+
+  useEffect(() => {
     socket.on('update_ticket', (updatedTicket: Ticket) => {
       setTicket(updatedTicket);
       setMessages(updatedTicket.messages);
@@ -134,6 +131,35 @@ export function UserChat() {
       socket.off('update_ticket');
     };
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const fetchMessages = async () => {
+        try {
+          if (ticket) {
+            const response = await fetch(`${API_URL}/user/tickets/${ticket._id}`, {
+              headers: {
+                Authorization: `Bearer ${Cookies.get('token')}`,
+              },
+            });
+
+            if (!response.ok) {
+              throw new Error('Erro ao buscar mensagens');
+            }
+
+            const updatedTicket: Ticket = await response.json();
+            setMessages(updatedTicket.messages);
+          }
+        } catch (error) {
+          console.error('Erro ao atualizar mensagens:', error);
+        }
+      };
+
+      fetchMessages();
+    }, 5000); // Atualiza a cada 5 segundos
+
+    return () => clearInterval(interval);
+  }, [ticket]);
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">

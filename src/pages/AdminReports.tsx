@@ -25,27 +25,6 @@ export function AdminReports() {
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    socket.on('new_ticket', (ticket: Ticket) => {
-      setTickets((prevTickets) => [...prevTickets, ticket]);
-    });
-
-    socket.on('update_ticket', (updatedTicket: Ticket) => {
-      setTickets((prevTickets) =>
-        prevTickets.map((ticket) =>
-          ticket._id === updatedTicket._id ? updatedTicket : ticket
-        )
-      );
-      if (selectedTicket?._id === updatedTicket._id) {
-        setSelectedTicket(updatedTicket);
-      }
-    });
-
-    return () => {
-      socket.off('new_ticket');
-      socket.off('update_ticket');
-    };
-  }, [selectedTicket]);
 
   const handleSendMessage = () => {
     if (newMessage.trim() && selectedTicket) {
@@ -93,6 +72,28 @@ export function AdminReports() {
   };
 
   useEffect(() => {
+    socket.on('new_ticket', (ticket: Ticket) => {
+      setTickets((prevTickets) => [...prevTickets, ticket]);
+    });
+
+    socket.on('update_ticket', (updatedTicket: Ticket) => {
+      setTickets((prevTickets) =>
+        prevTickets.map((ticket) =>
+          ticket._id === updatedTicket._id ? updatedTicket : ticket
+        )
+      );
+      if (selectedTicket?._id === updatedTicket._id) {
+        setSelectedTicket(updatedTicket);
+      }
+    });
+
+    return () => {
+      socket.off('new_ticket');
+      socket.off('update_ticket');
+    };
+  }, [selectedTicket]);
+  
+  useEffect(() => {
     const fetchTickets = async () => {
       try {
         const response = await fetch(`${API_URL}/admin/tickets`);
@@ -101,25 +102,39 @@ export function AdminReports() {
         }
         const data: Ticket[] = await response.json();
         setTickets(data);
-
-        if (selectedTicket) {
-          const updatedTicket = data.find(ticket => ticket._id === selectedTicket._id);
-          if (updatedTicket) {
-            setSelectedTicket(updatedTicket);
-          }
-        }
       } catch (error) {
         console.error('Erro ao buscar tickets:', error);
       }
     };
 
     fetchTickets();
+  }, []);
 
-    const interval = setInterval(fetchTickets, 5000); // Atualiza a cada 5 segundos
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (selectedTicket) {
+        fetch(`${API_URL}/admin/tickets/${selectedTicket._id}`)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Erro ao atualizar mensagens');
+            }
+            return response.json();
+          })
+          .then((updatedTicket: Ticket) => {
+            setSelectedTicket(updatedTicket);
+            setTickets((prevTickets) =>
+              prevTickets.map((ticket) =>
+                ticket._id === updatedTicket._id ? updatedTicket : ticket
+              )
+            );
+          })
+          .catch((error) => console.error('Erro ao atualizar mensagens:', error));
+      }
+    }, 3000); // Atualiza a cada 3 segundos
+
     return () => clearInterval(interval);
   }, [selectedTicket]);
-
-
+  
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       <div className="bg-blue-600 text-white p-4 rounded-t-lg">
