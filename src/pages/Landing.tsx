@@ -95,7 +95,7 @@ export function Landing() {
               <button
                 key={section.id}
                 onClick={() => scrollToSection(section.id)}
-                className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${activeSection === section.id ? 'text-[#6A5ACD] font-bold' : 'text-gray-300 hover:text-white'}`}
+                className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${activeSection === section.id ? 'text-[#FFFFFF] font-bold' : 'text-gray-500 hover:text-white'}`}
               >
                 {section.label}
               </button>
@@ -164,7 +164,7 @@ export function Landing() {
 
 
           <div className="relative w-full lg:w-1/2 mt-10 lg:mt-0">
-            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[50px] md:right-[280px] top-[-400px] md:top-[-800px]" style={{ filter: 'blur(100px)' }}></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[50px] md:right-[350px] top-[-400px] md:top-[-800px]" style={{ filter: 'blur(100px)' }}></div>
             <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] sm:w-[300px] md:w-[400px] h-[200px] sm:h-[300px] md:h-[400px] right-[200px] md:right-[1300px] top-[-200px] md:top-[-400px]" style={{ filter: 'blur(50px)' }}></div>
             <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[50px] top-[-250px]"></div>
             <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] right-[-50px] sm:right-[-100px] top-[-150px] sm:top-[-250px]"></div>
