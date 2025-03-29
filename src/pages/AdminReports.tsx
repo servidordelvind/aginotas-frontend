@@ -49,7 +49,11 @@ export function AdminReports() {
   };
 
   const handleTicketSelect = (ticket: Ticket) => {
-    setSelectedTicket(ticket);
+    if (selectedTicket?._id === ticket._id) {
+      setSelectedTicket(null); // Deselect if the same ticket is clicked again
+    } else {
+      setSelectedTicket(ticket); // Select the clicked ticket
+    }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
