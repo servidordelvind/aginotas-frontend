@@ -85,12 +85,12 @@ export function AdminReports() {
       setTickets(data);
     } catch (error) {
       console.error('Erro ao buscar tickets:', error);
-      setTimeout(pollData, 3000); // Retry after 3 seconds
+      setTimeout(pollData, 3000); 
     }
   };
 
   useEffect(() => {
-    pollData(); // Start polling data
+    pollData(); 
     socket.on('new_ticket', (ticket: Ticket) => {
       setTickets((prevTickets) => [...prevTickets, ticket]);
     });
@@ -110,7 +110,7 @@ export function AdminReports() {
       socket.off('new_ticket');
       socket.off('update_ticket');
     };
-  }, [selectedTicket]);
+  }, []);
 
 
   return (
