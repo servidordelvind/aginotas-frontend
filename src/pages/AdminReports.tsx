@@ -101,13 +101,23 @@ export function AdminReports() {
         }
         const data: Ticket[] = await response.json();
         setTickets(data);
+
+        if (selectedTicket) {
+          const updatedTicket = data.find(ticket => ticket._id === selectedTicket._id);
+          if (updatedTicket) {
+            setSelectedTicket(updatedTicket);
+          }
+        }
       } catch (error) {
         console.error('Erro ao buscar tickets:', error);
       }
     };
 
     fetchTickets();
-  }, []);
+
+    const interval = setInterval(fetchTickets, 5000); // Atualiza a cada 5 segundos
+    return () => clearInterval(interval);
+  }, [selectedTicket]);
 
 
   return (

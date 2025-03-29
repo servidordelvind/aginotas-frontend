@@ -81,7 +81,7 @@ export function UserChat() {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         const response = await fetch(`${API_URL}/user/tickets`, {
           headers: {
-            Authorization: `Bearer ${Cookies.get('token')}`,// Certifique-se de que o token está sendo armazenado no localStorage
+            Authorization: `Bearer ${Cookies.get('token')}`,
           },
         });
 
@@ -100,6 +100,10 @@ export function UserChat() {
     };
 
     fetchTickets();
+
+    const interval = setInterval(fetchTickets, 5000); // Atualiza a cada 5 segundos
+
+    return () => clearInterval(interval); // Limpa o intervalo ao desmontar o componente
   }, []);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
