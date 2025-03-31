@@ -26,6 +26,7 @@ interface Customer {
     zipCode: string;
   };
   inscricaoMunicipal?: string;
+  inscricaoEstadual?: string;
 }
 
 interface Schedule {
@@ -86,6 +87,7 @@ export function Customers() {
     email: '',
     phone: '',
     inscricaoMunicipal: '',
+    inscricaoEstadual: '',
     user: {
       _id: '',
       email: '',
@@ -100,7 +102,7 @@ export function Customers() {
       state: '',
       zipCode: ''
     },
-    status: 'inactive',
+    status: 'active',
   });
 
   //Agendando NF
@@ -350,6 +352,7 @@ export function Customers() {
 
     try {
       const nfseData = parseNfseXml(invoice.xml);
+
       const data = {
         IdInvoice: invoice._id,
         NumeroNfse: nfseData.numeroNota,
@@ -360,7 +363,7 @@ export function Customers() {
       }
 
       const response = await api.cancel_invoice(data);
-      toast.success('Nota fiscal cancelada com sucesso!');
+      toast.success(response.message);
     } catch (error) {
       toast.error('Erro ao cancelar nota fiscal');
       console.error('Erro ao cancelar nota fiscal:', error);
@@ -402,7 +405,7 @@ export function Customers() {
     }
 
     const response = await api.replace_invoice(data);
-    toast.success('Nota fiscal substituida com sucesso!');
+    toast.success(response.message);
   } catch (error) {
     toast.error('Erro ao substituir nota fiscal');
     console.error('Erro ao substituir nota fiscal:', error);
@@ -639,6 +642,26 @@ export function Customers() {
                       /* onBlur={handleCnpjBlur} */
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Inscrição Municipal</label>
+                    <input
+                      type="text"
+                      value={newCustomer.inscricaoMunicipal || ''}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, inscricaoMunicipal: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Inscrição Estadual</label>
+                    <input
+                      type="text"
+                      value={newCustomer.inscricaoEstadual || ''}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, inscricaoEstadual: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
                   <div>
