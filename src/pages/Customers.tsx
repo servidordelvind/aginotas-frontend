@@ -1032,8 +1032,8 @@ export function Customers() {
 
       {/* Modal Histórico de Notas Fiscais */}
       {selectedCustomer && activeModal === 'history' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-[60%]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-[70%] max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-900">Histórico de Notas Fiscais</h2>
               <button onClick={closeAllModals} className="text-gray-500 hover:text-gray-700">
@@ -1049,12 +1049,13 @@ export function Customers() {
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Descrição</th>
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Valor</th>
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Data</th>
+              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Ações</th>
             </tr>
           </thead>
           <tbody>
             {invoiceHistory.length === 0 ? (
               <tr>
-                <td colSpan={3} className="py-2 px-4 text-center text-sm text-gray-500">Nenhuma nota fiscal encontrada</td>
+                <td colSpan={5} className="py-2 px-4 text-center text-sm text-gray-500">Nenhuma nota fiscal encontrada</td>
               </tr>
             ) : (
               invoiceHistory.map((invoice) => (
