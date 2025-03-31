@@ -258,18 +258,18 @@ export function Customers() {
       start_date: subscription.startDate,
       end_date: subscription.endDate,
       data: {
-        servico: {
-          Discriminacao: invoice.discriminacao,
-          descricao: invoice.descricao,
-          item_lista: parseInt(invoice.item_lista),
-          cnae: parseInt(invoice.cnae),
-          quantidade: invoice.quantidade,
-          valor_unitario: invoice.valor_unitario,
-          desconto: invoice.desconto
-        }
+      servico: {
+        Discriminacao: invoice.discriminacao,
+        descricao: invoice.descricao,
+        item_lista: parseFloat(invoice.item_lista),
+        cnae: parseFloat(invoice.cnae),
+        quantidade: parseFloat(invoice.quantidade.toString()),
+        valor_unitario: parseFloat(invoice.valor_unitario.toString()),
+        desconto: parseFloat(invoice.desconto.toString())
+      }
       },
-      valor: invoice.quantidade * invoice.valor_unitario,          
-  }  
+      valor:  parseFloat(invoice.quantidade.toString()) * parseFloat(invoice.valor_unitario.toString()),          
+    }  
 
     try {
       if (selectedCustomer.status === 'active') {
@@ -417,7 +417,6 @@ export function Customers() {
 
   const handleEditCustomer = (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       api.update_customer(newCustomer._id, newCustomer);
       toast.success('Cliente atualizado com sucesso!');
@@ -1136,22 +1135,23 @@ export function Customers() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Valor Unitário</label>
                   <input
-                    type="number"
-                    step="0.01"
-                    value={invoice.valor_unitario || 0.00}
-                    onChange={(e) => setInvoice({ ...invoice, valor_unitario: parseFloat(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
+                  type="text"
+                  value={invoice.valor_unitario}
+                  onChange={(e) => {
+                  const sanitizedValue = e.target.value.replace(/,/g, ''); // Remove commas
+                  setInvoice({ ...invoice, valor_unitario: sanitizedValue });
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Desconto</label>
                   <input
-                    type="number"
-                    step="0.01"
-                    value={invoice.desconto || 0.00}
-                    onChange={(e) => setInvoice({ ...invoice, desconto: parseFloat(e.target.value).toString() })}
+                    type="text"
+                    value={invoice.desconto}
+                    onChange={(e) => setInvoice({ ...invoice, desconto: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
