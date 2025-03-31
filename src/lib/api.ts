@@ -396,4 +396,19 @@ export const api = {
 
     return response.json();
   },
+
+  async find_plans(){
+    const response = await fetch(`${API_URL}/pagarme/get-all-subscriptions`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao buscar planos cadastrados no sistema');
+    }
+
+    return response.json();
+  },    
 };
