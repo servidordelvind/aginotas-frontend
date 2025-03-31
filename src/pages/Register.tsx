@@ -63,9 +63,11 @@ export function Register() {
       return;
     }
 
+    //montar o const data = {} aqui e enviar ao backend com todos os dados corretamente incluindo o id da assinatura
+
     try {
-      await api.create_user({ name, cnpj, inscricaoMunicipal:municipalRegistration, email, password, estado:selectedState, cidade: selectedCity });
-      navigate('/login');
+      //await api.create_user({ name, cnpj, inscricaoMunicipal:municipalRegistration, email, password, estado:selectedState, cidade: selectedCity });
+      //navigate('/login');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ocorreu um erro');
     } finally {
