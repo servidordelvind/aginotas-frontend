@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Trash2, XCircle, Calendar, File, Check, Ban, Edit } from 'lucide-react';
+import { Plus, Search, Trash2, XCircle, Calendar, File, Check, Ban, Edit, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { FaEye } from 'react-icons/fa';
 import { api } from '../lib/api.ts';
@@ -545,9 +545,9 @@ export function Customers() {
                         <button
                           onClick={() => handleViewScheduleHistory()}
                           className="text-blue-600 hover:text-blue-700"
-                          title="Cancelar agendamento"
+                          title="Gerenciar agendamentos"
                         >
-                          <Ban className="w-5 h-5" />
+                          <Clock className="w-5 h-5" />
                         </button>
                         )}
 
