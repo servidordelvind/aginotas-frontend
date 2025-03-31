@@ -1161,6 +1161,7 @@ export function Customers() {
                   <input
                   type="text"
                   value={invoice.valor_unitario}
+                  placeholder='ex: 1600.90'
                   onChange={(e) => {
                   const sanitizedValue = e.target.value.replace(/,/g, ''); // Remove commas
                   setInvoice({ ...invoice, valor_unitario: sanitizedValue });
@@ -1175,6 +1176,7 @@ export function Customers() {
                   <input
                     type="text"
                     value={invoice.desconto}
+                    placeholder='0'
                     onChange={(e) => setInvoice({ ...invoice, desconto: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
@@ -1301,6 +1303,7 @@ export function Customers() {
                   <input
                   type="text"
                   value={invoice.valor_unitario}
+                  placeholder='ex: 1600.90'
                   onChange={(e) => {
                   const sanitizedValue = e.target.value.replace(/,/g, ''); // Remove commas
                   setInvoice({ ...invoice, valor_unitario: sanitizedValue });
@@ -1318,6 +1321,7 @@ export function Customers() {
                     onChange={(e) => setInvoice({ ...invoice, desconto: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
+                    placeholder='0'
                   />
                 </div>
 
@@ -1423,24 +1427,27 @@ export function Customers() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Valor Unitário</label>
                   <input
-                    type="number"
-                    step="0.01"
-                    placeholder={(handleinvoice.data.Rps.Servico.ListaItensServico[0].ValorUnitario || 0.00).toString()}
-                    onChange={(e) => setInvoice({ ...invoice, valor_unitario: parseFloat(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    
+                  type="text"
+                  value={invoice.valor_unitario}
+                  placeholder="ex: 1600.90"
+                  onChange={(e) => {
+                    const sanitizedValue = e.target.value.replace(/,/g, ''); // Remove commas
+                    setInvoice({ ...invoice, valor_unitario: sanitizedValue });
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Desconto</label>
                   <input
-                    type="number"
-                    step="0.01"
-                    placeholder={(handleinvoice.data.Rps.Servico.ListaItensServico[0].ValorDesconto || 0.00).toString()}
-                    onChange={(e) => setInvoice({ ...invoice, desconto: parseFloat(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    
+                  type="text"
+                  value={invoice.desconto}
+                  onChange={(e) => setInvoice({ ...invoice, desconto: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                  placeholder="0"
                   />
                 </div>
 
