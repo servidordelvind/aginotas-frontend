@@ -1078,13 +1078,15 @@ export function Customers() {
               >
                 <File className="w-4 h-4" />
               </button>
-              <button
-                onClick={() => handleCancelInvoice(invoice)}
-                className="text-red-600 hover:text-red-800 ml-2 p-1"
-                title="Cancelar Nota Fiscal"
-              >
-                <XCircle className="w-4 h-4" />
-              </button>
+                {(invoice.status === 'emitida' || invoice.status === 'substituida') && (
+                  <button
+                  onClick={() => handleCancelInvoice(invoice)}
+                  className="text-red-600 hover:text-red-800 p-1"
+                  title="Cancelar Nota Fiscal"
+                  >
+                  <XCircle className="w-4 h-4" />
+                  </button>
+                )}
             </td>
                 </tr>
               ))
