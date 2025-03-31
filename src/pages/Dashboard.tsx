@@ -108,8 +108,11 @@ export function Dashboard() {
   
   function somarValoresNotas(notas: Nota[]): number {
     return notas.reduce((acumulador, nota) => {
-      const valor = Number(nota.valor) || 0;
-      return acumulador + valor;
+      if (nota.status.toLowerCase() === 'emitida' || nota.status.toLowerCase() === 'substituida') {
+        const valor = Number(nota.valor) || 0;
+        return acumulador + valor;
+      }
+      return acumulador;
     }, 0);
   }
 
@@ -172,7 +175,9 @@ export function Dashboard() {
             </div>
             <div>
               <p className="text-sm text-gray-600">Previsão Mensal</p>
-              <p className="text-2xl font-bold text-gray-900">R$ {valorAreceber}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                R$ {valorAreceber.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </p>
             </div>
           </div>
         </div>
