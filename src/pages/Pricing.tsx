@@ -16,7 +16,21 @@ const features = [
 
 export function Pricing() {
 
-  const [plans, setPlans] = useState([]);
+  interface Plan {
+    plan: {
+      name: string;
+      id: string;
+      interval: string;
+      trial_period_days: number;
+    };
+    items: {
+      pricing_scheme: {
+        price: number;
+      };
+    }[];
+  }
+  
+  const [plans, setPlans] = useState<Plan | null>(null);
 
 useEffect(() => {
   async function loadData() {
@@ -32,6 +46,7 @@ useEffect(() => {
 
 //console.log('Items:', plans.items[0].pricing_scheme.price);
 //console.log('Plans:', plans.plan.trial_period_days);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
@@ -55,19 +70,19 @@ useEffect(() => {
 
         <div className="max-w-lg mx-auto bg-gray-800 rounded-2xl overflow-hidden">
           <div className="p-8 text-center border-b border-gray-700">
-            <h2 className="text-2xl font-bold text-white mb-2">{plans.plan.name || ''}</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">{plans?.plan.name || ''}</h2>
             <div className="flex justify-center items-baseline gap-2 mb-4">
-              <span className="text-4xl font-bold text-white">R${plans.items[0].pricing_scheme.price || ''}</span>
-              <span className="text-gray-400">/{plans.plan.interval || ''}</span>
+              <span className="text-4xl font-bold text-white">R${plans?.items[0].pricing_scheme.price || ''}</span>
+              <span className="text-gray-400">/{plans?.plan.interval || ''}</span>
             </div>
             <Link 
               to="/register" 
               className="block w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
               onClick={() => {
-              document.cookie = `idPlan=${plans.plan.id || ''}; path=/;`;
+              document.cookie = `idPlan=${plans?.plan.id || ''}; path=/;`;
               }}
             >
-              Começar Teste Grátis de {plans.plan.trial_period_days || ''} Dias
+              Começar Teste Grátis de {plans?.plan.trial_period_days || ''} Dias
             </Link>
           </div>
 
