@@ -722,19 +722,6 @@ export function Customers() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Nome da Empresa
-                    </label>
-                    <input
-                      type="text"
-                      value={newCustomer.name}
-                      onChange={(e) => setNewCustomer({ ...newCustomer, name: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       CNPJ {loadingCnpj && <Loader2 className="inline w-4 h-4 ml-2 animate-spin" />}
                     </label>
                     <input
@@ -748,6 +735,21 @@ export function Customers() {
                     />
                     {cnpjError && <p className="mt-1 text-sm text-red-600">{cnpjError}</p>}
                   </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Nome da Empresa
+                    </label>
+                    <input
+                      type="text"
+                      value={newCustomer.name}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, name: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+                  
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Inscrição Municipal</label>
