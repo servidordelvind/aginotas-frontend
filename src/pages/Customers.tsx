@@ -418,10 +418,10 @@ export function Customers() {
   }
 
 
-  const handleEditCustomer = (e: React.FormEvent) => {
+  const handleEditCustomer = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      api.update_customer(newCustomer._id, newCustomer);
+      await api.update_customer(newCustomer._id, newCustomer);
       toast.success('Cliente atualizado com sucesso!');
       location.reload();
     } catch (error) {
