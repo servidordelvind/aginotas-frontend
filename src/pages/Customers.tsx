@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-<<<<<<< HEAD
-import { Plus, Search, Trash2, XCircle, Calendar, File, Check, Ban, Loader2 } from 'lucide-react';
-=======
-import { Plus, Search, Trash2, XCircle, Calendar, File, Check, Ban, Edit, Clock } from 'lucide-react';
->>>>>>> bb9d9af0cf668e07cd796efaf0722d96bb4580e0
+import { Plus, Search, Trash2, XCircle, Calendar, File, Check, Ban, Edit, Clock, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { FaEye } from 'react-icons/fa';
 import { api } from '../lib/api.ts';
@@ -50,14 +46,14 @@ export function Customers() {
   const [isGerating, setIsGerating] = useState(false);
   const [invoiceHistory, setInvoiceHistory] = useState<any[]>([]);
   const [activeModal, setActiveModal] = useState<'none' | 'edit' | 'invoice' | 'replace' | 'subscription' | 'scheduling' | 'history'>('none');
-  
+
   const [handleinvoice, setHandleInvoice] = useState({
     _id: '',
     customer: '',
     numeroLote: 0,
     identificacaoRpsnumero: 0,
     xml: '',
-    data:{
+    data: {
       Rps: {
         Servico: {
           Discriminacao: '',
@@ -67,7 +63,7 @@ export function Customers() {
           quantidade: 0,
           valor_unitario: 0,
           desconto: 0,
-          ListaItensServico:[
+          ListaItensServico: [
             {
               Discriminacao: '',
               Descricao: '',
@@ -113,7 +109,7 @@ export function Customers() {
   const [loadingCnpj, setLoadingCnpj] = useState(false);
   const [cnpjError, setCnpjError] = useState('');
 
-  
+
   // Funções para CNPJ
   const validateCnpj = (cnpj: string): boolean => {
     const cleanedCnpj = cnpj.replace(/\D/g, '');
@@ -133,7 +129,7 @@ export function Customers() {
     return true;
   };
 
-  
+
   const formatCnpj = (value: string) => {
     const cleaned = value.replace(/\D/g, '');
 
@@ -252,7 +248,7 @@ export function Customers() {
     try {
       const response = await api.find_all_invoices_customer(customer._id);
       setInvoiceHistory(response || []);
-      setActiveModal('history'); 
+      setActiveModal('history');
       setSelectedCustomer(customer);
     } catch (error) {
       toast.error('Erro ao buscar notas fiscais do cliente');
@@ -353,9 +349,9 @@ export function Customers() {
     e.preventDefault();
 
     if (!selectedCustomer) return;
-    
-    if(selectedCustomer!.user.senhaelotech === 'undefined') return;
-    if(selectedCustomer!.inscricaoMunicipal === '') {toast.error('Inscrição Municipal inválida!'); return;};
+
+    if (selectedCustomer!.user.senhaelotech === 'undefined') return;
+    if (selectedCustomer!.inscricaoMunicipal === '') { toast.error('Inscrição Municipal inválida!'); return; };
 
     const data = {
       customer_id: selectedCustomer._id,
@@ -363,18 +359,18 @@ export function Customers() {
       start_date: subscription.startDate,
       end_date: subscription.endDate,
       data: {
-      servico: {
-        Discriminacao: invoice.discriminacao,
-        descricao: invoice.descricao,
-        item_lista: parseFloat(invoice.item_lista),
-        cnae: parseFloat(invoice.cnae),
-        quantidade: parseFloat(invoice.quantidade.toString()),
-        valor_unitario: parseFloat(invoice.valor_unitario.toString()),
-        desconto: parseFloat(invoice.desconto.toString())
-      }
+        servico: {
+          Discriminacao: invoice.discriminacao,
+          descricao: invoice.descricao,
+          item_lista: parseFloat(invoice.item_lista),
+          cnae: parseFloat(invoice.cnae),
+          quantidade: parseFloat(invoice.quantidade.toString()),
+          valor_unitario: parseFloat(invoice.valor_unitario.toString()),
+          desconto: parseFloat(invoice.desconto.toString())
+        }
       },
-      valor:  parseFloat(invoice.quantidade.toString()) * parseFloat(invoice.valor_unitario.toString()),          
-    }  
+      valor: parseFloat(invoice.quantidade.toString()) * parseFloat(invoice.valor_unitario.toString()),
+    }
 
     try {
       if (selectedCustomer.status === 'active') {
@@ -396,12 +392,12 @@ export function Customers() {
     e.preventDefault();
     if (!selectedCustomer) return;
 
-    if(selectedCustomer!.user.senhaelotech === 'undefined') return;
-    if(selectedCustomer!.inscricaoMunicipal === '') {toast.error('Inscrição Municipal inválida!'); return;};
+    if (selectedCustomer!.user.senhaelotech === 'undefined') return;
+    if (selectedCustomer!.inscricaoMunicipal === '') { toast.error('Inscrição Municipal inválida!'); return; };
 
-      const data = {
-        customer_id: selectedCustomer._id,
-        servico: {
+    const data = {
+      customer_id: selectedCustomer._id,
+      servico: {
         Discriminacao: invoice.discriminacao,
         descricao: invoice.descricao,
         item_lista: parseFloat(invoice.item_lista),
@@ -409,20 +405,20 @@ export function Customers() {
         quantidade: parseFloat(invoice.quantidade.toString()),
         valor_unitario: parseFloat(invoice.valor_unitario.toString()),
         desconto: parseFloat(invoice.desconto.toString())
-        }        
-      }   
+      }
+    }
 
-  try {
-    if (selectedCustomer.status === 'active' ) {
-          setIsGerating(true);
-          const response = await api.create_invoice(data);
-          toast.success(response.message);
-          setActiveModal('none');
-          setIsGerating(false);
-        } else {
-          toast.success('O contrato está inativo!');
-        }
-  } catch (error: any) {
+    try {
+      if (selectedCustomer.status === 'active') {
+        setIsGerating(true);
+        const response = await api.create_invoice(data);
+        toast.success(response.message);
+        setActiveModal('none');
+        setIsGerating(false);
+      } else {
+        toast.success('O contrato está inativo!');
+      }
+    } catch (error: any) {
       setIsGerating(false);
     }
   };
@@ -430,23 +426,23 @@ export function Customers() {
   function parseNfseXml(xmlString: string) {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlString, "text/xml");
-  
+
     const nsResolver = (prefix: string | null) => (prefix === "ns2" ? "http://shad.elotech.com.br/schemas/iss/nfse_v2_03.xsd" : null);
-  
+
     const getValue = (xpath: string) => {
-        const result = xmlDoc.evaluate(xpath, xmlDoc, nsResolver, XPathResult.STRING_TYPE, null);
-        return result.stringValue || null;
+      const result = xmlDoc.evaluate(xpath, xmlDoc, nsResolver, XPathResult.STRING_TYPE, null);
+      return result.stringValue || null;
     };
-  
+
     return {
-        numeroNota: getValue("//ns2:InfNfse/ns2:Numero"),
-        cpfCnpj: getValue("//ns2:PrestadorServico/ns2:IdentificacaoPrestador/ns2:CpfCnpj/ns2:Cnpj"),
-        inscricaoMunicipal: getValue("//ns2:PrestadorServico/ns2:IdentificacaoPrestador/ns2:InscricaoMunicipal"),
-        codigoMunicipio: getValue("//ns2:PrestadorServico/ns2:Endereco/ns2:CodigoMunicipio"),
-        chaveAcesso: getValue("//ns2:InfNfse/ns2:ChaveAcesso"),
-        codigoVerificacao: getValue("//ns2:InfNfse/ns2:CodigoVerificacao"),
+      numeroNota: getValue("//ns2:InfNfse/ns2:Numero"),
+      cpfCnpj: getValue("//ns2:PrestadorServico/ns2:IdentificacaoPrestador/ns2:CpfCnpj/ns2:Cnpj"),
+      inscricaoMunicipal: getValue("//ns2:PrestadorServico/ns2:IdentificacaoPrestador/ns2:InscricaoMunicipal"),
+      codigoMunicipio: getValue("//ns2:PrestadorServico/ns2:Endereco/ns2:CodigoMunicipio"),
+      chaveAcesso: getValue("//ns2:InfNfse/ns2:ChaveAcesso"),
+      codigoVerificacao: getValue("//ns2:InfNfse/ns2:CodigoVerificacao"),
     };
-}
+  }
 
   const handleCancelInvoice = async (invoice: any) => {
 
@@ -462,8 +458,8 @@ export function Customers() {
         NumeroNfse: nfseData.numeroNota,
         CpfCnpjNfse: nfseData.cpfCnpj,
         InscricaoMunicipalNfse: nfseData.inscricaoMunicipal,
-        CodigoMunicipioNfse: nfseData.codigoMunicipio, 
-        ChaveAcesso: nfseData.chaveAcesso, 
+        CodigoMunicipioNfse: nfseData.codigoMunicipio,
+        ChaveAcesso: nfseData.chaveAcesso,
       }
 
       const response = await api.cancel_invoice(data);
@@ -475,7 +471,7 @@ export function Customers() {
   }
 
   const handleModalReplaceInvoice = async (invoice: any) => {
-    setActiveModal('replace'); 
+    setActiveModal('replace');
     setHandleInvoice(invoice);
   }
 
@@ -487,37 +483,37 @@ export function Customers() {
     }
 
     try {
-    const nfseData = await parseNfseXml(handleinvoice.xml);
+      const nfseData = await parseNfseXml(handleinvoice.xml);
 
-    const data = {
-    IdInvoice: handleinvoice._id,
-    customer_id: handleinvoice.customer, 
-    servico:{
-      Discriminacao: invoice.discriminacao,
-      descricao: invoice.descricao,
-      item_lista: invoice.item_lista,
-      cnae: invoice.cnae,
-      quantidade: invoice.quantidade,
-      valor_unitario: invoice.valor_unitario,
-      desconto: invoice.desconto
-    },
-    numeroNfse: nfseData.numeroNota,
-    CodigoMunicipio: nfseData.codigoMunicipio,
-    ChaveAcesso: nfseData.chaveAcesso,
-    NumeroLote: handleinvoice.numeroLote,
-    IdentificacaoRpsnumero: handleinvoice.identificacaoRpsnumero,
+      const data = {
+        IdInvoice: handleinvoice._id,
+        customer_id: handleinvoice.customer,
+        servico: {
+          Discriminacao: invoice.discriminacao,
+          descricao: invoice.descricao,
+          item_lista: invoice.item_lista,
+          cnae: invoice.cnae,
+          quantidade: invoice.quantidade,
+          valor_unitario: invoice.valor_unitario,
+          desconto: invoice.desconto
+        },
+        numeroNfse: nfseData.numeroNota,
+        CodigoMunicipio: nfseData.codigoMunicipio,
+        ChaveAcesso: nfseData.chaveAcesso,
+        NumeroLote: handleinvoice.numeroLote,
+        IdentificacaoRpsnumero: handleinvoice.identificacaoRpsnumero,
+      }
+
+      const response = await api.replace_invoice(data);
+      toast.success(response.message);
+    } catch (error) {
+      toast.error('Erro ao substituir nota fiscal');
+      console.error('Erro ao substituir nota fiscal:', error);
     }
-
-    const response = await api.replace_invoice(data);
-    toast.success(response.message);
-  } catch (error) {
-    toast.error('Erro ao substituir nota fiscal');
-    console.error('Erro ao substituir nota fiscal:', error);
-  }
   }
 
   const handleViewModalEditCustomer = async (customer: Customer) => {
-    setActiveModal('edit'); 
+    setActiveModal('edit');
     setNewCustomer(customer);
   }
 
@@ -644,8 +640,8 @@ export function Customers() {
                       </button>
 
 
-                    
-                        {schedulings.some(schedule => schedule.customer_id === customer._id) && (
+
+                      {schedulings.some(schedule => schedule.customer_id === customer._id) && (
                         <button
                           onClick={() => handleViewScheduleHistory()}
                           className="text-blue-600 hover:text-blue-700"
@@ -653,7 +649,7 @@ export function Customers() {
                         >
                           <Clock className="w-5 h-5" />
                         </button>
-                        )}
+                      )}
 
 
                       <button
@@ -692,7 +688,7 @@ export function Customers() {
                         <Edit className="w-5 h-5" />
                       </button>
 
-                        {!invoiceHistory.some(invoice => invoice.customer_id === customer._id) && (
+                      {!invoiceHistory.some(invoice => invoice.customer_id === customer._id) && (
                         <button
                           onClick={() => handleDeleteCustomer(customer._id)}
                           className="text-red-600 hover:text-red-700"
@@ -700,7 +696,7 @@ export function Customers() {
                         >
                           <Trash2 className="w-5 h-5" />
                         </button>
-                        )}
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -775,7 +771,7 @@ export function Customers() {
                     />
                   </div>
 
-{/*                   <div>
+                  {/*                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Inscrição Estadual</label>
                     <input
                       type="text"
@@ -973,7 +969,7 @@ export function Customers() {
                       placeholder={newCustomer.name}
                       onChange={(e) => setNewCustomer({ ...newCustomer, name: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      
+
                     />
                   </div>
 
@@ -984,7 +980,7 @@ export function Customers() {
                       placeholder={newCustomer.cnpj}
                       onChange={(e) => setNewCustomer({ ...newCustomer, cnpj: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      
+
                     />
                   </div>
                   <div>
@@ -994,7 +990,7 @@ export function Customers() {
                       placeholder={newCustomer.inscricaoMunicipal}
                       onChange={(e) => setNewCustomer({ ...newCustomer, inscricaoMunicipal: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      
+
                     />
                   </div>
                   <div>
@@ -1004,7 +1000,7 @@ export function Customers() {
                       placeholder={newCustomer.email}
                       onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      
+
                     />
                   </div>
 
@@ -1015,7 +1011,7 @@ export function Customers() {
                       placeholder={newCustomer.phone}
                       onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      
+
                     />
                   </div>
                 </div>
@@ -1035,7 +1031,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                     
+
                     />
                   </div>
 
@@ -1051,7 +1047,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      
+
                     />
                   </div>
 
@@ -1067,7 +1063,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      
+
                     />
                   </div>
 
@@ -1083,7 +1079,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      
+
                     />
                   </div>
 
@@ -1099,7 +1095,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      
+
                     />
                   </div>
 
@@ -1115,7 +1111,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      
+
                     />
                   </div>
 
@@ -1133,7 +1129,7 @@ export function Customers() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      
+
                     />
                   </div>
                 </div>
@@ -1167,61 +1163,61 @@ export function Customers() {
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-900">Histórico de Notas Fiscais</h2>
               <button onClick={closeAllModals} className="text-gray-500 hover:text-gray-700">
-          <XCircle className="w-6 h-6" />
+                <XCircle className="w-6 h-6" />
               </button>
             </div>
             <div className="mt-4">
               <h3 className="text-lg font-semibold text-gray-800">{selectedCustomer.name}</h3>
               <table className="mt-4 w-full table-auto">
-          <thead>
-            <tr className="border-b">
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Status</th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Descrição</th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Valor</th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Data</th>
-              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {invoiceHistory.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="py-2 px-4 text-center text-sm text-gray-500">Nenhuma nota fiscal encontrada</td>
-              </tr>
-            ) : (
-              invoiceHistory.map((invoice) => (
-                <tr key={invoice.id} className="border-b">
-            <td className="py-2 px-4 text-sm text-gray-700">{invoice.status || ''}</td>
-            <td className="py-2 px-4 text-sm text-gray-700">{invoice.data.Rps.Servico.Discriminacao || ''}</td>
-            <td className="py-2 px-4 text-sm text-gray-700">{invoice.valor * invoice.data.Rps.Servico.ListaItensServico[0].Quantidade}</td>
-            <td className="py-2 px-4 text-sm text-gray-700">
-              {new Date(invoice.date).toLocaleDateString('pt-BR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-              }) || ''}
-            </td>
-            <td className="py-3 px-4 text-sm text-gray-700">
-              <button
-                onClick={() => handleModalReplaceInvoice(invoice)}
-                className="text-blue-600 hover:text-blue-800 p-1"
-                title="Substituir Nota Fiscal"
-              >
-                <File className="w-4 h-4" />
-              </button>
-                {(invoice.status === 'emitida' || invoice.status === 'substituida') && (
-                  <button
-                  onClick={() => handleCancelInvoice(invoice)}
-                  className="text-red-600 hover:text-red-800 p-1"
-                  title="Cancelar Nota Fiscal"
-                  >
-                  <XCircle className="w-4 h-4" />
-                  </button>
-                )}
-            </td>
-                </tr>
-              ))
-            )}
-          </tbody>
+                <thead>
+                  <tr className="border-b">
+                    <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Status</th>
+                    <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Descrição</th>
+                    <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Valor</th>
+                    <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Data</th>
+                    <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {invoiceHistory.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-2 px-4 text-center text-sm text-gray-500">Nenhuma nota fiscal encontrada</td>
+                    </tr>
+                  ) : (
+                    invoiceHistory.map((invoice) => (
+                      <tr key={invoice.id} className="border-b">
+                        <td className="py-2 px-4 text-sm text-gray-700">{invoice.status || ''}</td>
+                        <td className="py-2 px-4 text-sm text-gray-700">{invoice.data.Rps.Servico.Discriminacao || ''}</td>
+                        <td className="py-2 px-4 text-sm text-gray-700">{invoice.valor * invoice.data.Rps.Servico.ListaItensServico[0].Quantidade}</td>
+                        <td className="py-2 px-4 text-sm text-gray-700">
+                          {new Date(invoice.date).toLocaleDateString('pt-BR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                          }) || ''}
+                        </td>
+                        <td className="py-3 px-4 text-sm text-gray-700">
+                          <button
+                            onClick={() => handleModalReplaceInvoice(invoice)}
+                            className="text-blue-600 hover:text-blue-800 p-1"
+                            title="Substituir Nota Fiscal"
+                          >
+                            <File className="w-4 h-4" />
+                          </button>
+                          {(invoice.status === 'emitida' || invoice.status === 'substituida') && (
+                            <button
+                              onClick={() => handleCancelInvoice(invoice)}
+                              className="text-red-600 hover:text-red-800 p-1"
+                              title="Cancelar Nota Fiscal"
+                            >
+                              <XCircle className="w-4 h-4" />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
               </table>
             </div>
           </div>
@@ -1250,12 +1246,12 @@ export function Customers() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">CNAE</label>
                   <input
-                  type="text"
-                  value={invoice.cnae || ''}
-                  onChange={(e) => setInvoice({ ...invoice, cnae: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
+                    type="text"
+                    value={invoice.cnae || ''}
+                    onChange={(e) => setInvoice({ ...invoice, cnae: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
                 </div>
 
                 <div>
@@ -1291,15 +1287,15 @@ export function Customers() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Valor Unitário</label>
                   <input
-                  type="text"
-                  value={invoice.valor_unitario}
-                  placeholder='ex: 1600.90'
-                  onChange={(e) => {
-                  const sanitizedValue = e.target.value.replace(/,/g, ''); // Remove commas
-                  setInvoice({ ...invoice, valor_unitario: sanitizedValue });
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
+                    type="text"
+                    value={invoice.valor_unitario}
+                    placeholder='ex: 1600.90'
+                    onChange={(e) => {
+                      const sanitizedValue = e.target.value.replace(/,/g, ''); // Remove commas
+                      setInvoice({ ...invoice, valor_unitario: sanitizedValue });
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
                   />
                 </div>
 
@@ -1309,7 +1305,7 @@ export function Customers() {
                     type="text"
                     value={invoice.desconto}
                     placeholder='0'
-                    onChange={(e) => setInvoice({ ...invoice, desconto: e.target.value})}
+                    onChange={(e) => setInvoice({ ...invoice, desconto: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
@@ -1392,28 +1388,28 @@ export function Customers() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">CNAE</label>
                   <input
-                  type="text"
-                  value={invoice.cnae || ''}
-                  onChange={(e) => setInvoice({ ...invoice, cnae: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
+                    type="text"
+                    value={invoice.cnae || ''}
+                    onChange={(e) => setInvoice({ ...invoice, cnae: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Item da Lista de Serviço</label>
                   <input
-                  type="text"
-                  value={invoice.item_lista}
-                  onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
+                    type="text"
+                    value={invoice.item_lista}
+                    onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
                   <textarea
-                    value={invoice.descricao} 
+                    value={invoice.descricao}
                     onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
@@ -1433,15 +1429,15 @@ export function Customers() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Valor Unitário</label>
                   <input
-                  type="text"
-                  value={invoice.valor_unitario}
-                  placeholder='ex: 1600.90'
-                  onChange={(e) => {
-                  const sanitizedValue = e.target.value.replace(/,/g, ''); // Remove commas
-                  setInvoice({ ...invoice, valor_unitario: sanitizedValue });
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
+                    type="text"
+                    value={invoice.valor_unitario}
+                    placeholder='ex: 1600.90'
+                    onChange={(e) => {
+                      const sanitizedValue = e.target.value.replace(/,/g, ''); // Remove commas
+                      setInvoice({ ...invoice, valor_unitario: sanitizedValue });
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
                   />
                 </div>
 
@@ -1450,7 +1446,7 @@ export function Customers() {
                   <input
                     type="text"
                     value={invoice.desconto}
-                    onChange={(e) => setInvoice({ ...invoice, desconto: e.target.value})}
+                    onChange={(e) => setInvoice({ ...invoice, desconto: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                     placeholder='0'
@@ -1518,23 +1514,23 @@ export function Customers() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">CNAE</label>
                   <input
-                  type="text"
-                  placeholder={handleinvoice.data.Rps.Servico.ListaItensServico[0].CodigoCnae || ''}
-                  onChange={(e) => setInvoice({ ...invoice, cnae: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    type="text"
+                    placeholder={handleinvoice.data.Rps.Servico.ListaItensServico[0].CodigoCnae || ''}
+                    onChange={(e) => setInvoice({ ...invoice, cnae: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 
-                />
+                  />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Item da Lista de Serviço</label>
                   <input
-                  type="text"
-                  placeholder={handleinvoice.data.Rps.Servico.ListaItensServico[0].ItemListaServico}
-                  onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  
-                />
+                    type="text"
+                    placeholder={handleinvoice.data.Rps.Servico.ListaItensServico[0].ItemListaServico}
+                    onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
@@ -1542,7 +1538,7 @@ export function Customers() {
                     placeholder={handleinvoice.data.Rps.Servico.ListaItensServico[0].Descricao || ''}
                     onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    
+
                   />
                 </div>
                 <div>
@@ -1552,34 +1548,34 @@ export function Customers() {
                     placeholder={(handleinvoice.data.Rps.Servico.ListaItensServico[0].Quantidade).toString()}
                     onChange={(e) => setInvoice({ ...invoice, quantidade: parseInt(e.target.value) || 1 })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    
+
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Valor Unitário</label>
                   <input
-                  type="text"
-                  value={invoice.valor_unitario}
-                  placeholder="ex: 1600.90"
-                  onChange={(e) => {
-                    const sanitizedValue = e.target.value.replace(/,/g, ''); // Remove commas
-                    setInvoice({ ...invoice, valor_unitario: sanitizedValue });
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
+                    type="text"
+                    value={invoice.valor_unitario}
+                    placeholder="ex: 1600.90"
+                    onChange={(e) => {
+                      const sanitizedValue = e.target.value.replace(/,/g, ''); // Remove commas
+                      setInvoice({ ...invoice, valor_unitario: sanitizedValue });
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Desconto</label>
                   <input
-                  type="text"
-                  value={invoice.desconto}
-                  onChange={(e) => setInvoice({ ...invoice, desconto: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                  placeholder="0"
+                    type="text"
+                    value={invoice.desconto}
+                    onChange={(e) => setInvoice({ ...invoice, desconto: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                    placeholder="0"
                   />
                 </div>
 
@@ -1590,7 +1586,7 @@ export function Customers() {
                     value={invoice.issueDate}
                     onChange={(e) => setInvoice({ ...invoice, issueDate: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    
+
                   />
                 </div>
 
@@ -1601,7 +1597,7 @@ export function Customers() {
                     value={invoice.dueDate}
                     onChange={(e) => setInvoice({ ...invoice, dueDate: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    
+
                   />
                 </div>
               </form>

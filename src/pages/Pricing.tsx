@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle2, Receipt } from 'lucide-react';
-<<<<<<< HEAD
 import nomelogodelvind from '../public/logonomelogo.png';
-=======
+
 import { api } from '../lib/api';
->>>>>>> bb9d9af0cf668e07cd796efaf0722d96bb4580e0
+
 
 const features = [
   'Notas Fiscais Ilimitadas',

@@ -175,7 +175,6 @@ useEffect(() => {
     //montar o const data = {} aqui e enviar ao backend com todos os dados corretamente incluindo o id da assinatura
 
     try {
-<<<<<<< HEAD
       // await api.create_user({ 
       //   name, 
       //   cnpj: cnpj.replace(/\D/g, ''),
@@ -197,10 +196,10 @@ useEffect(() => {
         selectedCity,
         address
       });
-=======
+
       //await api.create_user({ name, cnpj, inscricaoMunicipal:municipalRegistration, email, password, estado:selectedState, cidade: selectedCity });
       //navigate('/login');
->>>>>>> bb9d9af0cf668e07cd796efaf0722d96bb4580e0
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ocorreu um erro');
     } finally {
