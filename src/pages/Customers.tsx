@@ -253,6 +253,7 @@ export function Customers() {
     if (!selectedCustomer) return;
     
     if(selectedCustomer!.user.senhaelotech === 'undefined') return;
+    if(selectedCustomer!.inscricaoMunicipal === '') {toast.error('Inscrição Municipal inválida!'); return;};
 
     const data = {
       customer_id: selectedCustomer._id,
@@ -294,6 +295,7 @@ export function Customers() {
     if (!selectedCustomer) return;
 
     if(selectedCustomer!.user.senhaelotech === 'undefined') return;
+    if(selectedCustomer!.inscricaoMunicipal === '') {toast.error('Inscrição Municipal inválida!'); return;};
 
       const data = {
         customer_id: selectedCustomer._id,
@@ -309,7 +311,7 @@ export function Customers() {
       }   
 
   try {
-    if (selectedCustomer.status === 'active') {
+    if (selectedCustomer.status === 'active' ) {
           setIsGerating(true);
           const response = await api.create_invoice(data);
           toast.success(response.message);
@@ -863,6 +865,16 @@ export function Customers() {
                       type="text"
                       placeholder={newCustomer.cnpj}
                       onChange={(e) => setNewCustomer({ ...newCustomer, cnpj: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Inscrição Municipal</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.inscricaoMunicipal}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, inscricaoMunicipal: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       
                     />
