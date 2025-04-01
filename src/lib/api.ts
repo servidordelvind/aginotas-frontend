@@ -85,6 +85,22 @@ export const api = {
     return response.json();
   },
 
+  async find_all_users(data: any) {
+    const response = await fetch(`${API_URL}/user/findall`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao buscar usuários');
+    }
+
+    return response.json();
+  },
+
   async recover_send_email_user(data: any) {
     const response = await fetch(`${API_URL}/user/recover/email`, {
       method: 'POST',
@@ -253,6 +269,22 @@ export const api = {
 
   async find_invoices(){
     const response = await fetch(`${API_URL}/invoice/findinvoices`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Cookies.get('token')}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao buscar notas fiscais');
+    }
+
+    return response.json();
+  },
+
+  async find_all_invoices(){
+    const response = await fetch(`${API_URL}/invoice/find`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
