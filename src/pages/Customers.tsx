@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Trash2, XCircle, Calendar, File, Check, Ban } from 'lucide-react';
+import { Plus, Search, Trash2, XCircle, Calendar, File, Check, Ban, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { FaEye } from 'react-icons/fa';
 import { api } from '../lib/api.ts';
@@ -99,6 +99,104 @@ export function Customers() {
       zipCode: ''
     }
   });
+
+  // Estados para CNPJ
+  const [loadingCnpj, setLoadingCnpj] = useState(false);
+  const [cnpjError, setCnpjError] = useState('');
+
+  
+  // Funções para CNPJ
+  const validateCnpj = (cnpj: string): boolean => {
+    const cleanedCnpj = cnpj.replace(/\D/g, '');
+
+    if (cleanedCnpj.length !== 14) {
+      setCnpjError('CNPJ deve ter 14 dígitos');
+      return false;
+    }
+
+    const cnpjRegex = /^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$/;
+    if (cnpj.length > 0 && !cnpjRegex.test(cnpj) && cnpj.length >= 14) {
+      setCnpjError('Formato inválido. Use 00.000.000/0000-00');
+      return false;
+    }
+
+    setCnpjError('');
+    return true;
+  };
+
+  
+  const formatCnpj = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+
+    let formatted = cleaned;
+    if (cleaned.length > 2) formatted = `${cleaned.slice(0, 2)}.${cleaned.slice(2)}`;
+    if (cleaned.length > 5) formatted = `${formatted.slice(0, 6)}.${formatted.slice(6)}`;
+    if (cleaned.length > 8) formatted = `${formatted.slice(0, 10)}/${formatted.slice(10)}`;
+    if (cleaned.length > 12) formatted = `${formatted.slice(0, 15)}-${formatted.slice(15, 17)}`;
+
+    return formatted.slice(0, 18);
+  };
+
+  const fetchCompanyData = async () => {
+    const cleanedCnpj = newCustomer.cnpj.replace(/\D/g, '');
+
+    if (!validateCnpj(newCustomer.cnpj) || cleanedCnpj.length !== 14) return;
+
+    setLoadingCnpj(true);
+    setCnpjError('');
+
+    try {
+      const response = await fetch(`https://publica.cnpj.ws/cnpj/${cleanedCnpj}`);
+
+      if (!response.ok) throw new Error('Erro na consulta');
+
+      const data = await response.json();
+
+      if (data.status === 'ERROR' || data.error) {
+        throw new Error(data.message || 'CNPJ não encontrado');
+      }
+
+      setNewCustomer({
+        ...newCustomer,
+        name: data.razao_social || '',
+        inscricaoMunicipal: data.inscricao_municipal || '',
+        email: data.estabelecimento.email || '',
+        address: {
+          ...newCustomer.address,
+          street: `${data.estabelecimento.tipo_logradouro || ''} ${data.estabelecimento.logradouro || ''}`.trim(),
+          city: data.estabelecimento.cidade.nome || '',
+          state: data.estabelecimento.estado.sigla || '',
+        },
+      });
+    } catch (err) {
+      console.error('Erro na consulta:', err);
+      setCnpjError('Dados não encontrados. Preencha manualmente');
+      setNewCustomer({
+        ...newCustomer,
+        name: '',
+        inscricaoMunicipal: '',
+        email: '',
+        address: {
+          ...newCustomer.address,
+          street: '',
+          city: '',
+          state: '',
+        },
+      });
+    } finally {
+      setLoadingCnpj(false);
+    }
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (newCustomer.cnpj.replace(/\D/g, '').length === 14) {
+        fetchCompanyData();
+      }
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [newCustomer.cnpj]);
 
   //Agendando NF
   const [subscription, setSubscription] = useState({
@@ -594,16 +692,32 @@ export function Customers() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      CNPJ {loadingCnpj && <Loader2 className="inline w-4 h-4 ml-2 animate-spin" />}
+                    </label>
                     <input
                       type="text"
                       value={newCustomer.cnpj}
-                      onChange={(e) => setNewCustomer({ ...newCustomer, cnpj: e.target.value })}
-                      /* onBlur={handleCnpjBlur} */
+                      onChange={(e) => setNewCustomer({ ...newCustomer, cnpj: formatCnpj(e.target.value) })}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${cnpjError ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                      required
+                      placeholder="00.000.000/0000-00"
+                    />
+                    {cnpjError && <p className="mt-1 text-sm text-red-600">{cnpjError}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Inscrição Municipal</label>
+                    <input
+                      type="text"
+                      value={newCustomer.inscricaoMunicipal || ''}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, inscricaoMunicipal: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
                   </div>
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
                     <input

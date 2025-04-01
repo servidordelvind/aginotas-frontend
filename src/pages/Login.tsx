@@ -4,6 +4,7 @@ import { Receipt } from 'lucide-react';
 import { toast } from 'sonner';
 import { api } from '../lib/api.ts';
 import Cookies from "js-cookie";
+import nomelogodelvind from '../public/nomelogodelvind.png';
 
 export function Login() {
   const navigate = useNavigate();
@@ -35,6 +36,14 @@ export function Login() {
       <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
         <div className="flex flex-col items-center mb-8">
           <Receipt className="w-12 h-12 text-blue-600 mb-4" />
+          {/* <div className="flex items-center">
+          
+            <img
+              src={nomelogodelvind}
+              alt="Nome Logo Delvind"
+              className="h-32 w-32 object-contain"
+            />
+          </div> */}
           <h1 className="text-2xl font-bold text-gray-900">Bem-vindo ao AgiNotas</h1>
           <p className="text-gray-500">Entre para gerenciar suas notas</p>
         </div>

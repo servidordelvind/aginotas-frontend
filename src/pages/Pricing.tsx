@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle2, Receipt } from 'lucide-react';
+import nomelogodelvind from '../public/logonomelogo.png';
 
 const features = [
   'Notas Fiscais Ilimitadas',
@@ -18,10 +19,13 @@ export function Pricing() {
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       {/* Navigation */}
       <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2">
-          <Receipt className="w-8 h-8 text-blue-500" />
-          <span className="text-2xl font-bold text-white">AgiNotas</span>
-        </Link>
+      <div className="flex items-center">
+            <img
+              src={nomelogodelvind}
+              alt="Nome Logo Delvind"
+              className="h-32 w-32 object-contain"
+            />
+          </div>
         <div className="space-x-4">
           <Link to="/login" className="text-gray-300 hover:text-white">Entrar</Link>
         </div>

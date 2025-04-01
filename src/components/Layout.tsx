@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import nomelogodelvind from '../public/nomelogodelvind.png';
 import {
   LayoutDashboard,
   Users,
@@ -88,6 +89,14 @@ export function Layout() {
           </button>
         )}
         <div className="flex items-center gap-2 mb-8">
+           {/* <div className="flex items-center">
+          
+          <img
+            src={nomelogodelvind}
+            alt="Nome Logo Delvind"
+            className="h-32 w-32 object-contain"
+          />
+        </div> */}
           <CreditCard className="w-8 h-8 text-blue-600" />
           <h1 className="text-xl font-bold">AgiNotas</h1>
         </div>
