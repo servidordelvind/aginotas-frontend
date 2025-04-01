@@ -23,6 +23,7 @@ export function Register() {
   const [subscription, setSubscription] = useState(false);
   
   const [user, setUser] = useState({
+    _id: '',
     id_client_pagarme: '',
   });
 
@@ -234,6 +235,7 @@ useEffect(() => {
     }
 
     const data = {
+      idUser: user._id, 
       id_plan: idPlan,
       id_customer: user.id_client_pagarme,
       cardNumber: cardDetails.cardNumber,
