@@ -19,6 +19,22 @@ export const api = {
     return response.json();
   },
 
+  async create_subscription_user(data: any) {
+    const response = await fetch(`${API_URL}/pagarme/create-subscription`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao criar assinatura do usuário');
+    }
+
+    return response.json();
+  },
+
   async update_user(data: any) {
     const response = await fetch(`${API_URL}/user/update`, {
       method: 'PATCH',
@@ -360,21 +376,6 @@ export const api = {
 
     if (!response.ok) {
       throw new Error('Falha ao autenticar usuário');
-    }
-
-    return response.json();
-  },
-
-  async find_all_users(){
-    const response = await fetch(`${API_URL}/admin/findallusers`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Falha ao buscar usuários cadastrados no sistema');
     }
 
     return response.json();
