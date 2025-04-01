@@ -140,67 +140,67 @@ export function Landing() {
       </header>
 
       <main className="pt-1">
-      <section
-  id="hero"
-  ref={el => sectionsRef.current[0] = el}
-  className="container mx-auto px-4 sm:px-6 pt-32 sm:pt-8 pb-16 flex flex-col-reverse lg:flex-row items-center justify-between min-h-[90vh] sm:min-h-[100vh] relative"
->
-  <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] h-[300px] right-[50px] top-[-150px] opacity-20 blur-[80px]"></div>
-  <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] h-[200px] right-[200px] top-[-100px] opacity-15 blur-[60px]"></div>
+        <section
+          id="hero"
+          ref={el => sectionsRef.current[0] = el}
+          className="container mx-auto px-4 sm:px-6 pt-32 sm:pt-8 pb-16 flex flex-col-reverse lg:flex-row items-center justify-between min-h-[90vh] sm:min-h-[100vh] relative"
+        >
+          <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] h-[300px] right-[50px] top-[-150px] opacity-20 blur-[80px]"></div>
+          <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] h-[200px] right-[200px] top-[-100px] opacity-15 blur-[60px]"></div>
 
-  <div className="max-w-full lg:max-w-xl mb-10 lg:mb-0 text-center lg:text-left z-10 mt-10">
-    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
-      O jeito fácil e automático de emitir NFC-se para sua empresa!
-    </h1>
-    <p className="text-base sm:text-lg mb-6 sm:mb-8 text-gray-300">
-      Automatizar a emissão de notas fiscais de serviços recorrentes, tornando o processo mais ágil, simples e eficiente.
-    </p>
-    <button
-      onClick={() => scrollToSection('mission')}
-      className="bg-[#2962FF] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors inline-block text-center"
-    >
-      SAIBA MAIS
-    </button>
-  </div>
+          <div className="max-w-full lg:max-w-xl mb-10 lg:mb-0 text-center lg:text-left z-10 mt-10">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
+              O jeito fácil e automático de emitir NFC-se para sua empresa!
+            </h1>
+            <p className="text-base sm:text-lg mb-6 sm:mb-8 text-gray-300">
+              Automatizar a emissão de notas fiscais de serviços recorrentes, tornando o processo mais ágil, simples e eficiente.
+            </p>
+            <button
+              onClick={() => scrollToSection('mission')}
+              className="bg-[#2962FF] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors inline-block text-center"
+            >
+              SAIBA MAIS
+            </button>
+          </div>
 
-  <div className="relative w-full lg:w-1/2 mt-10 lg:mt-0">
-    <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[50px] md:right-[250px] top-[-400px] md:top-[-800px]" style={{ filter: 'blur(300px)' }}></div>
-    <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] sm:w-[300px] md:w-[400px] h-[200px] sm:h-[300px] md:h-[400px] right-[200px] md:right-[1300px] top-[-200px] md:top-[-400px]" style={{ filter: 'blur(50px)' }}></div>
-    <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[50px] top-[-250px]"></div>
-    <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] right-[-50px] sm:right-[-100px] top-[-150px] sm:top-[-250px]"></div>
-    <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[-50px] sm:right-[-100px] top-[-100px] sm:top-[-230px]">
-      <img
-        src={lpheroimg}
-        alt="Homem sorrindo usando tablet"
-        className="relative z-10 rounded-lg max-w-full"
-        style={{
-          position: 'absolute', top: '40%', left: '41%', transform: 'translate(-50%, -50%)', filter: 'blur(0px)',
-          maskImage: 'linear-gradient(to top, transparent 7%, black 18%)'
-        }}
-      />
-    </div>
-    <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[200px] sm:right-[550px] top-[40px] sm:top-[80px]"></div>
-    <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] left-[-200px] sm:left-[-680px] top-[-100px] sm:top-[-145px]"></div>
-    <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] left-[-200px] sm:left-[-800px] top-[150px] sm:top-[265px]"></div>
+          <div className="relative w-full lg:w-1/2 mt-10 lg:mt-0">
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[50px] md:right-[250px] top-[-400px] md:top-[-800px]" style={{ filter: 'blur(300px)' }}></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] sm:w-[300px] md:w-[400px] h-[200px] sm:h-[300px] md:h-[400px] right-[200px] md:right-[1300px] top-[-200px] md:top-[-400px]" style={{ filter: 'blur(50px)' }}></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[50px] top-[-250px]"></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] right-[-50px] sm:right-[-100px] top-[-150px] sm:top-[-250px]"></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[-50px] sm:right-[-100px] top-[-100px] sm:top-[-230px]">
+              <img
+                src={lpheroimg}
+                alt="Homem sorrindo usando tablet"
+                className="relative z-10 rounded-lg max-w-full"
+                style={{
+                  position: 'absolute', top: '40%', left: '41%', transform: 'translate(-50%, -50%)', filter: 'blur(0px)',
+                  maskImage: 'linear-gradient(to top, transparent 7%, black 18%)'
+                }}
+              />
+            </div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[200px] sm:right-[550px] top-[40px] sm:top-[80px]"></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] left-[-200px] sm:left-[-680px] top-[-100px] sm:top-[-145px]"></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] left-[-200px] sm:left-[-800px] top-[150px] sm:top-[265px]"></div>
 
-    <div className="lg:hidden flex items-center justify-center">
-      <div className="relative w-[250px] h-[250px] sm:w-[300px] sm:h-[300px] rounded-full bg-[#2962FF] overflow-hidden">
-        <img
-          src={lpheroimg}
-          alt="Homem sorrindo usando tablet"
-          className="w-[80%] rounded-lg"
-        />
-        <div
-          className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-[#161e2e] to-transparent"
-          style={{
-            filter: 'blur(10px)',
-            maskImage: 'linear-gradient(to top, transparent 0%, black 30%)'
-          }}
-        ></div>
-      </div>
-    </div>
-  </div>
-</section>
+            <div className="lg:hidden flex items-center justify-center">
+              <div className="relative w-[250px] h-[250px] sm:w-[300px] sm:h-[300px] rounded-full bg-[#2962FF] overflow-hidden">
+                <img
+                  src={lpheroimg}
+                  alt="Homem sorrindo usando tablet"
+                  className="rounded-lg"
+                />
+                <div
+                  className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-[#161e2e] to-transparent"
+                  style={{
+                    filter: 'blur(10px)',
+                    maskImage: 'linear-gradient(to top, transparent 0%, black 30%)'
+                  }}
+                ></div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <section className="py-12 sm:py-16 bg-[#161e2e] relative">
           <div className="absolute right-0 bottom-0 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
@@ -319,59 +319,59 @@ export function Landing() {
         </section>
 
         <section
-  id="simplicity"
-  ref={el => sectionsRef.current[2] = el}
-  className="bg-[#161e2e] relative pb-16" // Adicionado pb-16 (padding-bottom)
->
-  <div className="absolute left-20 top-1/2 w-6 h-6 rounded-full bg-[#2962FF] opacity-30"></div>
-  <div className="absolute right-32 bottom-32 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
+          id="simplicity"
+          ref={el => sectionsRef.current[2] = el}
+          className="bg-[#161e2e] relative pb-16" // Adicionado pb-16 (padding-bottom)
+        >
+          <div className="absolute left-20 top-1/2 w-6 h-6 rounded-full bg-[#2962FF] opacity-30"></div>
+          <div className="absolute right-32 bottom-32 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
 
-  <div className="container mx-auto px-4 sm:px-6">
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-      <div className="lg:col-span-5">
-        <div className="text-center lg:text-left">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-white">
-            VEJA COMO É SIMPLES
-          </h2>
-          <p className="text-xl sm:text-2xl mb-8 text-gray-300">
-            O AgiNotas é simples de usar. Basta assinar o teste grátis, preencher algumas informações de autenticação com sua prefeitura e pronto, você já pode usar.
-          </p>
-        </div>
-      </div>
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-5">
+                <div className="text-center lg:text-left">
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-white">
+                    VEJA COMO É SIMPLES
+                  </h2>
+                  <p className="text-xl sm:text-2xl mb-8 text-gray-300">
+                    O AgiNotas é simples de usar. Basta assinar o teste grátis, preencher algumas informações de autenticação com sua prefeitura e pronto, você já pode usar.
+                  </p>
+                </div>
+              </div>
 
-      <div className="hidden lg:block lg:col-span-1"></div>
+              <div className="hidden lg:block lg:col-span-1"></div>
 
-      <div className="lg:col-span-6 flex items-center justify-center">
-        <img
-          src={delvindapp}
-          alt="Tablet com AgiNotas"
-          className="w-full max-w-[600px] mx-auto lg:mx-0"
-          loading="lazy"
-        />
-      </div>
-    </div>
+              <div className="lg:col-span-6 flex items-center justify-center">
+                <img
+                  src={delvindapp}
+                  alt="Tablet com AgiNotas"
+                  className="w-full max-w-[600px] mx-auto lg:mx-0"
+                  loading="lazy"
+                />
+              </div>
+            </div>
 
-    <div className="flex justify-center mt-12 lg:mt-">
-      <Link
-        to="/manual"
-        className="bg-[#C0C0C0] text-black px-6 py-3 rounded-md font-semibold flex items-center min-w-[280px] hover:bg-gray-300 transition-colors duration-200"
-      >
-        <img
-          src={logocomnome}
-          alt="Logo Delvind"
-          className="h-12 w-12 bg-[#161e2e] rounded-md p-1 mr-4"
-        />
-        <div className="flex flex-col items-start flex-grow">
-          <div className="flex items-center justify-between w-full">
-            <span className="text-lg font-medium">BAIXAR</span>
-            <FaChevronRight className="ml-2" />
+            <div className="flex justify-center mt-12 lg:mt-">
+              <Link
+                to="/manual"
+                className="bg-[#C0C0C0] text-black px-6 py-3 rounded-md font-semibold flex items-center min-w-[280px] hover:bg-gray-300 transition-colors duration-200"
+              >
+                <img
+                  src={logocomnome}
+                  alt="Logo Delvind"
+                  className="h-12 w-12 bg-[#161e2e] rounded-md p-1 mr-4"
+                />
+                <div className="flex flex-col items-start flex-grow">
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-lg font-medium">BAIXAR</span>
+                    <FaChevronRight className="ml-2" />
+                  </div>
+                  <span className="text-sm opacity-70 mt-1">Manual</span>
+                </div>
+              </Link>
+            </div>
           </div>
-          <span className="text-sm opacity-70 mt-1">Manual</span>
-        </div>
-      </Link>
-    </div>
-  </div>
-</section>
+        </section>
       </main>
 
       <footer className="bg-[#0f172a] py-12">

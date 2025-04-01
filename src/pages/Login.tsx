@@ -92,11 +92,11 @@ export function Login() {
           </a>
         </div>
 
-        <div className="mt-2 text-center">
+       {/*} <div className="mt-2 text-center">
           <a onClick={() => navigate('/admin/login')} className="cursor-pointer text-sm text-black-600 hover:text-blue-700">
             Acesso administrativo
           </a>
-        </div>
+        </div>*/}
       </div>
     </div>
   );
