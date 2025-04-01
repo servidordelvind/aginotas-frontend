@@ -55,12 +55,6 @@ export function Layout() {
   };
 
   const navItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
-    { icon: Users, label: 'Clientes', path: '/customers' },
-    { icon: CreditCard, label: 'Assinaturas', path: '/subscriptions' },
-    
-    ...(isAdmin ? [] : [{ icon: MessageSquare, label: 'Chat com Suporte', path: '/chat' }]),
-    ...(isAdmin ? [] : [{ icon: Settings, label: 'Configurações', path: '/UserConfig' }]),
     ...(isAdmin
       ? [
         { icon: ShieldCheck, label: 'Admin Dashboard', path: '/admin/dashboard' },
@@ -68,7 +62,13 @@ export function Layout() {
         { icon: MessageCircleCode, label: 'Admin Reports', path: '/admin/reports' },
         { icon: Settings, label: 'Admin Subscriptions', path: '/admin/subscriptions' },
       ]
-      : []),
+      : [
+        { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
+        { icon: Users, label: 'Clientes', path: '/customers' },
+        { icon: MessageSquare, label: 'Chat com Suporte', path: '/chat' },
+        { icon: Settings, label: 'Configurações', path: '/UserConfig' },
+        { icon: CreditCard, label: 'Assinaturas', path: '/subscriptions' },
+      ]),
   ];
 
   const shouldShowDropdown = windowSize.width < 1200 && windowSize.height < 750;

@@ -111,6 +111,7 @@ export function Landing() {
         {mobileMenuOpen && (
           <div className="md:hidden bg-[#0f172a] px-4 pt-2 pb-4">
             <div className="flex flex-col space-y-2">
+<<<<<<< HEAD
               {sections.map((section) => (
                 <button
                   key={section.id}
@@ -127,6 +128,8 @@ export function Landing() {
               >
                 Login
               </Link>
+=======
+>>>>>>> bb9d9af0cf668e07cd796efaf0722d96bb4580e0
               <Link
                 to="/pricing"
                 className="bg-[#2962FF] text-white px-4 py-2 rounded-full text-sm font-medium text-center hover:bg-[#1E50D9] transition-colors mt-1"
@@ -140,6 +143,7 @@ export function Landing() {
       </header>
 
       <main className="pt-1">
+<<<<<<< HEAD
       <section
   id="hero"
   ref={el => sectionsRef.current[0] = el}
@@ -147,6 +151,15 @@ export function Landing() {
 >
   <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] h-[300px] right-[50px] top-[-150px] opacity-20 blur-[80px]"></div>
   <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] h-[200px] right-[200px] top-[-100px] opacity-15 blur-[60px]"></div>
+=======
+        <section
+          id="hero"
+          ref={el => sectionsRef.current[0] = el}
+          className="container mx-auto px-4 sm:px-6 pt-8 pb-16 flex flex-col lg:flex-row items-center justify-between min-h-[90vh] sm:min-h-[100vh] relative"
+        >
+          <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] h-[300px] right-[50px] top-[-150px] opacity-20 blur-[80px]"></div>
+          <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] h-[200px] right-[200px] top-[-100px] opacity-15 blur-[60px]"></div>
+>>>>>>> bb9d9af0cf668e07cd796efaf0722d96bb4580e0
 
   <div className="max-w-full lg:max-w-xl mb-10 lg:mb-0 text-center lg:text-left z-10 mt-10">
     <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
@@ -163,6 +176,7 @@ export function Landing() {
     </button>
   </div>
 
+<<<<<<< HEAD
   <div className="relative w-full lg:w-1/2 mt-10 lg:mt-0">
     <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[50px] md:right-[250px] top-[-400px] md:top-[-800px]" style={{ filter: 'blur(300px)' }}></div>
     <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] sm:w-[300px] md:w-[400px] h-[200px] sm:h-[300px] md:h-[400px] right-[200px] md:right-[1300px] top-[-200px] md:top-[-400px]" style={{ filter: 'blur(50px)' }}></div>
@@ -201,6 +215,46 @@ export function Landing() {
     </div>
   </div>
 </section>
+=======
+          <div className="relative w-full lg:w-1/2 mt-10 lg:mt-0">
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[50px] md:right-[250px] top-[-400px] md:top-[-800px]" style={{ filter: 'blur(300px)' }}></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] sm:w-[300px] md:w-[400px] h-[200px] sm:h-[300px] md:h-[400px] right-[200px] md:right-[1300px] top-[-200px] md:top-[-400px]" style={{ filter: 'blur(50px)' }}></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[50px] top-[-250px]"></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] right-[-50px] sm:right-[-100px] top-[-150px] sm:top-[-250px]"></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[-50px] sm:right-[-100px] top-[-100px] sm:top-[-230px]">
+              <img
+                src={lpheroimg}
+                alt="Homem sorrindo usando tablet"
+                className="relative z-10 rounded-lg max-w-full"
+                style={{
+                  position: 'absolute', top: '40%', left: '41%', transform: 'translate(-50%, -50%)', filter: 'blur(0px)',
+                  maskImage: 'linear-gradient(to top, transparent 7%, black 18%)'
+                }}
+              />
+            </div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[200px] sm:right-[550px] top-[40px] sm:top-[80px]"></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] left-[-200px] sm:left-[-680px] top-[-100px] sm:top-[-145px]"></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] left-[-200px] sm:left-[-800px] top-[150px] sm:top-[265px]"></div>
+
+            <div className="lg:hidden absolute inset-0 flex items-center justify-center">
+              <div className="relative w-[250px] h-[250px] sm:w-[300px] sm:h-[300px] rounded-full bg-[#2962FF] overflow-hidden">
+                <img
+                  src={lpheroimg}
+                  alt="Homem sorrindo usando tablet"
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[80%] rounded-lg"
+                />
+                <div
+                  className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-[#161e2e] to-transparent"
+                  style={{
+                    filter: 'blur(10px)',
+                    maskImage: 'linear-gradient(to top, transparent 0%, black 30%)'
+                  }}
+                ></div>
+              </div>
+            </div>
+          </div>
+        </section>
+>>>>>>> bb9d9af0cf668e07cd796efaf0722d96bb4580e0
 
         <section className="py-12 sm:py-16 bg-[#161e2e] relative">
           <div className="absolute right-0 bottom-0 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
@@ -326,6 +380,7 @@ export function Landing() {
   <div className="absolute left-20 top-1/2 w-6 h-6 rounded-full bg-[#2962FF] opacity-30"></div>
   <div className="absolute right-32 bottom-32 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
 
+<<<<<<< HEAD
   <div className="container mx-auto px-4 sm:px-6">
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
       <div className="lg:col-span-5">
@@ -350,6 +405,32 @@ export function Landing() {
         />
       </div>
     </div>
+=======
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-5">
+                <div className="text-center lg:text-left">
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-white">
+                    VEJA COMO É SIMPLES
+                  </h2>
+                  <p className="text-xl sm:text-2xl mb-8 text-gray-300">
+                    O AgiNotas é simples de usar. Basta assinar o teste grátis, preencher algumas informações de autenticação com sua prefeitura e pronto, você já pode usar.
+                  </p>
+                </div>
+              </div>
+
+              <div className="hidden lg:block lg:col-span-1"></div>
+
+              <div className="lg:col-span-6 flex items-center justify-center">
+                <img
+                  src={delvindapp}
+                  alt="Tablet com AgiNotas"
+                  className="w-full max-w-[600px] mx-auto lg:mx-0"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+>>>>>>> bb9d9af0cf668e07cd796efaf0722d96bb4580e0
 
     <div className="flex justify-center mt-12 lg:mt-">
       <Link
@@ -366,12 +447,16 @@ export function Landing() {
             <span className="text-lg font-medium">BAIXAR</span>
             <FaChevronRight className="ml-2" />
           </div>
+<<<<<<< HEAD
           <span className="text-sm opacity-70 mt-1">Manual</span>
         </div>
       </Link>
     </div>
   </div>
 </section>
+=======
+        </section>
+>>>>>>> bb9d9af0cf668e07cd796efaf0722d96bb4580e0
       </main>
 
       <footer className="bg-[#0f172a] py-12">

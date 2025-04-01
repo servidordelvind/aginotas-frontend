@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { CircularProgress } from '@mui/material'; // Importe CircularProgress
+import { api } from '../lib/api';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -36,9 +37,8 @@ interface Metrics {
   subscriptionsByMonth: SubscriptionByMonth[];
 }
 
-
 const [metrics, setMetrics] = useState({
-  totalInvoices: 150,
+  totalInvoices: 0,
   totalInvoiceValue: 50000,
   activeCustomers: 120,
   inactiveCustomers: 30,
@@ -46,6 +46,7 @@ const [metrics, setMetrics] = useState({
   latecomers: 15,
   subscriptionCancellations: 5, // Exemplo de cancelamentos
   totalSubscriptionRevenue: 25000, // Exemplo de receita de assinaturas
+  
   invoicesByMonth: [
     { month: 'Jan', value: 4000 },
     { month: 'Fev', value: 4500 },
@@ -54,6 +55,7 @@ const [metrics, setMetrics] = useState({
     { month: 'Mai', value: 6000 },
     { month: 'Jun', value: 6500 },
   ],
+
   customersByMonth: [
     { month: 'Jan', count: 100 },
     { month: 'Fev', count: 105 },
@@ -62,6 +64,7 @@ const [metrics, setMetrics] = useState({
     { month: 'Mai', count: 120 },
     { month: 'Jun', count: 125 },
   ],
+  
   subscriptionsByMonth: [
     { month: 'Jan', count: 10 },
     { month: 'Fev', count: 12 },
@@ -72,9 +75,39 @@ const [metrics, setMetrics] = useState({
   ],
 });
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [selectedChart, setSelectedChart] = useState('invoices');
+
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState(null);
+const [selectedChart, setSelectedChart] = useState('invoices');
+const [invoice, setInvoice] = useState([]);
+const [invoicePrice, setInvoicePrice] = useState(0);
+const [users, setUsers] = useState([]);
+const [plans, setPlans] = useState<Plan | null>(null);
+
+useEffect(() => {
+  async function fetchMetrics() {
+    try {
+      const invoice = await api.find_all_invoices();
+      setInvoice(invoice.filter((inv) => inv.status === 'emitida' || inv.status === 'substituida'));
+
+      const totalPrice = invoice
+        .filter((inv) => inv.status === 'emitida' || inv.status === 'substituida')
+        .reduce((sum, inv) => sum + inv.valor, 0);
+
+      setInvoicePrice(totalPrice);
+      
+      const usersdb = await api.find_all_users();
+      setUsers(usersdb);
+
+      const response = await api.find_plans();
+      setPlans(response.data[0]);
+
+    } catch (error) {
+      console.error('Erro ao buscar métricas:', error);
+    }
+  }
+  fetchMetrics();
+}, []);
 
 
   const dataInvoices = {
@@ -131,9 +164,12 @@ const [metrics, setMetrics] = useState({
     );
   }
 
+
   if (error) {
     return <p className="text-red-500">Erro: {error}</p>;
   }
+
+  console.log(invoice);
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -142,36 +178,36 @@ const [metrics, setMetrics] = useState({
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
         <h2 className="text-lg font-semibold text-gray-700">Total de Notas Emitidas</h2>
-        <p className="text-3xl font-bold text-gray-800 mt-2">{metrics.totalInvoices}</p>
+        <p className="text-3xl font-bold text-gray-800 mt-2">{invoice.length}</p>
       </div>
       <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
         <h2 className="text-lg font-semibold text-gray-700">Valor Total das Notas Emitidas</h2>
-        <p className="text-3xl font-bold text-gray-800 mt-2">R$ {metrics.totalInvoiceValue.toFixed(2)}</p>
+        <p className="text-3xl font-bold text-gray-800 mt-2">R$ {invoicePrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
       </div>
       <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
         <h2 className="text-lg font-semibold text-gray-700">Clientes Ativos</h2>
-        <p className="text-3xl font-bold text-gray-800 mt-2">{metrics.activeCustomers}</p>
+        <p className="text-3xl font-bold text-gray-800 mt-2">{users.filter((user) => user.status === 'active').length}</p>
       </div>
-      <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+{/*       <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
     <h2 className="text-lg font-semibold text-gray-700">Com Atrasos</h2>
     <p className="text-3xl font-bold text-gray-800 mt-2">{metrics.latecomers}</p>
-  </div>
-  <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+  </div> */}
+{/*   <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
     <h2 className="text-lg font-semibold text-gray-700">Cancelamentos de Assinatura</h2>
     <p className="text-3xl font-bold text-gray-800 mt-2">{metrics.subscriptionCancellations}</p>
-  </div>
+  </div> */}
   <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
     <h2 className="text-lg font-semibold text-gray-700">Receita Total de Assinaturas</h2>
-    <p className="text-3xl font-bold text-gray-800 mt-2">R$ {metrics.totalSubscriptionRevenue.toFixed(2)}</p>
+    <p className="text-3xl font-bold text-gray-800 mt-2">R$ {(plans?.items[0].pricing_scheme.price * users.filter((user) => user.status === 'active').length).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
   </div>
       <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
         <h2 className="text-lg font-semibold text-gray-700">Clientes Inativos</h2>
-        <p className="text-3xl font-bold text-gray-800 mt-2">{metrics.inactiveCustomers}</p>
+        <p className="text-3xl font-bold text-gray-800 mt-2">{users.filter((user) => user.status === 'inactive').length}</p>
       </div>
-      <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+{/*       <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
         <h2 className="text-lg font-semibold text-gray-700">Novas Assinaturas</h2>
         <p className="text-3xl font-bold text-gray-800 mt-2">{metrics.newSubscriptions}</p>
-      </div>
+      </div> */}
     </div>
 
     <div className="flex flex-col gap-4">

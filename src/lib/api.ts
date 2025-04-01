@@ -36,6 +36,23 @@ export const api = {
     return response.json();
   },  
 
+  async update_customer(id: string, data: any) {
+    const response = await fetch(`${API_URL}/customer/update/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Cookies.get('token')}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao atualizar cliente');
+    }
+
+    return response.json();
+  }, 
+
   async login_user(data: any) {
     const response = await fetch(`${API_URL}/user/auth`, {
       method: 'POST',
@@ -63,6 +80,22 @@ export const api = {
 
     if (!response.ok) {
       throw new Error('Falha ao buscar usuário');
+    }
+
+    return response.json();
+  },
+
+  async find_all_users(data: any) {
+    const response = await fetch(`${API_URL}/user/findall`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao buscar usuários');
     }
 
     return response.json();
@@ -250,6 +283,22 @@ export const api = {
     return response.json();
   },
 
+  async find_all_invoices(){
+    const response = await fetch(`${API_URL}/invoice/find`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Cookies.get('token')}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao buscar notas fiscais');
+    }
+
+    return response.json();
+  },
+
   async find_schedulings(){
     const response = await fetch(`${API_URL}/scheduling/find`, {
       method: 'GET',
@@ -379,4 +428,19 @@ export const api = {
 
     return response.json();
   },
+
+  async find_plans(){
+    const response = await fetch(`${API_URL}/pagarme/get-all-subscriptions`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao buscar planos cadastrados no sistema');
+    }
+
+    return response.json();
+  },    
 };

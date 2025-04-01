@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { Plus, Search, Trash2, XCircle, Calendar, File, Check, Ban, Loader2 } from 'lucide-react';
+=======
+import { Plus, Search, Trash2, XCircle, Calendar, File, Check, Ban, Edit, Clock } from 'lucide-react';
+>>>>>>> bb9d9af0cf668e07cd796efaf0722d96bb4580e0
 import { toast } from 'sonner';
 import { FaEye } from 'react-icons/fa';
 import { api } from '../lib/api.ts';
@@ -26,6 +30,7 @@ interface Customer {
     zipCode: string;
   };
   inscricaoMunicipal?: string;
+  inscricaoEstadual?: string;
 }
 
 interface Schedule {
@@ -44,7 +49,7 @@ export function Customers() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGerating, setIsGerating] = useState(false);
   const [invoiceHistory, setInvoiceHistory] = useState<any[]>([]);
-  const [activeModal, setActiveModal] = useState<'none' | 'invoice' | 'replace' | 'subscription' | 'history'>('none');
+  const [activeModal, setActiveModal] = useState<'none' | 'edit' | 'invoice' | 'replace' | 'subscription' | 'scheduling' | 'history'>('none');
   
   const [handleinvoice, setHandleInvoice] = useState({
     _id: '',
@@ -79,15 +84,18 @@ export function Customers() {
     }
   });
 
-  const [newCustomer, setNewCustomer] = useState({
+  const [newCustomer, setNewCustomer] = useState<Customer>({
+    _id: '',
     name: '',
     cnpj: '',
     email: '',
     phone: '',
     inscricaoMunicipal: '',
+    inscricaoEstadual: '',
     user: {
       _id: '',
       email: '',
+      senhaelotech: '',
     },
     address: {
       street: '',
@@ -97,7 +105,8 @@ export function Customers() {
       city: '',
       state: '',
       zipCode: ''
-    }
+    },
+    status: 'active',
   });
 
   // Estados para CNPJ
@@ -217,8 +226,8 @@ export function Customers() {
     cnpj: selectedCustomer?.cnpj || "",
     cnae: '6201501',
     quantidade: 1,
-    valor_unitario: 100,
-    desconto: 0.00,
+    valor_unitario: '',
+    desconto: '',
     iss_retido: false,
     aliquota_iss: 4.41,
     retencoes: {
@@ -254,6 +263,10 @@ export function Customers() {
     setSearchTerm(e.target.value);
   };
 
+  const handleViewScheduleHistory = async () => {
+    setActiveModal('scheduling');
+  }
+
   const handleAddCustomer = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -268,6 +281,12 @@ export function Customers() {
   };
 
   const handleDeleteCustomer = async (id: string) => {
+    const response = await api.find_all_invoices_customer(id);
+    if (response.length > 0) {
+      toast.error('Não é possível excluir o cliente, pois ele possui notas fiscais emitidas.');
+      return;
+    }
+
     if (!window.confirm("Tem certeza que deseja excluir esse cliente?")) {
       return;
     }
@@ -336,6 +355,7 @@ export function Customers() {
     if (!selectedCustomer) return;
     
     if(selectedCustomer!.user.senhaelotech === 'undefined') return;
+    if(selectedCustomer!.inscricaoMunicipal === '') {toast.error('Inscrição Municipal inválida!'); return;};
 
     const data = {
       customer_id: selectedCustomer._id,
@@ -343,18 +363,18 @@ export function Customers() {
       start_date: subscription.startDate,
       end_date: subscription.endDate,
       data: {
-        servico: {
-          Discriminacao: invoice.discriminacao,
-          descricao: invoice.descricao,
-          item_lista: parseInt(invoice.item_lista),
-          cnae: parseInt(invoice.cnae),
-          quantidade: invoice.quantidade,
-          valor_unitario: invoice.valor_unitario,
-          desconto: invoice.desconto
-        }
+      servico: {
+        Discriminacao: invoice.discriminacao,
+        descricao: invoice.descricao,
+        item_lista: parseFloat(invoice.item_lista),
+        cnae: parseFloat(invoice.cnae),
+        quantidade: parseFloat(invoice.quantidade.toString()),
+        valor_unitario: parseFloat(invoice.valor_unitario.toString()),
+        desconto: parseFloat(invoice.desconto.toString())
+      }
       },
-      valor: invoice.quantidade * invoice.valor_unitario,          
-  }  
+      valor:  parseFloat(invoice.quantidade.toString()) * parseFloat(invoice.valor_unitario.toString()),          
+    }  
 
     try {
       if (selectedCustomer.status === 'active') {
@@ -377,22 +397,23 @@ export function Customers() {
     if (!selectedCustomer) return;
 
     if(selectedCustomer!.user.senhaelotech === 'undefined') return;
+    if(selectedCustomer!.inscricaoMunicipal === '') {toast.error('Inscrição Municipal inválida!'); return;};
 
       const data = {
-          customer_id: selectedCustomer._id,
-          servico: {
-            Discriminacao: invoice.discriminacao,
-            descricao: invoice.descricao,
-            item_lista: invoice.item_lista,
-            cnae: invoice.cnae,
-            quantidade: invoice.quantidade,
-            valor_unitario: invoice.valor_unitario,
-            desconto: invoice.desconto
-          }        
+        customer_id: selectedCustomer._id,
+        servico: {
+        Discriminacao: invoice.discriminacao,
+        descricao: invoice.descricao,
+        item_lista: parseFloat(invoice.item_lista),
+        cnae: parseFloat(invoice.cnae),
+        quantidade: parseFloat(invoice.quantidade.toString()),
+        valor_unitario: parseFloat(invoice.valor_unitario.toString()),
+        desconto: parseFloat(invoice.desconto.toString())
+        }        
       }   
 
   try {
-    if (selectedCustomer.status === 'active') {
+    if (selectedCustomer.status === 'active' ) {
           setIsGerating(true);
           const response = await api.create_invoice(data);
           toast.success(response.message);
@@ -435,6 +456,7 @@ export function Customers() {
 
     try {
       const nfseData = parseNfseXml(invoice.xml);
+
       const data = {
         IdInvoice: invoice._id,
         NumeroNfse: nfseData.numeroNota,
@@ -445,7 +467,7 @@ export function Customers() {
       }
 
       const response = await api.cancel_invoice(data);
-      toast.success('Nota fiscal cancelada com sucesso!');
+      toast.success(response.message);
     } catch (error) {
       toast.error('Erro ao cancelar nota fiscal');
       console.error('Erro ao cancelar nota fiscal:', error);
@@ -487,11 +509,30 @@ export function Customers() {
     }
 
     const response = await api.replace_invoice(data);
-    toast.success('Nota fiscal substituida com sucesso!');
+    toast.success(response.message);
   } catch (error) {
     toast.error('Erro ao substituir nota fiscal');
     console.error('Erro ao substituir nota fiscal:', error);
   }
+  }
+
+  const handleViewModalEditCustomer = async (customer: Customer) => {
+    setActiveModal('edit'); 
+    setNewCustomer(customer);
+  }
+
+
+  const handleEditCustomer = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await api.update_customer(newCustomer._id, newCustomer);
+      toast.success('Cliente atualizado com sucesso!');
+      location.reload();
+    } catch (error) {
+      toast.error('Erro ao atualizar cliente');
+      console.error('Erro ao atualizar cliente:', error);
+    }
+
   }
 
   const filteredCustomers = customers.filter(customer =>
@@ -528,9 +569,6 @@ export function Customers() {
   useEffect(() => {
     loadCustomers();
   }, []);
-
-  useEffect(() => {
-  }, [schedulings]);
 
 
   return (
@@ -605,20 +643,17 @@ export function Customers() {
                         <Calendar className="w-5 h-5" />
                       </button>
 
-                      {schedulings.map((schedule) => (
-                        <>
-                          {/* BOTAO CANCELAR AGENDAMENTO */}
-                          {schedule.customer_id === customer._id &&
-                            <button
-                              onClick={() => handleCancelSchedule(customer._id)}
-                              className="text-blue-600 hover:text-blue-700"
-                              title="Cancelar agendamento"
-                            >
-                              <Ban className="w-5 h-5" />
-                            </button>
-                          }
-                        </>
-                      ))}
+
+                    
+                        {schedulings.some(schedule => schedule.customer_id === customer._id) && (
+                        <button
+                          onClick={() => handleViewScheduleHistory()}
+                          className="text-blue-600 hover:text-blue-700"
+                          title="Gerenciar agendamentos"
+                        >
+                          <Clock className="w-5 h-5" />
+                        </button>
+                        )}
 
 
                       <button
@@ -648,13 +683,24 @@ export function Customers() {
                         </button>
                       )}
 
+                      {/* BOTAO EDITAR */}
                       <button
-                        onClick={() => handleDeleteCustomer(customer._id)}
-                        className="text-red-600 hover:text-red-700"
-                        title="Excluir"
+                        onClick={() => handleViewModalEditCustomer(customer)}
+                        className="text-blue-600 hover:text-blue-700"
+                        title="Editar Cliente"
                       >
-                        <Trash2 className="w-5 h-5" />
+                        <Edit className="w-5 h-5" />
                       </button>
+
+                        {!invoiceHistory.some(invoice => invoice.customer_id === customer._id) && (
+                        <button
+                          onClick={() => handleDeleteCustomer(customer._id)}
+                          className="text-red-600 hover:text-red-700"
+                          title="Excluir"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                        )}
                     </div>
                   </td>
                 </tr>
@@ -718,6 +764,26 @@ export function Customers() {
                     />
                   </div>
 
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Inscrição Municipal</label>
+                    <input
+                      type="text"
+                      value={newCustomer.inscricaoMunicipal || ''}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, inscricaoMunicipal: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+{/*                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Inscrição Estadual</label>
+                    <input
+                      type="text"
+                      value={newCustomer.inscricaoEstadual || ''}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, inscricaoEstadual: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div> */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
                     <input
@@ -881,10 +947,223 @@ export function Customers() {
         </div>
       )}
 
+      {/* Modal de Editar Cliente */}
+      {activeModal === 'edit' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-h-[90vh] w-full max-w-2xl flex flex-col">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-bold text-gray-900">Editar Cliente</h2>
+            </div>
+
+            <div className="p-6 overflow-y-auto flex-1">
+              <form
+                id="editCustomerForm"
+                onSubmit={(e) => handleEditCustomer(e)}
+                className="space-y-6"
+              >
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900">Informações Básicas</h3>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Nome da Empresa
+                    </label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.name}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, name: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.cnpj}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, cnpj: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Inscrição Municipal</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.inscricaoMunicipal}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, inscricaoMunicipal: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                    <input
+                      type="email"
+                      placeholder={newCustomer.email}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                    <input
+                      type="tel"
+                      placeholder={newCustomer.phone}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900">Endereço</h3>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Rua</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.street}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, street: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                     
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Número</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.number}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, number: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Bairro</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.neighborhood}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, neighborhood: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.city}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, city: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.state}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, state: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">CEP</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.zipCode}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, zipCode: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Código do Município
+                    </label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.cityCode}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, cityCode: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      
+                    />
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={closeAllModals}
+                className="px-4 py-2 text-gray-700 hover:text-gray-900"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                form="editCustomerForm"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Salvar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modal Histórico de Notas Fiscais */}
       {selectedCustomer && activeModal === 'history' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-[60%]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-[70%] max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-900">Histórico de Notas Fiscais</h2>
               <button onClick={closeAllModals} className="text-gray-500 hover:text-gray-700">
@@ -900,12 +1179,13 @@ export function Customers() {
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Descrição</th>
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Valor</th>
               <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Data</th>
+              <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Ações</th>
             </tr>
           </thead>
           <tbody>
             {invoiceHistory.length === 0 ? (
               <tr>
-                <td colSpan={3} className="py-2 px-4 text-center text-sm text-gray-500">Nenhuma nota fiscal encontrada</td>
+                <td colSpan={5} className="py-2 px-4 text-center text-sm text-gray-500">Nenhuma nota fiscal encontrada</td>
               </tr>
             ) : (
               invoiceHistory.map((invoice) => (
@@ -928,13 +1208,15 @@ export function Customers() {
               >
                 <File className="w-4 h-4" />
               </button>
-              <button
-                onClick={() => handleCancelInvoice(invoice)}
-                className="text-red-600 hover:text-red-800 ml-2 p-1"
-                title="Cancelar Nota Fiscal"
-              >
-                <XCircle className="w-4 h-4" />
-              </button>
+                {(invoice.status === 'emitida' || invoice.status === 'substituida') && (
+                  <button
+                  onClick={() => handleCancelInvoice(invoice)}
+                  className="text-red-600 hover:text-red-800 p-1"
+                  title="Cancelar Nota Fiscal"
+                  >
+                  <XCircle className="w-4 h-4" />
+                  </button>
+                )}
             </td>
                 </tr>
               ))
@@ -1009,22 +1291,25 @@ export function Customers() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Valor Unitário</label>
                   <input
-                    type="number"
-                    step="0.01"
-                    value={invoice.valor_unitario || 0.00}
-                    onChange={(e) => setInvoice({ ...invoice, valor_unitario: parseFloat(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
+                  type="text"
+                  value={invoice.valor_unitario}
+                  placeholder='ex: 1600.90'
+                  onChange={(e) => {
+                  const sanitizedValue = e.target.value.replace(/,/g, ''); // Remove commas
+                  setInvoice({ ...invoice, valor_unitario: sanitizedValue });
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Desconto</label>
                   <input
-                    type="number"
-                    step="0.01"
-                    value={invoice.desconto || 0.00}
-                    onChange={(e) => setInvoice({ ...invoice, desconto: parseFloat(e.target.value) })}
+                    type="text"
+                    value={invoice.desconto}
+                    placeholder='0'
+                    onChange={(e) => setInvoice({ ...invoice, desconto: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
@@ -1128,7 +1413,7 @@ export function Customers() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
                   <textarea
-                    value={invoice.descricao || ''} 
+                    value={invoice.descricao} 
                     onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
@@ -1138,7 +1423,7 @@ export function Customers() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Quantidade</label>
                   <input
                     type="number"
-                    value={invoice.quantidade || 0}
+                    value={invoice.quantidade}
                     onChange={(e) => setInvoice({ ...invoice, quantidade: parseInt(e.target.value) || 1 })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
@@ -1148,24 +1433,27 @@ export function Customers() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Valor Unitário</label>
                   <input
-                    type="number"
-                    step="0.01"
-                    value={invoice.valor_unitario || 0.00}
-                    onChange={(e) => setInvoice({ ...invoice, valor_unitario: parseFloat(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
+                  type="text"
+                  value={invoice.valor_unitario}
+                  placeholder='ex: 1600.90'
+                  onChange={(e) => {
+                  const sanitizedValue = e.target.value.replace(/,/g, ''); // Remove commas
+                  setInvoice({ ...invoice, valor_unitario: sanitizedValue });
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Desconto</label>
                   <input
-                    type="number"
-                    step="0.01"
-                    value={invoice.desconto || 0.00}
-                    onChange={(e) => setInvoice({ ...invoice, desconto: parseFloat(e.target.value) })}
+                    type="text"
+                    value={invoice.desconto}
+                    onChange={(e) => setInvoice({ ...invoice, desconto: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
+                    placeholder='0'
                   />
                 </div>
 
@@ -1271,24 +1559,27 @@ export function Customers() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Valor Unitário</label>
                   <input
-                    type="number"
-                    step="0.01"
-                    placeholder={(handleinvoice.data.Rps.Servico.ListaItensServico[0].ValorUnitario || 0.00).toString()}
-                    onChange={(e) => setInvoice({ ...invoice, valor_unitario: parseFloat(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    
+                  type="text"
+                  value={invoice.valor_unitario}
+                  placeholder="ex: 1600.90"
+                  onChange={(e) => {
+                    const sanitizedValue = e.target.value.replace(/,/g, ''); // Remove commas
+                    setInvoice({ ...invoice, valor_unitario: sanitizedValue });
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Desconto</label>
                   <input
-                    type="number"
-                    step="0.01"
-                    placeholder={(handleinvoice.data.Rps.Servico.ListaItensServico[0].ValorDesconto || 0.00).toString()}
-                    onChange={(e) => setInvoice({ ...invoice, desconto: parseFloat(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    
+                  type="text"
+                  value={invoice.desconto}
+                  onChange={(e) => setInvoice({ ...invoice, desconto: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                  placeholder="0"
                   />
                 </div>
 
@@ -1326,6 +1617,63 @@ export function Customers() {
                 disabled={isGerating}
               >
                 {isGerating ? 'Substituindo...' : 'Substituir'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Agendamentos de Emissão Automatizada */}
+      {activeModal === 'scheduling' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-h-[90vh] w-full max-w-2xl flex flex-col">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-bold text-gray-900">Agendamentos de Emissão Automatizada</h2>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1">
+              {schedulings.length === 0 ? (
+                <div className="text-center text-gray-500">Nenhum agendamento encontrado.</div>
+              ) : (
+                <table className="w-full table-auto">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Cliente</th>
+                      <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Descrição</th>
+                      <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Dia do Faturamento</th>
+                      <th className="py-2 px-4 text-right text-sm font-medium text-gray-600">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {schedulings.map((schedule) => {
+                      const customer = customers.find(c => c._id === schedule.customer_id);
+                      return (
+                        <tr key={schedule.customer_id} className="border-b">
+                          <td className="py-2 px-4 text-sm text-gray-700">{customer?.name || 'Cliente não encontrado'}</td>
+                          <td className="py-2 px-4 text-sm text-gray-700">{schedule.data.servico.Discriminacao}</td>
+                          <td className="py-2 px-4 text-sm text-gray-700">{schedule.billing_day}</td>
+                          <td className="py-2 px-4 text-right">
+                            <button
+                              onClick={() => handleCancelSchedule(schedule.customer_id)}
+                              className="text-red-600 hover:text-red-800"
+                              title="Cancelar Agendamento"
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+            <div className="p-6 border-t border-gray-200 flex justify-end">
+              <button
+                type="button"
+                onClick={closeAllModals}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Fechar
               </button>
             </div>
           </div>
