@@ -9,11 +9,15 @@ import bolaImagem from '../public/cardimg.png';
 import delvindapp from '../public/delvindapp.png';
 
 export function Landing() {
+  // Hooks de Estado
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
+
+  // Referência de Elementos DOM
   const sectionsRef = useRef<(HTMLElement | null)[]>([]);
 
+  // Hook de Efeito para Observar Interseção das Seções
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
@@ -33,6 +37,7 @@ export function Landing() {
         rootMargin: '-10px 0px -10% 0px'
       }
     );
+
     const currentSections = sectionsRef.current;
     currentSections.forEach(section => {
       if (section) observer.observe(section);
@@ -45,6 +50,7 @@ export function Landing() {
     };
   }, []);
 
+  // Hook de Efeito para Listener de Scroll
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -54,43 +60,48 @@ export function Landing() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Função para Rolar até a Seção
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      const headerHeight = document.querySelector('header').offsetHeight; // Obtém a altura do cabeçalho
-      const elementPosition = element.getBoundingClientRect().top + window.scrollY; // Obtém a posição do elemento
+      const headerHeight = document.querySelector('header').offsetHeight;
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({
-        top: elementPosition - headerHeight, // Subtrai a altura do cabeçalho
+        top: elementPosition - headerHeight,
         behavior: 'smooth'
       });
       setActiveSection(id);
     }
   };
+
+  // Dados das Seções
   const sections = [
     { id: 'hero', label: 'Início' },
     { id: 'mission', label: 'Missão' },
     { id: 'simplicity', label: 'Como Funciona' },
   ];
 
+  // Componente Principal (JSX)
   return (
     <div className="min-h-screen bg-[#161e2e] text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-      <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#161e2e]/95 backdrop-blur-sm shadow-lg' : 'py-0'}`}>
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="flex items-center">
-            <img
-              src={logodelvind}
-              alt="Nome Logo Delvind"
-              className="h-20 w-20 object-contain-inline-block -mr-4"
-            />
-            <img
-              src={nomelogodelvind}
-              alt="Nome Logo Delvind"
-              className=" max-w-[200px] max-h-[200px] object-contain "
-            
-            />
+      {/* Cabeçalho */}
+      <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#161e2e]/95 backdrop-blur-sm shadow-lg py-1 md:py-2 lg:py-3' : 'py-1 md:py-2 lg:py-0'}`}>
+  <div className="container mx-auto px-4 flex justify-between items-center">
+    {/* Logo */}
+    <div className="flex items-center">
+      <img
+        src={logodelvind}
+        alt="Nome Logo Delvind"
+        className="h-16 w-16 object-contain-inline-block -mr-4"
+      />
+      <img
+        src={nomelogodelvind}
+        alt="Nome Logo Delvind"
+        className="max-h-[150px] object-contain"
+      />
+    </div>
 
-          </div>
-
+          {/* Menu de Navegação */}
           <nav className="hidden md:flex space-x-4 items-center">
             {sections.map((section) => (
               <button
@@ -107,6 +118,7 @@ export function Landing() {
             </Link>
           </nav>
 
+          {/* Botão Menu Móvel */}
           <button
             className="md:hidden text-gray-300 focus:outline-none"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -116,18 +128,18 @@ export function Landing() {
           </button>
         </div>
 
+        {/* Menu Móvel (Condicional) */}
         {mobileMenuOpen && (
           <div className="relative h-full min-h-screen flex flex-col">
-
-            {/* Overlay escuro com blur */}
+            {/* Overlay Escuro com Blur */}
             <div
               className="fixed inset-0 bg-[#0f172a]/95 backdrop-blur-sm"
               onClick={() => setMobileMenuOpen(false)}
             />
 
-            {/* Container principal do modal */}
+            {/* Container Principal do Modal */}
             <div className="relative h-full flex flex-col">
-              {/* Cabeçalho com botão fechar */}
+              {/* Cabeçalho com Botão Fechar */}
               <div className="flex justify-end p-4">
                 <button
                   className="text-gray-300 hover:text-white transition-colors"
@@ -138,7 +150,7 @@ export function Landing() {
                 </button>
               </div>
 
-              {/* Conteúdo do menu - key única força recriação */}
+              {/* Conteúdo do Menu - key única força recriação */}
               <div key={Date.now()} className="flex-grow px-6 overflow-y-auto">
                 <div className="space-y-6 pb-24">
                   {sections.map((section) => (
@@ -163,7 +175,7 @@ export function Landing() {
                 </div>
               </div>
 
-              {/* Botão fixo na parte inferior */}
+              {/* Botão Fixo na Parte Inferior */}
               <div className="sticky bottom-0 bg-[#0f172a] border-t border-[#1e293b] p-4">
                 <Link
                   to="/pricing"
@@ -178,17 +190,18 @@ export function Landing() {
         )}
       </header>
 
+      {/* Seção Hero */}
       <main className="pt-32">
         <section
           id="hero"
           ref={el => sectionsRef.current[0] = el}
           className="container mx-auto px-1 sm:px-6 pt-32 sm:pt-8 pb-16 flex flex-col-reverse lg:flex-row items-center justify-between min-h-[100vh] sm:min-h-[100vh] relative"
         >
-
-
+          {/* Elementos Decorativos */}
           <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] h-[300px] right-[50px] top-[-150px] opacity-20 blur-[80px]"></div>
           <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] h-[200px] right-[200px] top-[-100px] opacity-15 blur-[60px]"></div>
 
+          {/* Texto Hero */}
           <div className="max-w-sm sm:max-w-md lg:max-w-lg text-left ml-4 sm:ml-8 md:ml-12 lg:ml-1 z-10 mt-10">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
               O jeito fácil e automático de emitir NFS-E para sua empresa!
@@ -206,8 +219,9 @@ export function Landing() {
             </div>
           </div>
 
-
+          {/* Imagem Hero */}
           <div className="relative w-full lg:w-1/2 mt-10 lg:mt-0">
+            {/* Elementos Decorativos */}
             <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[50px] md:right-[250px] top-[-400px] md:top-[-800px]" style={{ filter: 'blur(300px)' }}></div>
             <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] sm:w-[300px] md:w-[400px] h-[200px] sm:h-[300px] md:h-[400px] right-[200px] md:right-[1300px] top-[-200px] md:top-[-400px]" style={{ filter: 'blur(50px)' }}></div>
             <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[50px] top-[-250px]"></div>
@@ -227,11 +241,9 @@ export function Landing() {
             <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] left-[-200px] sm:left-[-680px] top-[-100px] sm:top-[-145px]"></div>
             <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] left-[-200px] sm:left-[-800px] top-[150px] sm:top-[265px]"></div>
 
+            {/* Imagem Hero para Mobile */}
             <div className="lg:hidden flex items-center justify-center">
-
-              {/* Container da bola - mantém o tamanho original mas remove overflow-hidden */}
               <div className="relative w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] rounded-full bg-[#2962FF]">
-                {/* Imagem que transborda */}
                 <img
                   src={lpheroimg}
                   alt="Homem sorrindo usando tablet"
@@ -253,9 +265,9 @@ export function Landing() {
           </div>
         </section>
 
+        {/* Seção Funcionalidades */}
         <section className="py-12 sm:py-16 bg-[#161e2e] relative">
           <div className="absolute right-0 bottom-0 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
-
 
           <div className="container mx-auto px-5 relative z-10">
             <h2 className="text-3xl font-bold py-10 text-center mb-8">
@@ -263,6 +275,7 @@ export function Landing() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Funcionalidade 1 */}
               <div className="bg-[#1e293b] rounded-xl overflow-hidden aspect-[4/3] relative flex flex-col">
                 <div className="flex justify-center pt-8 pb-4">
                   <div className="bg-[#2962FF] p-4 rounded-full">
@@ -277,6 +290,7 @@ export function Landing() {
                 </div>
               </div>
 
+              {/* Funcionalidade 2 */}
               <div className="bg-[#1e293b] rounded-xl overflow-hidden aspect-[4/3] relative flex flex-col">
                 <div className="flex justify-center pt-8 pb-4">
                   <div className="bg-[#2962FF] p-4 rounded-full">
@@ -291,6 +305,7 @@ export function Landing() {
                 </div>
               </div>
 
+              {/* Funcionalidade 3 */}
               <div className="bg-[#1e293b] rounded-xl overflow-hidden aspect-[4/3] relative flex flex-col">
                 <div className="flex justify-center pt-8 pb-4">
                   <div className="bg-[#2962FF] p-4 rounded-full">
@@ -315,20 +330,22 @@ export function Landing() {
           </div>
         </section>
 
+        {/* Seção Missão */}
         <section
           id="mission"
           ref={el => sectionsRef.current[1] = el}
-          className="py-8 sm:py-40 bg-[#161e2e] relative" // Alterado de py-12 sm:py-40 para py-8 sm:py-40
+          className="py-8 sm:py-40 bg-[#161e2e] relative"
         >
-          <div className="absolute left-10  w-7 h-7 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
+          <div className="absolute left-10 w-7 h-7 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
 
-          <div className="container mx-auto px-4  relative z-10">
+          <div className="container mx-auto px-4 relative z-10">
             <h1 className="text-4xl md:text-6xl font-bold text-center">
               AUTOMATIZE SUA NFS-E E ESQUEÇA A BUROCRACIA!
             </h1>
 
             <div className="flex flex-col lg:flex-row gap-8 items-center">
               <div className="w-full lg:w-2/3 flex flex-col lg:flex-row gap-8">
+                {/* Nossa Missão */}
                 <div className="w-full lg:w-1/2">
                   <div className="mb-8">
                     <h2 className="text-2xl font-bold mb-5 text-center">NOSSA MISSÃO</h2>
@@ -338,6 +355,7 @@ export function Landing() {
                   </div>
                 </div>
 
+                {/* Nosso Propósito */}
                 <div className="w-full lg:w-1/2">
                   <div className="mb-8">
                     <h2 className="text-2xl font-bold mb-4 text-center">NOSSO PROPÓSITO</h2>
@@ -348,6 +366,7 @@ export function Landing() {
                 </div>
               </div>
 
+              {/* Imagem Decorativa */}
               <div className="w-full lg:w-1/3 flex justify-center lg:justify-end">
                 <div className="rounded-full w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] lg:w-[400px] lg:h-[400px]">
                   <img
@@ -369,10 +388,11 @@ export function Landing() {
           </div>
         </section>
 
+        {/* Seção Simplicidade */}
         <section
           id="simplicity"
           ref={el => sectionsRef.current[2] = el}
-          className="bg-[#161e2e] relative pb-8 sm:pb-16" // Alterado de pb-16 para pb-8 sm:pb-16
+          className="bg-[#161e2e] relative pb-8 sm:pb-16"
         >
           <div className="absolute left-20 top-1/2 w-6 h-6 rounded-full bg-[#2962FF] opacity-30"></div>
           <div className="absolute right-32 bottom-32 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
@@ -424,6 +444,8 @@ export function Landing() {
           </div>
         </section>
       </main>
+
+      {/* Rodapé */}
 
       <footer className="bg-[#0f172a] py-12">
         <div className="container mx-auto px-4">
