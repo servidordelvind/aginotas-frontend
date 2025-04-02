@@ -210,7 +210,7 @@ useEffect(() => {
       </div> */}
     </div>
 
-    <div className="flex flex-col gap-4">
+{/*     <div className="flex flex-col gap-4">
       <div className="flex justify-center gap-4">
         <button
           className={`px-4 py-2 rounded-md ${selectedChart === 'invoices' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
@@ -237,7 +237,7 @@ useEffect(() => {
         {selectedChart === 'customers' && <Bar options={options} data={dataCustomers} />}
         {selectedChart === 'subscriptions' && <Bar options={options} data={dataSubscriptions} />}
       </div>
-    </div>
+    </div> */}
   </div>
   );
 }
