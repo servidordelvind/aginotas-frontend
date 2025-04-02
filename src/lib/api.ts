@@ -429,7 +429,7 @@ export const api = {
   },
 
   async find_plans(){
-    const response = await fetch(`${API_URL}/pagarme/get-all-subscriptions`, {
+    const response = await fetch(`${API_URL}/pagarme/plans`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
