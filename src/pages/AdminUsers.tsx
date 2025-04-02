@@ -103,7 +103,7 @@ export function AdminUsers() {
     }, 1000);
   }, []);
 
-  console.log(infoSubscription);
+  //console.log(infoSubscription);
 
   return (
     <div className="p-4 md:p-8">

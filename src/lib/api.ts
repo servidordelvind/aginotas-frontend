@@ -101,15 +101,13 @@ export const api = {
     return response.json();
   },
 
-  async find_all_users(data: any) {
+  async find_all_users() {
     const response = await fetch(`${API_URL}/user/findall`, {
-      method: 'POST',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data),
     });
-
     if (!response.ok) {
       throw new Error('Falha ao buscar usuários');
     }
