@@ -4,7 +4,7 @@ import { Receipt } from 'lucide-react';
 import { toast } from 'sonner';
 import { api } from '../lib/api.ts';
 import Cookies from "js-cookie";
-import nomelogodelvind from '../public/nomelogodelvind.png';
+import nomelogodelvind from '../public/aginotaslogoescura.svg';
 
 export function Login() {
   const navigate = useNavigate();
@@ -35,15 +35,15 @@ export function Login() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
         <div className="flex flex-col items-center mb-8">
-          <Receipt className="w-12 h-12 text-blue-600 mb-4" />
-          {/* <div className="flex items-center">
+        {/* <Receipt className="w-12 h-12 text-blue-600 mb-4" /> */}
+        <div className="flex items-center">
           
             <img
               src={nomelogodelvind}
               alt="Nome Logo Delvind"
-              className="h-32 w-32 object-contain"
+              className="h-24 w-32 object-contain"
             />
-          </div> */}
+          </div>
           <h1 className="text-2xl font-bold text-gray-900">Bem-vindo ao AgiNotas</h1>
           <p className="text-gray-500">Entre para gerenciar suas notas</p>
         </div>
@@ -92,11 +92,11 @@ export function Login() {
           </a>
         </div>
 
-       {/*} <div className="mt-2 text-center">
+        {/* <div className="mt-2 text-center">
           <a onClick={() => navigate('/admin/login')} className="cursor-pointer text-sm text-black-600 hover:text-blue-700">
             Acesso administrativo
           </a>
-        </div>*/}
+        </div> */}
       </div>
     </div>
   );
