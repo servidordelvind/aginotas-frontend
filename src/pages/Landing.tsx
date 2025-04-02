@@ -109,59 +109,95 @@ export function Landing() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="md:hidden bg-[#0f172a] px-4 pt-2 pb-4">
-            <div className="flex flex-col space-y-2">
-              {sections.map((section) => (
+          <div className="relative h-full min-h-screen flex flex-col">
+
+            {/* Overlay escuro com blur */}
+            <div
+              className="fixed inset-0 bg-[#0f172a]/95 backdrop-blur-sm"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+
+            {/* Container principal do modal */}
+            <div className="relative h-full flex flex-col">
+              {/* Cabeçalho com botão fechar */}
+              <div className="flex justify-end p-4">
                 <button
-                  key={section.id}
-                  onClick={() => { scrollToSection(section.id); setMobileMenuOpen(false); }}
-                  className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${activeSection === section.id ? 'text-[#FFFFFF] font-bold' : 'text-gray-500 hover:text-white'}`}
+                  className="text-gray-300 hover:text-white transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                  aria-label="Fechar menu"
                 >
-                  {section.label}
+                  <FaTimes size={28} />
                 </button>
-              ))}
-              <Link
-                to="/login"
-                className="text-white text-sm text-center"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Login
-              </Link>
-              <Link
-                to="/pricing"
-                className="bg-[#2962FF] text-white px-4 py-2 rounded-full text-sm font-medium text-center hover:bg-[#1E50D9] transition-colors mt-1"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Teste Grátis
-              </Link>
+              </div>
+
+              {/* Conteúdo do menu - key única força recriação */}
+              <div key={Date.now()} className="flex-grow px-6 overflow-y-auto">
+                <div className="space-y-6 pb-24">
+                  {sections.map((section) => (
+                    <button
+                      key={section.id}
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        setTimeout(() => scrollToSection(section.id), 100);
+                      }}
+                      className={`block text-xl font-medium w-full text-left ${activeSection === section.id ? 'text-white font-bold' : 'text-gray-400 hover:text-white'}`}
+                    >
+                      {section.label}
+                    </button>
+                  ))}
+                  <Link
+                    to="/login"
+                    className="block text-xl text-gray-400 hover:text-white transition-colors w-full text-left"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                </div>
+              </div>
+
+              {/* Botão fixo na parte inferior */}
+              <div className="sticky bottom-0 bg-[#0f172a] border-t border-[#1e293b] p-4">
+                <Link
+                  to="/pricing"
+                  className="block bg-[#2962FF] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors text-center"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Teste Grátis
+                </Link>
+              </div>
             </div>
           </div>
         )}
       </header>
 
-      <main className="pt-1">
+      <main className="pt-28">
         <section
           id="hero"
           ref={el => sectionsRef.current[0] = el}
-          className="container mx-auto px-4 sm:px-6 pt-32 sm:pt-8 pb-16 flex flex-col-reverse lg:flex-row items-center justify-between min-h-[90vh] sm:min-h-[100vh] relative"
+          className="container mx-auto px-1 sm:px-6 pt-32 sm:pt-8 pb-16 flex flex-col-reverse lg:flex-row items-center justify-between min-h-[90vh] sm:min-h-[100vh] relative"
         >
+
+
           <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] h-[300px] right-[50px] top-[-150px] opacity-20 blur-[80px]"></div>
           <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] h-[200px] right-[200px] top-[-100px] opacity-15 blur-[60px]"></div>
 
-          <div className="max-w-full lg:max-w-xl mb-10 lg:mb-0 text-center lg:text-left z-10 mt-10">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
-              O jeito fácil e automático de emitir NFC-se para sua empresa!
+          <div className="max-w-sm sm:max-w-md lg:max-w-lg text-left ml-4 sm:ml-8 md:ml-12 lg:ml-1 z-10 mt-10">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
+              O jeito fácil e automático de emitir NFS-E para sua empresa!
             </h1>
-            <p className="text-base sm:text-lg mb-6 sm:mb-8 text-gray-300">
-              Automatizar a emissão de notas fiscais de serviços recorrentes, tornando o processo mais ágil, simples e eficiente.
+            <p className="text-sm sm:text-base mb-6 text-gray-300 max-w-xs sm:max-w-md md:max-w-md mx-0">
+              Automatize a emissão de notas fiscais de serviços, eliminando burocracias e otimizando seu fluxo de trabalho de forma ágil e eficiente.
             </p>
-            <button
-              onClick={() => scrollToSection('mission')}
-              className="bg-[#2962FF] text-white px-6 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors inline-block text-center"
-            >
-              SAIBA MAIS
-            </button>
+            <div className="text-left">
+              <button
+                onClick={() => scrollToSection('mission')}
+                className="bg-[#2962FF] text-white px-8 py-3 sm:px-10 sm:py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors inline-block"
+              >
+                SAIBA MAIS
+              </button>
+            </div>
           </div>
+
 
           <div className="relative w-full lg:w-1/2 mt-10 lg:mt-0">
             <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[50px] md:right-[250px] top-[-400px] md:top-[-800px]" style={{ filter: 'blur(300px)' }}></div>
@@ -184,19 +220,26 @@ export function Landing() {
             <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] left-[-200px] sm:left-[-800px] top-[150px] sm:top-[265px]"></div>
 
             <div className="lg:hidden flex items-center justify-center">
-              <div className="relative w-[250px] h-[250px] sm:w-[300px] sm:h-[300px] rounded-full bg-[#2962FF] overflow-hidden">
+
+              {/* Container da bola - mantém o tamanho original mas remove overflow-hidden */}
+              <div className="relative w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] rounded-full bg-[#2962FF]">
+                {/* Imagem que transborda */}
                 <img
                   src={lpheroimg}
                   alt="Homem sorrindo usando tablet"
                   className="rounded-lg"
-                />
-                <div
-                  className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-[#161e2e] to-transparent"
                   style={{
-                    filter: 'blur(10px)',
-                    maskImage: 'linear-gradient(to top, transparent 0%, black 30%)'
+                    width: '120%',
+                    height: '120%',
+                    top: '40%',
+                    left: '41%',
+                    transform: 'translate(-50%, -50%)',
+                    objectFit: 'cover',
+                    zIndex: 10,
+                    position: 'absolute', filter: 'blur(0px)',
+                    maskImage: 'linear-gradient(to top, transparent 7%, black 18%)'
                   }}
-                ></div>
+                />
               </div>
             </div>
           </div>
@@ -204,11 +247,11 @@ export function Landing() {
 
         <section className="py-12 sm:py-16 bg-[#161e2e] relative">
           <div className="absolute right-0 bottom-0 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
-          <div className="absolute left-10 top-20 w-8 h-8 rounded-full bg-[#d2aae3] opacity-30"></div>
+
 
           <div className="container mx-auto px-5 relative z-10">
             <h2 className="text-3xl font-bold py-10 text-center mb-8">
-              Uma plataforma inovadora pra facilitar a gestão de NFC-se
+              Uma plataforma inovadora pra facilitar a gestão de NFS-E
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -267,13 +310,13 @@ export function Landing() {
         <section
           id="mission"
           ref={el => sectionsRef.current[1] = el}
-          className="py-12 sm:py-40 bg-[#161e2e] relative"
+          className="py-8 sm:py-40 bg-[#161e2e] relative" // Alterado de py-12 sm:py-40 para py-8 sm:py-40
         >
           <div className="absolute left-10  w-7 h-7 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
 
           <div className="container mx-auto px-4  relative z-10">
             <h1 className="text-4xl md:text-6xl font-bold text-center">
-              AUTOMATIZE SUA NFC-SE E ESQUEÇA A BUROCRACIA!
+              AUTOMATIZE SUA NFS-E E ESQUEÇA A BUROCRACIA!
             </h1>
 
             <div className="flex flex-col lg:flex-row gap-8 items-center">
@@ -282,7 +325,7 @@ export function Landing() {
                   <div className="mb-8">
                     <h2 className="text-2xl font-bold mb-5 text-center">NOSSA MISSÃO</h2>
                     <p className="text-xl text-center">
-                      Oferecer uma plataforma inovadora que facilite a gestão de NFC-se para empresas que prestam serviços contínuos, eliminando burocracias e otimizando processos.
+                      Oferecer uma plataforma inovadora que facilite a gestão de NFS-E para empresas que prestam serviços contínuos, eliminando burocracias e otimizando processos.
                     </p>
                   </div>
                 </div>
@@ -291,14 +334,14 @@ export function Landing() {
                   <div className="mb-8">
                     <h2 className="text-2xl font-bold mb-4 text-center">NOSSO PROPÓSITO</h2>
                     <p className="text-xl text-center mb-8">
-                      Automatizar a emissão de NFC-se recorrentes, tornando o processo mais ágil, simples e eficiente.
+                      Automatizar a emissão de NFS-E recorrentes, tornando o processo mais ágil, simples e eficiente.
                     </p>
                   </div>
                 </div>
               </div>
 
               <div className="w-full lg:w-1/3 flex justify-center lg:justify-end">
-                <div className="rounded-full w-[300px] h-[300px] lg:w-[400px] lg:h-[400px]">
+                <div className="rounded-full w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] lg:w-[400px] lg:h-[400px]">
                   <img
                     src={bolaImagem}
                     alt="Imagem decorativa"
@@ -321,7 +364,7 @@ export function Landing() {
         <section
           id="simplicity"
           ref={el => sectionsRef.current[2] = el}
-          className="bg-[#161e2e] relative pb-16" // Adicionado pb-16 (padding-bottom)
+          className="bg-[#161e2e] relative pb-8 sm:pb-16" // Alterado de pb-16 para pb-8 sm:pb-16
         >
           <div className="absolute left-20 top-1/2 w-6 h-6 rounded-full bg-[#2962FF] opacity-30"></div>
           <div className="absolute right-32 bottom-32 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
@@ -377,7 +420,8 @@ export function Landing() {
       <footer className="bg-[#0f172a] py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="flex flex-col items-center md:items-start">
+            <div className="flex flex-col items-center text-center md:items-start">
+
               <div className="flex items-center mb-4">
                 <img
                   src={nomelogodelvind}
@@ -385,10 +429,12 @@ export function Landing() {
                   className="h-20"
                 />
               </div>
-              <p className="text-gray-400 text-sm">
-                Solução completa para gestão de NFC-se para serviços contínuos.
+              <p className="text-gray-400 text-sm text-center w-full">
+                Solução completa para gestão de NFS-E para serviços contínuos.
               </p>
+
             </div>
+
 
             <div className="flex flex-col items-center md:items-start">
               <h3 className="text-white font-semibold mb-4 flex items-center">
