@@ -207,6 +207,23 @@ export function Register() {
     }
   };
 
+  const handleSubmitSubscription = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (
+      !cardDetails.cardNumber ||
+      !cardDetails.holderName ||
+      !cardDetails.expMonth ||
+      !cardDetails.expYear ||
+      !cardDetails.cvv
+    ) {
+      setError("Por favor, preencha todos os campos.");
+      return;
+    }
+
+    handleCreateAccount();
+  }
+
   const handleCreateAccount = async () => {
     setIsLoading(true);
     setError('');
@@ -265,10 +282,7 @@ export function Register() {
         <p className="text-gray-500">Complete o cadastro para ativar sua assinatura.</p>
           </div>
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              //console.log('Dados do cartão enviados:', cardDetails);
-            }}
+            onSubmit={handleSubmitSubscription}
             className="space-y-4"
           >
             <div>
@@ -356,7 +370,6 @@ export function Register() {
 
             <button
               type="submit"
-              onClick={() => handleCreateAccount()}
               disabled={isLoading}
               className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
