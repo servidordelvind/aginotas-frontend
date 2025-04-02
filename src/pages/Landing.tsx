@@ -3,7 +3,7 @@ import { FaFileInvoiceDollar, FaChartLine, FaUsers, FaBars, FaTimes, FaChevronRi
 import { useEffect, useState, useRef } from 'react';
 import lpheroimg from '../public/lpheroimg.png';
 import logodelvind from '../public/logodelvind.png';
-import nomelogodelvind from '../public/logonomelogo.png';
+import nomelogodelvind from '../public/nomelogodelvind.png';
 import logocomnome from '../public/logocomnome.png';
 import bolaImagem from '../public/cardimg.png';
 import delvindapp from '../public/delvindapp.png';
@@ -57,14 +57,15 @@ export function Landing() {
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
+      const headerHeight = document.querySelector('header').offsetHeight; // Obtém a altura do cabeçalho
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY; // Obtém a posição do elemento
+      window.scrollTo({
+        top: elementPosition - headerHeight, // Subtrai a altura do cabeçalho
+        behavior: 'smooth'
       });
       setActiveSection(id);
     }
   };
-
   const sections = [
     { id: 'hero', label: 'Início' },
     { id: 'mission', label: 'Missão' },
@@ -73,14 +74,21 @@ export function Landing() {
 
   return (
     <div className="min-h-screen bg-[#161e2e] text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-      <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#161e2e]/95 backdrop-blur-sm py-2 shadow-lg' : 'py-2'}`}>
+      <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#161e2e]/95 backdrop-blur-sm shadow-lg' : 'py-0'}`}>
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center">
             <img
+              src={logodelvind}
+              alt="Nome Logo Delvind"
+              className="h-20 w-20 object-contain-inline-block -mr-4"
+            />
+            <img
               src={nomelogodelvind}
               alt="Nome Logo Delvind"
-              className="h-22 w-22 object-contain"
+              className=" max-w-[200px] max-h-[200px] object-contain "
+            
             />
+
           </div>
 
           <nav className="hidden md:flex space-x-4 items-center">
@@ -170,11 +178,11 @@ export function Landing() {
         )}
       </header>
 
-      <main className="pt-28">
+      <main className="pt-32">
         <section
           id="hero"
           ref={el => sectionsRef.current[0] = el}
-          className="container mx-auto px-1 sm:px-6 pt-32 sm:pt-8 pb-16 flex flex-col-reverse lg:flex-row items-center justify-between min-h-[90vh] sm:min-h-[100vh] relative"
+          className="container mx-auto px-1 sm:px-6 pt-32 sm:pt-8 pb-16 flex flex-col-reverse lg:flex-row items-center justify-between min-h-[100vh] sm:min-h-[100vh] relative"
         >
 
 
