@@ -267,6 +267,8 @@ export function Register() {
       navigate('/login');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ocorreu um erro');
+      alert('Ocorreu um erro ao criar a conta do usuário!');
+      setIsLoading(false);
       console.error('Ocorreu um erro ao criar a conta do usuário!');
       return;
     }
@@ -420,7 +422,7 @@ export function Register() {
               <p className="mt-1 text-sm text-red-600">{cnpjError}</p>
             )}
           </div>
-       <div>
+{/*        <div>
           <label htmlFor="cnpj" className="block text-sm font-medium text-gray-700 mb-1">
             CNPJ {loadingCnpj && <Loader2 className="inline w-4 h-4 ml-2 animate-spin" />}
           </label>
@@ -438,7 +440,7 @@ export function Register() {
           {cnpjError && (
             <p className="mt-1 text-sm text-red-600">{cnpjError}</p>
           )}
-        </div>
+        </div> */}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
