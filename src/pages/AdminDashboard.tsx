@@ -198,7 +198,7 @@ useEffect(() => {
   </div> */}
   <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
     <h2 className="text-lg font-semibold text-gray-700">Receita Total de Assinaturas</h2>
-    <p className="text-3xl font-bold text-gray-800 mt-2">R$ {(plans?.items[0].pricing_scheme.price * users.filter((user) => user.status === 'active').length).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+    <p className="text-3xl font-bold text-gray-800 mt-2">R$ {((plans?.items[0].pricing_scheme.price / 100) * users.filter((user) => user.status === 'active').length).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
   </div>
       <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
         <h2 className="text-lg font-semibold text-gray-700">Clientes Inativos</h2>
