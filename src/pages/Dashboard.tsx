@@ -128,7 +128,7 @@ export function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Painel de Controle</h1>
+        <h1 className="text-2xl sm:text-left font-bold text-gray-900 text-center">Painel de Controle</h1>      
       
       {/* Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
