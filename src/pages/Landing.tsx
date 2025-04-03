@@ -74,107 +74,118 @@ export function Landing() {
 
   return (
     <div className="min-h-screen bg-[#161e2e] text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-      <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#161e2e]/95 backdrop-blur-sm shadow-lg py-[0.0rem] md:py-0 lg:py-0' : 'py-[0.0rem] md:py-0 lg:py-0'}`}>
-        <div className="container mx-auto px-4 flex justify-between items-center">
-        <div className="flex items-center">
-  <img
-    src={logodelvind}
-    alt="Nome Logo Delvind"
-    className="h-12 w-12 object-contain -mr-16 md:h-16 md:w-16"
-  />
-  <img
-    src={nomelogodelvind}
-    alt="Nome Logo Delvind"
-    className="w-full max-w-[284px] aspect-[16/9] object-contain md:max-w-[320px]"
-  />
-</div>
-
-
-          <nav className="hidden md:flex space-x-4 items-center">
-            {sections.map((section) => (
-              <button
-                key={section.id}
-                onClick={() => scrollToSection(section.id)}
-                className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${activeSection === section.id ? 'text-[#FFFFFF] font-bold' : 'text-gray-500 hover:text-white'}`}
-              >
-                {section.label}
-              </button>
-            ))}
-            <Link to="/login" className="text-white text-sm">Login</Link>
-            <Link to="/pricing" className="bg-white text-[#0D47A1] px-3 py-1 sm:px-4 sm:py-1 rounded-full font-semibold hover:bg-gray-200 transition-colors text-sm">
-              Teste Grátis
-            </Link>
-          </nav>
-
-          <button
-            className="md:hidden text-gray-300 focus:outline-none"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
-          </button>
-        </div>
-
-        {mobileMenuOpen && (
-  <div className="relative h-full min-h-screen flex flex-col">
-    <div
-      className="fixed inset-0 bg-[#0f172a]/95 backdrop-blur-sm"
-      onClick={() => setMobileMenuOpen(false)}
-    />
-
-    <div className="relative h-full flex flex-col">
-      {/* Botão de fechar */}
-      <div className="flex justify-end p-4">
-        <button
-          className="text-gray-300 hover:text-white transition-colors"
-          onClick={() => setMobileMenuOpen(false)}
-          aria-label="Fechar menu"
-        >
-          <FaTimes size={28} />
-        </button>
-      </div>
-
-      {/* Lista de seções */}
-      <div key={Date.now()} className="flex-grow px-6 overflow-y-auto ">
-        <div className="space-y-6 pb-72 text-right">
-          {sections.map((section) => (
-            <button
-              key={section.id}
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setTimeout(() => scrollToSection(section.id), 100);
-              }}
-              className={`block text-xl font-medium w-full text-right ${
-                activeSection === section.id ? 'text-white font-bold' : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              {section.label}
-            </button>
-          ))}
-          <Link
-            to="/login"
-            className="block text-xl text-gray-400 hover:text-white transition-colors w-full text-right"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Login
-          </Link>
-        </div>
-      </div>
-
-      {/* Botão "Teste Grátis" fixado no bottom 0 e centralizado */}
-<div className="absolute bottom-0 left-0 w-full bg-[#0f172a] border-t border-[#1e293b] p-4 flex justify-center">
-  <Link
-    to="/pricing"
-    className="bg-[#2962FF] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors text-center"
-    onClick={() => setMobileMenuOpen(false)}
-  >
-    Teste Grátis
-  </Link>
-</div>
-
+   <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#161e2e]/95 backdrop-blur-sm shadow-lg py-[0.0rem] md:py-0 lg:py-0' : 'py-[0.0rem] md:py-0 lg:py-0'}`}>
+  <div className="container mx-auto px-4 flex justify-between items-center">
+    <div className="flex items-center">
+      <img
+        src={logodelvind}
+        alt="Nome Logo Delvind"
+        className="h-12 w-12 object-contain -mr-16 md:h-16 md:w-16"
+      />
+      <img
+        src={nomelogodelvind}
+        alt="Nome Logo Delvind"
+        className="w-full max-w-[284px] aspect-[16/9] object-contain md:max-w-[320px]"
+      />
     </div>
+
+    {/* Menu desktop - agora só aparece acima de 1024px */}
+    <nav className="hidden lg:flex space-x-4 items-center">
+      {sections.map((section) => (
+        <button
+          key={section.id}
+          onClick={() => scrollToSection(section.id)}
+          className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${activeSection === section.id ? 'text-[#FFFFFF] font-bold' : 'text-gray-500 hover:text-white'}`}
+        >
+          {section.label}
+        </button>
+      ))}
+      <Link to="/login" className="text-white text-sm">Login</Link>
+      <Link to="/pricing" className="bg-white text-[#0D47A1] px-3 py-1 sm:px-4 sm:py-1 rounded-full font-semibold hover:bg-gray-200 transition-colors text-sm">
+        Teste Grátis
+      </Link>
+    </nav>
+
+    {/* Botão do menu mobile - aparece abaixo de 1024px (727-1024px e <727px) */}
+    <button
+      className="lg:hidden text-gray-300 focus:outline-none"
+      onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+      aria-label="Toggle menu"
+    >
+      {mobileMenuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
+    </button>
   </div>
-)}
+
+  {/* Menu mobile - aparece abaixo de 1024px */}
+  {mobileMenuOpen && (
+    <div className="fixed inset-0 flex flex-col bg-[#0f172a]/95 backdrop-blur-sm h-full min-h-screen">
+            <div
+              className="absolute inset-0 bg-[#0f172a]/95 backdrop-blur-sm"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+
+            {/* Container principal */}
+            <div className="relative h-full flex flex-col">
+
+              {/* Logo centralizada no topo */}
+              <div className="flex justify-center">
+                <img
+                  src={nomelogodelvind}
+                  alt="Nome Logo Delvind"
+                  className="w-full max-w-[284px] aspect-[16/9] object-contain md:max-w-[320px]"
+                />
+              </div>
+
+              {/* Botão de fechar no canto superior direito */}
+              <button
+                className="absolute top-16 right-4 text-gray-300 hover:text-white transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Fechar menu"
+              >
+                <FaTimes size={28} />
+              </button>
+
+              {/* Lista de seções */}
+              <div key={Date.now()} className="flex-grow px-6 overflow-y-auto">
+                <div className="space-y-6 pb-72 text-right">
+                  {sections.map((section) => (
+                    <button
+                      key={section.id}
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        setTimeout(() => scrollToSection(section.id), 100);
+                      }}
+                      className={`block text-xl font-medium w-full text-right ${activeSection === section.id ? 'text-white font-bold' : 'text-gray-400 hover:text-white'
+                        }`}
+                    >
+                      {section.label}
+                    </button>
+                  ))}
+                  <Link
+                    to="/login"
+                    className="block text-xl text-gray-400 hover:text-white transition-colors w-full text-right"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                </div>
+              </div>
+
+              {/* Botão "Teste Grátis" fixado no bottom 0 e centralizado */}
+              <div className="fixed bottom-0 left-0 w-full bg-[#0f172a] border-t border-[#1e293b] p-4 flex justify-center">
+                <Link
+                  to="/pricing"
+                  className="bg-[#2962FF] w-80 text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors text-center"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Teste Grátis
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+
 
       </header>
 
@@ -205,12 +216,15 @@ export function Landing() {
           </div>
 
           <div className="relative w-full lg:w-1/2 mt-10 lg:mt-0">
-            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[50px] md:right-[250px] top-[-400px] md:top-[-800px]" style={{ filter: 'blur(300px)' }}></div>
-            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] sm:w-[300px] md:w-[400px] h-[200px] sm:h-[300px] md:h-[400px] right-[200px] md:right-[1300px] top-[-200px] md:top-[-400px]" style={{ filter: 'blur(50px)' }}></div>
-            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[50px] top-[-250px]"></div>
-            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] right-[-50px] sm:right-[-100px] top-[-150px] sm:top-[-250px]"></div>
+
+            <div className="hidden lg:block  absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[50px] md:right-[250px] top-[-400px] md:top-[-800px]" style={{ filter: 'blur(300px)' }}></div>
+            <div className="hidden lg:block  absolute rounded-full bg-[#2962FF] w-[200px] sm:w-[300px] md:w-[400px] h-[200px] sm:h-[300px] md:h-[400px] right-[200px] md:right-[1300px] top-[-200px] md:top-[-400px]" style={{ filter: 'blur(50px)' }}></div>
+            <div className="hidden lg:block  absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[50px] top-[-250px]"></div>
+            <div className="hidden lg:block   absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] right-[-50px] sm:right-[-100px] top-[-150px] sm:top-[-250px]"></div>
+
             <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[-50px] sm:right-[-100px] top-[-100px] sm:top-[-230px]">
               <img
+
                 src={lpheroimg}
                 alt="Homem sorrindo usando tablet"
                 className="relative z-10 rounded-lg max-w-full"
@@ -220,28 +234,46 @@ export function Landing() {
                 }}
               />
             </div>
-            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[200px] sm:right-[550px] top-[40px] sm:top-[80px]"></div>
-            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] left-[-200px] sm:left-[-680px] top-[-100px] sm:top-[-145px]"></div>
-            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] left-[-200px] sm:left-[-800px] top-[150px] sm:top-[265px]"></div>
+            <div className="hidden lg:block  absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[200px] sm:right-[550px] top-[40px] sm:top-[80px] "></div>
+            <div className="hidden lg:block  absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] left-[-200px] sm:left-[-680px] top-[-100px] sm:top-[-145px]"></div>
+            <div className="hidden lg:block  absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] left-[-200px] sm:left-[-800px] top-[150px] sm:top-[265px]"></div>
 
-            <div className="lg:hidden flex items-center justify-center">
+            <div className="lg:hidden py-10 flex items-center justify-center relative" style={{ overflow: 'visible' }}>
+              <div className="absolute top-[-16px] left-0 w-full h-[2px] bg-[#2962FF] lg:hidden"></div>
+
               <div className="relative w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] rounded-full bg-[#2962FF]">
                 <img
                   src={lpheroimg}
                   alt="Homem sorrindo usando tablet"
                   className="rounded-lg"
                   style={{
-                    width: '120%',
-                    height: '120%',
-                    top: '40%',
-                    left: '41%',
-                    transform: 'translate(-50%, -50%)',
                     objectFit: 'cover',
+                    width: '150%',
+                    height: '145%',
+                    top: '15%',
+                    left: '45%',
+                    transform: 'translate(-50%, -50%)',
+                    maxWidth: '500px',
                     zIndex: 10,
-                    position: 'absolute', filter: 'blur(0px)',
+                    position: 'absolute',
+                    filter: 'blur(0px)',
                     maskImage: 'linear-gradient(to top, transparent 7%, black 18%)'
                   }}
                 />
+
+                {/* Efeitos grandes - visíveis apenas em mobile (<640px) */}
+                <div className="absolute rounded-full bg-[#2962FF] w-[300px] h-[300px] right-[50px] top-[-400px] sm:hidden" style={{ filter: 'blur(300px)' }}></div>
+                <div className="absolute rounded-full bg-[#2962FF] w-[150px] h-[150px] right-[-50px] top-[-200px] sm:hidden" style={{ filter: 'blur(50px)' }}></div>
+
+                {/* Efeitos médios - visíveis apenas em mobile (<640px) */}
+                <div className="absolute rounded-full bg-[#2962FF] w-[150px] h-[150px] right-[150px] top-[-150px] sm:hidden" style={{ filter: 'blur(50px)' }}></div>
+
+                {/* Bolinhas pequenas - visíveis apenas em mobile (<640px) */}
+                <div className="absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[-55px] top-[-50px] sm:hidden"></div>
+                <div className="absolute rounded-full bg-[#2962FF] w-[50px] h-[50px] right-[-120px] top-[50px] sm:hidden"></div>
+                <div className="absolute rounded-full bg-[#2962FF] w-[5px] h-[5px] right-[-25px] top-[-45px] sm:hidden"></div>
+                <div className="absolute rounded-full bg-[#2962FF] w-[5px] h-[5px] right-[225px] top-[-5px] sm:hidden"></div>
+                <div className="absolute rounded-full bg-[#2962FF] w-[50px] h-[50px] right-[250px] top-[150px] sm:hidden"></div>
               </div>
             </div>
           </div>
@@ -383,7 +415,7 @@ export function Landing() {
                 </div>
               </div>
 
-              <div className="hidden lg:block lg:col-span-1"></div>
+              <div className="hidden  lg:col-span-1"></div>
 
               <div className="lg:col-span-6 flex items-center justify-center">
                 <img
