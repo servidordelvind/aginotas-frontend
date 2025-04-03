@@ -12,6 +12,18 @@ export function SubscriptionManagement() {
     const [plans, setPlans] = useState([
         {
             _id: '',
+            id: '',
+            created_at: '',
+            statement_descriptor: '',
+            trial_period_days: '',
+            status: '',
+            items: [
+                {
+                    pricing_scheme:{
+                        price: 0,
+                    }
+                }
+            ],
             name: '',
             description: '',
             price: 0,
@@ -20,6 +32,7 @@ export function SubscriptionManagement() {
     const [subscriptions, setSubscriptions] = useState([
         {
             _id: '',
+            id: '',    
             name: '',
             details: ''
         }
@@ -37,8 +50,6 @@ export function SubscriptionManagement() {
         }
         loadData();
     },[])
-
-    console.log(plans);
 
     
     if (loading) {
@@ -77,22 +88,36 @@ export function SubscriptionManagement() {
                     key={plan._id}
                     className="p-4 border rounded shadow-md flex flex-col items-start"
                 >
+                    <p>{plan.id}</p>
                     <Typography variant="h6" className="text-gray-800">
                     {plan.name}
                     </Typography>
                     <Typography className="text-gray-600">
-                    {plan.description}
+                     {new Date(plan.created_at).toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                     })}
+                    </Typography>
+                    <Typography className="text-gray-600">
+                    {plan.statement_descriptor}
+                    </Typography>
+                    <Typography className="text-gray-600">
+                    Tempo gratuito {plan.trial_period_days} dias
+                    </Typography>
+                    <Typography className="text-gray-600">
+                    status: {plan.status}
                     </Typography>
                     <Typography className="text-gray-800 font-bold">
-                    R$ {plan.price}
+                    R$ {plan.items[0].pricing_scheme.price / 100}
                     </Typography>
                     <div className="mt-4 flex space-x-2">
                     <button className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">
                         Editar
                     </button>
-                    <button className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
+{/*                     <button className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
                         Excluir
-                    </button>
+                    </button> */}
                     </div>
                 </div>
                 ))}
