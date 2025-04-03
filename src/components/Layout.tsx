@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import nomelogodelvind from '../public/aginotaslogoescura.svg';
+import nomelogodelvind from '../public/logodelvindlayout.svg';
 import {
   LayoutDashboard,
   Users,
@@ -94,11 +94,11 @@ export function Layout() {
           <img
             src={nomelogodelvind}
             alt="Nome Logo Delvind"
-            className="h-10 w-10 object-contain"
+           className="max-h-[150px] px-8 object-contain"
           />
         </div> 
          
-          <h1 className="text-xl font-bold">AgiNotas</h1>
+          
         </div>
 
         <div className="space-y-2">
