@@ -97,7 +97,7 @@ export function Layout() {
             className="h-10 w-10 object-contain"
           />
         </div> 
-          <CreditCard className="w-8 h-8 text-blue-600" />
+         
           <h1 className="text-xl font-bold">AgiNotas</h1>
         </div>
 
