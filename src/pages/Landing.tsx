@@ -251,7 +251,7 @@ export function Landing() {
           <div className="absolute right-0 bottom-0 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
 
           <div className="container mx-auto px-5 relative z-10">
-            <h2 className="text-3xl font-bold py-10 mb-8">
+            <h2 className="text-3xl font-bold py-10 text-center mb-8">
               Uma plataforma inovadora pra facilitar a gestão de NFS-E
             </h2>
 
@@ -264,7 +264,7 @@ export function Landing() {
                 </div>
                 <div className="flex-grow flex flex-col items-center justify-center p-6 text-center">
                   <h3 className="text-xl font-semibold mb-4">Faturamento Automático</h3>
-                  <p className="text-gray-400 text-justify">
+                  <p className="text-gray-400">
                     Configure cobranças recorrentes e deixe nosso sistema fazer o resto.
                   </p>
                 </div>
@@ -278,7 +278,7 @@ export function Landing() {
                 </div>
                 <div className="flex-grow flex flex-col items-center justify-center p-6 text-center">
                   <h3 className="text-xl font-semibold mb-4">Acompanhamento Inteligente</h3>
-                  <p className="text-gray-400 text-justify">
+                  <p className="text-gray-400">
                     Monitore pagamentos e receba notificações de atualizações.
                   </p>
                 </div>
@@ -292,7 +292,7 @@ export function Landing() {
                 </div>
                 <div className="flex-grow flex flex-col items-center justify-center p-6 text-center">
                   <h3 className="text-xl font-semibold mb-4">Portal do Cliente</h3>
-                  <p className="text-gray-400 text-justify">
+                  <p className="text-gray-400">
                     Ofereça aos clientes acesso ao histórico de notas fiscais.
                   </p>
                 </div>
