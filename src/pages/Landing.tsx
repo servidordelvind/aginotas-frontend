@@ -136,7 +136,7 @@ export function Landing() {
 
       {/* Lista de seções */}
       <div key={Date.now()} className="flex-grow px-6 overflow-y-auto ">
-        <div className="space-y-6 pb-96 text-right">
+        <div className="space-y-6 pb-72 text-right">
           {sections.map((section) => (
             <button
               key={section.id}
