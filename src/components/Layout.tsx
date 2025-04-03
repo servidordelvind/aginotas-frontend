@@ -98,7 +98,7 @@ export function Layout() {
           />
         </div> 
          
-          <h1 className="text-xl font-bold">AgiNotas</h1>
+          
         </div>
 
         <div className="space-y-2">
