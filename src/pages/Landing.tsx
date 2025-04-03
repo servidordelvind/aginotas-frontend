@@ -57,10 +57,10 @@ export function Landing() {
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      const headerHeight = document.querySelector('header').offsetHeight; // Obtém a altura do cabeçalho
-      const elementPosition = element.getBoundingClientRect().top + window.scrollY; // Obtém a posição do elemento
+      const headerHeight = document.querySelector('header').offsetHeight;
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({
-        top: elementPosition - headerHeight, // Subtrai a altura do cabeçalho
+        top: elementPosition - headerHeight,
         behavior: 'smooth'
       });
       setActiveSection(id);
@@ -76,21 +76,20 @@ export function Landing() {
     <div className="min-h-screen bg-[#161e2e] text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#161e2e]/95 backdrop-blur-sm shadow-lg py-[0.0rem] md:py-0 lg:py-0' : 'py-[0.0rem] md:py-0 lg:py-0'}`}>
         <div className="container mx-auto px-4 flex justify-between items-center">
-          {/* Logo */}
-          <div className="flex items-center">
-            <img
-              src={logodelvind}
-              alt="Nome Logo Delvind"
-              className="h-12 w-12 object-contain -mr-2 md:h-16 md:w-16" // Tamanho menor em telas pequenas
-            />
-            <img
-              src={nomelogodelvind}
-              alt="Nome Logo Delvind"
-              className="max-h-[100px] object-contain md:max-h-[150px]" // Tamanho menor em telas pequenas
-            />
-          </div>
+        <div className="flex items-center">
+  <img
+    src={logodelvind}
+    alt="Nome Logo Delvind"
+    className="h-12 w-12 object-contain -mr-16 md:h-16 md:w-16"
+  />
+  <img
+    src={nomelogodelvind}
+    alt="Nome Logo Delvind"
+    className="w-full max-w-[284px] aspect-[16/9] object-contain md:max-w-[320px]"
+  />
+</div>
 
-          {/* Menu de Navegação */}
+
           <nav className="hidden md:flex space-x-4 items-center">
             {sections.map((section) => (
               <button
@@ -107,7 +106,6 @@ export function Landing() {
             </Link>
           </nav>
 
-          {/* Botão Menu Móvel */}
           <button
             className="md:hidden text-gray-300 focus:outline-none"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -118,75 +116,74 @@ export function Landing() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="relative h-full min-h-screen flex flex-col">
+  <div className="relative h-full min-h-screen flex flex-col">
+    <div
+      className="fixed inset-0 bg-[#0f172a]/95 backdrop-blur-sm"
+      onClick={() => setMobileMenuOpen(false)}
+    />
 
-            {/* Overlay escuro com blur */}
-            <div
-              className="fixed inset-0 bg-[#0f172a]/95 backdrop-blur-sm"
-              onClick={() => setMobileMenuOpen(false)}
-            />
+    <div className="relative h-full flex flex-col">
+      {/* Botão de fechar */}
+      <div className="flex justify-end p-4">
+        <button
+          className="text-gray-300 hover:text-white transition-colors"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-label="Fechar menu"
+        >
+          <FaTimes size={28} />
+        </button>
+      </div>
 
-            {/* Container principal do modal */}
-            <div className="relative h-full flex flex-col">
-              {/* Cabeçalho com botão fechar */}
-              <div className="flex justify-end p-4">
-                <button
-                  className="text-gray-300 hover:text-white transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                  aria-label="Fechar menu"
-                >
-                  <FaTimes size={28} />
-                </button>
-              </div>
+      {/* Lista de seções */}
+      <div key={Date.now()} className="flex-grow px-6 overflow-y-auto ">
+        <div className="space-y-6 pb-72 text-right">
+          {sections.map((section) => (
+            <button
+              key={section.id}
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setTimeout(() => scrollToSection(section.id), 100);
+              }}
+              className={`block text-xl font-medium w-full text-right ${
+                activeSection === section.id ? 'text-white font-bold' : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              {section.label}
+            </button>
+          ))}
+          <Link
+            to="/login"
+            className="block text-xl text-gray-400 hover:text-white transition-colors w-full text-right"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Login
+          </Link>
+        </div>
+      </div>
 
-              {/* Conteúdo do menu - key única força recriação */}
-              <div key={Date.now()} className="flex-grow px-6 overflow-y-auto">
-                <div className="space-y-6 pb-24">
-                  {sections.map((section) => (
-                    <button
-                      key={section.id}
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        setTimeout(() => scrollToSection(section.id), 100);
-                      }}
-                      className={`block text-xl font-medium w-full text-left ${activeSection === section.id ? 'text-white font-bold' : 'text-gray-400 hover:text-white'}`}
-                    >
-                      {section.label}
-                    </button>
-                  ))}
-                  <Link
-                    to="/login"
-                    className="block text-xl text-gray-400 hover:text-white transition-colors w-full text-left"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Login
-                  </Link>
-                </div>
-              </div>
+      {/* Botão "Teste Grátis" fixado no bottom 0 e centralizado */}
+<div className="absolute bottom-0 left-0 w-full bg-[#0f172a] border-t border-[#1e293b] p-4 flex justify-center">
+  <Link
+    to="/pricing"
+    className="bg-[#2962FF] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors text-center"
+    onClick={() => setMobileMenuOpen(false)}
+  >
+    Teste Grátis
+  </Link>
+</div>
 
-              {/* Botão fixo na parte inferior */}
-              <div className="sticky bottom-0 bg-[#0f172a] border-t border-[#1e293b] p-4">
-                <Link
-                  to="/pricing"
-                  className="block bg-[#2962FF] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors text-center"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Teste Grátis
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
+    </div>
+  </div>
+)}
+
       </header>
 
       <main className="pt-32">
         <section
           id="hero"
           ref={el => sectionsRef.current[0] = el}
-          className="container mx-auto px-1 sm:px-6  sm:pt-8 pb-16 flex flex-col-reverse lg:flex-row items-center justify-between min-h-[100vh] sm:min-h-[100vh] relative"
+          className="container mx-auto px-1 sm:px-6 sm:pt-8 pb-16 flex flex-col-reverse lg:flex-row items-center justify-between min-h-[10vh] sm:min-h-[100vh] relative"
         >
-
-
           <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] h-[300px] right-[50px] top-[-150px] opacity-20 blur-[80px]"></div>
           <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] h-[200px] right-[200px] top-[-100px] opacity-15 blur-[60px]"></div>
 
@@ -194,7 +191,7 @@ export function Landing() {
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
               O jeito fácil e automático de emitir NFS-E para sua empresa!
             </h1>
-            <p className="text-sm sm:text-base mb-6 text-gray-300 max-w-xs sm:max-w-md md:max-w-md mx-0">
+            <p className="text-sm sm:text-base mb-6 text-gray-300 max-w-xs sm:max-w-md md:max-w-md mx-0 text-justify">
               Automatize a emissão de notas fiscais de serviços, eliminando burocracias e otimizando seu fluxo de trabalho de forma ágil e eficiente.
             </p>
             <div className="text-left">
@@ -206,7 +203,6 @@ export function Landing() {
               </button>
             </div>
           </div>
-
 
           <div className="relative w-full lg:w-1/2 mt-10 lg:mt-0">
             <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[50px] md:right-[250px] top-[-400px] md:top-[-800px]" style={{ filter: 'blur(300px)' }}></div>
@@ -229,10 +225,7 @@ export function Landing() {
             <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] left-[-200px] sm:left-[-800px] top-[150px] sm:top-[265px]"></div>
 
             <div className="lg:hidden flex items-center justify-center">
-
-              {/* Container da bola - mantém o tamanho original mas remove overflow-hidden */}
               <div className="relative w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] rounded-full bg-[#2962FF]">
-                {/* Imagem que transborda */}
                 <img
                   src={lpheroimg}
                   alt="Homem sorrindo usando tablet"
@@ -256,7 +249,6 @@ export function Landing() {
 
         <section className="py-12 sm:py-16 bg-[#161e2e] relative">
           <div className="absolute right-0 bottom-0 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
-
 
           <div className="container mx-auto px-5 relative z-10">
             <h2 className="text-3xl font-bold py-10 text-center mb-8">
@@ -319,12 +311,12 @@ export function Landing() {
         <section
           id="mission"
           ref={el => sectionsRef.current[1] = el}
-          className="py-6 bg-[#161e2e] relative" // Alterado de py-12 sm:py-40 para py-8 sm:py-40
+          className="py-6 bg-[#161e2e] relative"
         >
-          <div className="absolute left-10  w-7 h-7 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
+          <div className="absolute left-10 w-7 h-7 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
 
-          <div className="container mx-auto px-4  relative z-10">
-            <h1 className="text-4xl py-8 md:text-6xl font-bold text-center">
+          <div className="container mx-auto px-4 relative z-10">
+            <h1 className="text-4xl py-8 md:text-6xl font-bold">
               AUTOMATIZE SUA NFS-E E ESQUEÇA A BUROCRACIA!
             </h1>
 
@@ -332,8 +324,8 @@ export function Landing() {
               <div className="w-full lg:w-2/3 flex flex-col lg:flex-row gap-8">
                 <div className="w-full lg:w-1/2">
                   <div className="mb-8">
-                    <h2 className="text-2xl font-bold mb-5 text-center">NOSSA MISSÃO</h2>
-                    <p className="text-xl text-center">
+                    <h2 className="text-2xl font-bold mb-5">NOSSA MISSÃO</h2>
+                    <p className="text-xl text-justify">
                       Oferecer uma plataforma inovadora que facilite a gestão de NFS-E para empresas que prestam serviços contínuos, eliminando burocracias e otimizando processos.
                     </p>
                   </div>
@@ -341,8 +333,8 @@ export function Landing() {
 
                 <div className="w-full lg:w-1/2">
                   <div className="mb-8">
-                    <h2 className="text-2xl font-bold mb-4 text-center">NOSSO PROPÓSITO</h2>
-                    <p className="text-xl text-center mb-8">
+                    <h2 className="text-2xl font-bold mb-4">NOSSO PROPÓSITO</h2>
+                    <p className="text-xl text-justify mb-8">
                       Automatizar a emissão de NFS-E recorrentes, tornando o processo mais ágil, simples e eficiente.
                     </p>
                   </div>
@@ -373,7 +365,7 @@ export function Landing() {
         <section
           id="simplicity"
           ref={el => sectionsRef.current[2] = el}
-          className="bg-[#161e2e] relative pb-8 == sm:pb-16" // Alterado de pb-16 para pb-8 sm:pb-16
+          className="bg-[#161e2e] relative pb-8 sm:pb-16"
         >
           <div className="absolute left-20 top-1/2 w-6 h-6 rounded-full bg-[#2962FF] opacity-30"></div>
           <div className="absolute right-32 bottom-32 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
@@ -385,13 +377,13 @@ export function Landing() {
                   <h2 className="text-3xl pt-12 sm:text-3xl md:text-5xl font-bold mb-6 text-white">
                     VEJA COMO É SIMPLES
                   </h2>
-                  <p className="text-xl sm:text-2xl m text-gray-300 text-center">
+                  <p className="text-xl sm:text-2xl text-gray-300 text-center text-justify">
                     O AgiNotas é simples de usar. Basta assinar o teste grátis, preencher algumas informações de autenticação com sua prefeitura e pronto, você já pode usar.
                   </p>
                 </div>
               </div>
 
-              <div className="hidden lg:block lg:col-span-1 "></div>
+              <div className="hidden lg:block lg:col-span-1"></div>
 
               <div className="lg:col-span-6 flex items-center justify-center">
                 <img
@@ -430,23 +422,21 @@ export function Landing() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="flex flex-col items-center text-center md:items-start">
-
-            <div className="flex items-center">
-            <img
-              src={logodelvind}
-              alt="Nome Logo Delvind"
-              className="h-12 w-12 object-contain -mr-2 md:h-16 md:w-16" // Tamanho menor em telas pequenas
-            />
-            <img
-              src={nomelogodelvind}
-              alt="Nome Logo Delvind"
-              className="max-h-[100px] object-contain md:max-h-[150px]" // Tamanho menor em telas pequenas
-            />
-          </div>
-              <p className="text-gray-400 text-sm text-center w-full">
+              <div className="flex items-center">
+                <img
+                  src={logodelvind}
+                  alt="Nome Logo Delvind"
+                  className="h-12 w-12 object-contain -mr-2 md:h-16 md:w-16"
+                />
+                <img
+                  src={nomelogodelvind}
+                  alt="Nome Logo Delvind"
+                  className="max-h-[100px] object-contain md:max-h-[150px]"
+                />
+              </div>
+              <p className="text-gray-400 text-sm text-center text-justify w-full">
                 Solução completa para gestão de NFS-E para serviços contínuos.
               </p>
-
             </div>
 
 
