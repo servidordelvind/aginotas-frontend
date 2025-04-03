@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Receipt } from 'lucide-react';
 import { toast } from 'sonner';
 import { api } from '../lib/api.ts';
+import nomelogodelvind from '../public/aginotaslogoescura.svg';
 
 export function Recover() {
   const navigate = useNavigate();
@@ -92,7 +93,14 @@ export function Recover() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
         <div className="flex flex-col items-center mb-8">
-          <Receipt className="w-12 h-12 text-blue-600 mb-4" />
+        <div className="flex items-center">
+          
+            <img
+              src={nomelogodelvind}
+              alt="Nome Logo Delvind"
+              className="h-24 w-32 object-contain"
+            />
+          </div>
           <h1 className="text-2xl font-bold text-gray-900">Recuperação</h1>
         </div>
         {isStep1 && (
