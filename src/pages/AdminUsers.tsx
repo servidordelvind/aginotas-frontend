@@ -103,7 +103,6 @@ export function AdminUsers() {
     }, 1000);
   }, []);
 
-  //console.log(infoSubscription);
 
   return (
     <div className="p-4 md:p-8">
@@ -174,68 +173,53 @@ export function AdminUsers() {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        maxWidth: '90%',
-        width: '100%',
+        maxWidth: '600px',
+        width: '90%',
         maxHeight: '90vh',
         overflowY: 'auto',
         bgcolor: 'background.paper',
         boxShadow: 24,
         p: 4,
-        borderRadius: 2,
+        borderRadius: 4,
       }}
       >
-      <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-        Detalhes completos do Usuário
+      <Typography variant="h5" component="h2" sx={{ mb: 3, textAlign: 'center', fontWeight: 'bold' }}>
+        Detalhes do Usuário
       </Typography>
-      {infoSubscription && (
-        <div>
-        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+      {infoSubscription ? (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', borderBottom: '1px solid #ddd', pb: 1 }}>
           Informações da Assinatura
         </Typography>
-        <p><strong>ID da Assinatura:</strong> {infoSubscription.id}</p>
-        <p><strong>Status:</strong> {infoSubscription.status}</p>
-        <p><strong>Data de Criação:</strong> {new Date(infoSubscription.created_at).toLocaleDateString()}</p>
-        <p><strong>Data de Cancelamento:</strong> {infoSubscription.canceled_at ? new Date(infoSubscription.canceled_at).toLocaleDateString() : 'N/A'}</p>
-        <p><strong>Início:</strong> {new Date(infoSubscription.start_at).toLocaleDateString()}</p>
-        <p><strong>Intervalo:</strong> {infoSubscription.interval} ({infoSubscription.interval_count})</p>
-        <p><strong>Dia de Cobrança:</strong> {infoSubscription.billing_day}</p>
-        <p><strong>Método de Pagamento:</strong> {infoSubscription.payment_method}</p>
-        <p><strong>Plano:</strong> {infoSubscription.plan?.name}</p>
-        <p><strong>Cliente:</strong> {infoSubscription.customer?.name} ({infoSubscription.customer?.email})</p>
-        <p><strong>Moeda:</strong> {infoSubscription.currency}</p>
-        <p><strong>Descrição no Extrato:</strong> {infoSubscription.statement_descriptor}</p>
+        <Typography><strong>ID da Assinatura:</strong> {infoSubscription.id}</Typography>
+        <Typography><strong>Status:</strong> {infoSubscription.status}</Typography>
+        <Typography><strong>Data de Criação:</strong> {new Date(infoSubscription.created_at).toLocaleDateString()}</Typography>
+        <Typography><strong>Plano:</strong> {infoSubscription.plan?.name}</Typography>
 
-        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', borderBottom: '1px solid #ddd', mt: 3, pb: 1 }}>
           Detalhes do Cliente
         </Typography>
-        <p><strong>ID do Cliente:</strong> {infoSubscription.customer?.id}</p>
-        <p><strong>Nome:</strong> {infoSubscription.customer?.name}</p>
-        <p><strong>Email:</strong> {infoSubscription.customer?.email}</p>
-        <p><strong>Tipo:</strong> {infoSubscription.customer?.type}</p>
-        <p><strong>Documento:</strong> {infoSubscription.customer?.document}</p>
-        <p><strong>Tipo de Documento:</strong> {infoSubscription.customer?.document_type}</p>
-        <p><strong>Delinquente:</strong> {infoSubscription.customer?.delinquent ? 'Sim' : 'Não'}</p>
-        <p><strong>Telefone Residencial:</strong> {infoSubscription.customer?.phones?.home_phone?.country_code} {infoSubscription.customer?.phones?.home_phone?.area_code} {infoSubscription.customer?.phones?.home_phone?.number}</p>
-        <p><strong>Telefone Celular:</strong> {infoSubscription.customer?.phones?.mobile_phone?.country_code} {infoSubscription.customer?.phones?.mobile_phone?.area_code} {infoSubscription.customer?.phones?.mobile_phone?.number}</p>
-        <p><strong>Criado em:</strong> {new Date(infoSubscription.customer?.created_at).toLocaleDateString()}</p>
-        <p><strong>Atualizado em:</strong> {new Date(infoSubscription.customer?.updated_at).toLocaleDateString()}</p>
+        <Typography><strong>Nome:</strong> {infoSubscription.customer?.name}</Typography>
+        <Typography><strong>Email:</strong> {infoSubscription.customer?.email}</Typography>
+        <Typography><strong>Documento:</strong> {infoSubscription.customer?.document}</Typography>
 
-        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 'bold', borderBottom: '1px solid #ddd', mt: 3, pb: 1 }}>
           Detalhes do Cartão
         </Typography>
-        <p><strong>Marca:</strong> {infoSubscription.card?.brand}</p>
-        <p><strong>ID do Cartão:</strong> {infoSubscription.card?.id}</p>
-        <p><strong>Primeiros Seis Dígitos:</strong> {infoSubscription.card?.first_six_digits}</p>
-        <p><strong>Últimos Quatro Dígitos:</strong> {infoSubscription.card?.last_four_digits}</p>
-        <p><strong>Nome do Titular:</strong> {infoSubscription.card?.holder_name}</p>
-        <p><strong>Status:</strong> {infoSubscription.card?.status}</p>
-        <p><strong>Tipo:</strong> {infoSubscription.card?.type}</p>
-        <p><strong>Mês de Expiração:</strong> {infoSubscription.card?.exp_month}</p>
-        <p><strong>Ano de Expiração:</strong> {infoSubscription.card?.exp_year}</p>
-        <p><strong>Criado em:</strong> {new Date(infoSubscription.card?.created_at).toLocaleDateString()}</p>
-        <p><strong>Atualizado em:</strong> {new Date(infoSubscription.card?.updated_at).toLocaleDateString()}</p>
-        </div>
+        <Typography><strong>Marca:</strong> {infoSubscription.card?.brand}</Typography>
+        <Typography><strong>Últimos Dígitos:</strong> {infoSubscription.card?.last_four_digits}</Typography>
+        <Typography><strong>Nome do Titular:</strong> {infoSubscription.card?.holder_name}</Typography>
+        </Box>
+      ) : (
+        <Typography variant="body1" sx={{ textAlign: 'center', color: 'gray' }}>
+        Nenhuma informação disponível.
+        </Typography>
       )}
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <Button variant="contained" color="primary" onClick={handleCloseModal}>
+        Fechar
+        </Button>
+      </Box>
       </Box>
     </Modal>
   </div>

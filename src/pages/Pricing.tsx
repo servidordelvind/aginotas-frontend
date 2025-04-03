@@ -26,6 +26,7 @@ export function Pricing() {
       interval: string;
       trial_period_days: number;
     items: [{
+      name: '',
       pricing_scheme: {
         price: number;
       };
@@ -81,7 +82,7 @@ useEffect(() => {
 
         <div className="max-w-lg mx-auto bg-gray-800 rounded-2xl overflow-hidden">
           <div className="p-8 text-center border-b border-gray-700">
-            <h2 className="text-2xl font-bold text-white mb-2">{plans?.name || ''}</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">{plans?.items[0].name || ''}</h2>
             <div className="flex justify-center items-baseline gap-2 mb-4">
             <span className="text-4xl font-bold text-white">
               {new Intl.NumberFormat("pt-BR", {

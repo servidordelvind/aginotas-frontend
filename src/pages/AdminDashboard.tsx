@@ -169,7 +169,7 @@ useEffect(() => {
     return <p className="text-red-500">Erro: {error}</p>;
   }
 
-  console.log(invoice);
+  //console.log(plans);
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">

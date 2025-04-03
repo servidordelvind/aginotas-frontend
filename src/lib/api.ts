@@ -441,5 +441,36 @@ export const api = {
     }
 
     return response.json();
-  },    
+  }, 
+  
+  async Edit_Plan(data: any){
+    const response = await fetch(`${API_URL}/pagarme/edit-item-plan`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Server error');
+    }
+
+    return response.json();
+  },
+
+  async Find_All_Subscriptions(){
+    const response = await fetch(`${API_URL}/pagarme/get-all-subscriptions`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Server error');
+    }
+
+    return response.json();
+  }, 
 };
