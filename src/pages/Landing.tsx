@@ -361,7 +361,7 @@ export function Landing() {
               </div>
             </div>
 
-            <div className="w-full flex ">
+            <div className="w-full flex">
               <Link to="/pricing" className="bg-[#2962FF] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors relative">
                 <span className="absolute left-[8px] top-1/2 transform -translate-y-1/2 w-4 h-4 bg-white rounded-full"></span>
                 TESTE GRÁTIS
@@ -382,7 +382,7 @@ export function Landing() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-5">
                 <div className="text-center lg:text-left">
-                  <h2 className="text-3xl sm:text-3xl md:text-5xl font-bold mb-6 text-white">
+                  <h2 className="text-3xl pt-12 sm:text-3xl md:text-5xl font-bold mb-6 text-white">
                     VEJA COMO É SIMPLES
                   </h2>
                   <p className="text-xl sm:text-2xl m text-gray-300 text-center">
@@ -391,9 +391,9 @@ export function Landing() {
                 </div>
               </div>
 
-              <div className="hidden lg:block lg:col-span-1"></div>
+              <div className="hidden lg:block lg:col-span-1 "></div>
 
-              <div className="lg:col-span-6 flex items-center justify-center">
+              <div className="lg:col-span-6 pt-32 flex items-center justify-center">
                 <img
                   src={delvindapp}
                   alt="Tablet com AgiNotas"
@@ -431,13 +431,18 @@ export function Landing() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="flex flex-col items-center text-center md:items-start">
 
-              <div className="flex items-center mb-4">
-                <img
-                  src={nomelogodelvind}
-                  alt="Nome Delvind"
-                  className="h-20"
-                />
-              </div>
+            <div className="flex items-center">
+            <img
+              src={logodelvind}
+              alt="Nome Logo Delvind"
+              className="h-12 w-12 object-contain -mr-2 md:h-16 md:w-16" // Tamanho menor em telas pequenas
+            />
+            <img
+              src={nomelogodelvind}
+              alt="Nome Logo Delvind"
+              className="max-h-[100px] object-contain md:max-h-[150px]" // Tamanho menor em telas pequenas
+            />
+          </div>
               <p className="text-gray-400 text-sm text-center w-full">
                 Solução completa para gestão de NFS-E para serviços contínuos.
               </p>
