@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Receipt, Loader2 } from 'lucide-react';
 import { api } from '../lib/api.ts';
+import nomelogodelvind from '../public/aginotaslogoescura.svg';
 
 export function Register() {
   const navigate = useNavigate();
@@ -376,7 +377,14 @@ export function Register() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
         <div className="flex flex-col items-center mb-8">
-          <Receipt className="w-12 h-12 text-blue-600 mb-4" />
+        <div className="flex items-center">
+          
+          <img
+            src={nomelogodelvind}
+            alt="Nome Logo Delvind"
+            className="h-24 w-32 object-contain"
+          />
+        </div>
           <h1 className="text-2xl font-bold text-gray-900">Crie sua conta</h1>
           <p className="text-gray-500">Comece seu teste grátis de 14 dias</p>
         </div>
