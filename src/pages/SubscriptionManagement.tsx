@@ -39,6 +39,8 @@ export function SubscriptionManagement() {
     ]);
     const [error, setError] = useState(null);
 
+    const handleViewEditPlan = useState();
+
     useEffect(()=>{
         async function loadData() {
             setLoading(true);
@@ -118,7 +120,7 @@ export function SubscriptionManagement() {
                     R$ {plan.items[0].pricing_scheme.price / 100}
                     </Typography>
                     <div className="mt-4 flex space-x-2">
-                    <button className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">
+                    <button onClick={()=> handleViewEditPlan()} className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">
                         Editar
                     </button>
 {/*                     <button className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
