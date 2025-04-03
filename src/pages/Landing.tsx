@@ -393,7 +393,7 @@ export function Landing() {
 
               <div className="hidden lg:block lg:col-span-1 "></div>
 
-              <div className="lg:col-span-6 pt-32 flex items-center justify-center">
+              <div className="lg:col-span-6 flex items-center justify-center">
                 <img
                   src={delvindapp}
                   alt="Tablet com AgiNotas"
