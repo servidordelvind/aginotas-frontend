@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle2, Receipt } from 'lucide-react';
 import nomelogodelvind from '../public/logonomelogo.png';
+import logodelvind from '../public/logodelvind.png';
 
 import { api } from '../lib/api';
 
@@ -53,11 +54,17 @@ useEffect(() => {
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       {/* Navigation */}
       <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
+     
       <div className="flex items-center">
+            <img
+              src={logodelvind}
+              alt="Nome Logo Delvind"
+              className="h-12 w-12 object-contain -mr-2 md:h-16 md:w-16" // Tamanho menor em telas pequenas
+            />
             <img
               src={nomelogodelvind}
               alt="Nome Logo Delvind"
-              className="h-32 w-32 object-contain"
+              className="max-h-[100px] object-contain md:max-h-[150px]" // Tamanho menor em telas pequenas
             />
           </div>
         <div className="space-x-4">
