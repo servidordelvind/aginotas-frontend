@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle2, Receipt } from 'lucide-react';
-import nomelogodelvind from '../public/logonomelogo.png';
+import nomelogodelvind from '../public/nomelogodelvind.png';
 import logodelvind from '../public/logodelvind.png';
 
 import { api } from '../lib/api';
