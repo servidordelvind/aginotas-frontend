@@ -73,396 +73,397 @@ export function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#161e2e] text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-   <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#161e2e]/95 backdrop-blur-sm shadow-lg py-[0.0rem] md:py-0 lg:py-0' : 'py-[0.0rem] md:py-0 lg:py-0'}`}>
+    <div className="min-h-screen bg-[#161e2e] text-white flex flex-col" style={{ fontFamily: 'Montserrat, sans-serif' }}> 
+     <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#161e2e]/95 backdrop-blur-sm shadow-lg py-[0.0rem] md:py-0 lg:py-0' : 'py-[0.0rem] md:py-0 lg:py-0'}`}>
   <div className="container mx-auto px-4 flex justify-between items-center">
-    <div className="flex items-center">
-      <img
-        src={logodelvind}
-        alt="Nome Logo Delvind"
-        className="h-12 w-12 object-contain -mr-16 md:h-16 md:w-16"
-      />
-      <img
-        src={nomelogodelvind}
-        alt="Nome Logo Delvind"
-        className="w-full max-w-[284px] aspect-[16/9] object-contain md:max-w-[320px]"
-      />
-    </div>
+        <div className="flex items-center">
+          <img
+            src={logodelvind}
+            alt="Nome Logo Delvind"
+            className="h-12 w-12 object-contain -mr-16 md:h-16 md:w-16"
+          />
+          <img
+            src={nomelogodelvind}
+            alt="Nome Logo Delvind"
+            className="w-full max-w-[284px] aspect-[16/9] object-contain md:max-w-[320px]"
+          />
+        </div>
 
-    {/* Menu desktop - agora só aparece acima de 1024px */}
-    <nav className="hidden lg:flex space-x-4 items-center">
-      {sections.map((section) => (
+        {/* Menu desktop -  só aparece acima de 1024px */}
+        <nav className="hidden lg:flex space-x-4 items-center">
+          {sections.map((section) => (
+            <button
+              key={section.id}
+              onClick={() => scrollToSection(section.id)}
+              className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${activeSection === section.id ? 'text-[#FFFFFF] font-bold' : 'text-gray-500 hover:text-white'}`}
+            >
+              {section.label}
+            </button>
+          ))}
+          <Link to="/login" className="text-white text-sm">Login</Link>
+          <Link to="/pricing" className="bg-white text-[#0D47A1] px-3 py-1 sm:px-4 sm:py-1 rounded-full font-semibold hover:bg-gray-200 transition-colors text-sm">
+            Teste Grátis
+          </Link>
+        </nav>
+
+        {/* Botão do menu mobile - aparece abaixo de 1024px (727-1024px e <727px) */}
         <button
-          key={section.id}
-          onClick={() => scrollToSection(section.id)}
-          className={`px-2 py-1 rounded-md text-sm font-medium transition-colors ${activeSection === section.id ? 'text-[#FFFFFF] font-bold' : 'text-gray-500 hover:text-white'}`}
+          className="lg:hidden text-gray-300 focus:outline-none"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle menu"
         >
-          {section.label}
+          {mobileMenuOpen ? <FaTimes size={22} /> : <FaBars size={50} />}
         </button>
-      ))}
-      <Link to="/login" className="text-white text-sm">Login</Link>
-      <Link to="/pricing" className="bg-white text-[#0D47A1] px-3 py-1 sm:px-4 sm:py-1 rounded-full font-semibold hover:bg-gray-200 transition-colors text-sm">
-        Teste Grátis
-      </Link>
-    </nav>
+      </div>
 
-    {/* Botão do menu mobile - aparece abaixo de 1024px (727-1024px e <727px) */}
-    <button
-      className="lg:hidden text-gray-300 focus:outline-none"
-      onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-      aria-label="Toggle menu"
-    >
-      {mobileMenuOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
-    </button>
+        {/* Menu mobile - aparece abaixo de 1024px */}
+        {mobileMenuOpen && (
+  <div className="fixed inset-0 flex flex-col bg-[#0f172a]/95 backdrop-blur-sm h-full min-h-screen z-50">
+    <div
+      className="absolute inset-0 bg-[#0f172a]/95 backdrop-blur-sm"
+      onClick={() => setMobileMenuOpen(false)}
+    />
+
+    {/* Container principal */}
+    <div className="relative h-full flex flex-col pt-8">
+
+      {/* Logo centralizada no topo */}
+      <div className="flex justify-center mt-8">
+        <img
+          src={nomelogodelvind}
+          alt="Nome Logo Delvind"
+          className="w-full max-w-[550px] aspect-[16/9] object-contain"
+        />
+      </div>
+
+      {/* Botão de fechar no canto superior direito */}
+      <button
+        className="absolute top-48 right-6 text-gray-300 hover:text-white transition-colors"
+        onClick={() => setMobileMenuOpen(false)}
+        aria-label="Fechar menu"
+      >
+        <FaTimes size={32} />
+      </button>
+
+      {/* Lista de seções */}
+      <div key={Date.now()} className="flex-grow  px-8 overflow-y-auto mt-12">
+        <div className="space-y-8 pb-32">
+          {sections.map((section) => (
+            <button
+              key={section.id}
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setTimeout(() => scrollToSection(section.id), 100);
+              }}
+              className={`block w-full text-right py-4 px-6 rounded-lg text-3xl transition-all ${activeSection === section.id 
+                ? ' text-white font-bold text-3xl' 
+                : 'text-gray-400 hover:text-white hover:bg-[#1e293b] text-2xl'}`}
+            >
+              {section.label}
+            </button>
+          ))}
+          <Link
+            to="/login"
+            className="block w-full text-right py-4 text-3xl px-6 rounded-lg text-gray-400 hover:text-white hover:bg-[#1e293b] transition-colors text-2xl"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Login
+          </Link>
+        </div>
+      </div>
+
+      {/* Botão "Teste Grátis" */}
+      <div className="sticky bottom-0 left-0 w-full bg-[#0f172a] border-t border-[#1e293b] p-20 flex justify-center">
+        <Link
+          to="/pricing"
+          className="bg-[#2962FF] w-full max-w-md  text-white px-8 py-4 rounded-full font-bold hover:bg-[#1E50D9] transition-colors text-center text-4xl"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          Teste Grátis
+        </Link>
+      </div>
+    </div>
   </div>
-
-  {/* Menu mobile - aparece abaixo de 1024px */}
-  {mobileMenuOpen && (
-    <div className="fixed inset-0 flex flex-col bg-[#0f172a]/95 backdrop-blur-sm h-full min-h-screen">
-            <div
-              className="absolute inset-0 bg-[#0f172a]/95 backdrop-blur-sm"
-              onClick={() => setMobileMenuOpen(false)}
-            />
-
-            {/* Container principal */}
-            <div className="relative h-full flex flex-col">
-
-              {/* Logo centralizada no topo */}
-              <div className="flex justify-center">
-                <img
-                  src={nomelogodelvind}
-                  alt="Nome Logo Delvind"
-                  className="w-full max-w-[284px] aspect-[16/9] object-contain md:max-w-[320px]"
-                />
-              </div>
-
-              {/* Botão de fechar no canto superior direito */}
-              <button
-                className="absolute top-16 right-4 text-gray-300 hover:text-white transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-                aria-label="Fechar menu"
-              >
-                <FaTimes size={28} />
-              </button>
-
-              {/* Lista de seções */}
-              <div key={Date.now()} className="flex-grow px-6 overflow-y-auto">
-                <div className="space-y-6 pb-72 text-right">
-                  {sections.map((section) => (
-                    <button
-                      key={section.id}
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        setTimeout(() => scrollToSection(section.id), 100);
-                      }}
-                      className={`block text-xl font-medium w-full text-right ${activeSection === section.id ? 'text-white font-bold' : 'text-gray-400 hover:text-white'
-                        }`}
-                    >
-                      {section.label}
-                    </button>
-                  ))}
-                  <Link
-                    to="/login"
-                    className="block text-xl text-gray-400 hover:text-white transition-colors w-full text-right"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Login
-                  </Link>
-                </div>
-              </div>
-
-              {/* Botão "Teste Grátis" fixado no bottom 0 e centralizado */}
-              <div className="fixed bottom-0 left-0 w-full bg-[#0f172a] border-t border-[#1e293b] p-4 flex justify-center">
-                <Link
-                  to="/pricing"
-                  className="bg-[#2962FF] w-80 text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors text-center"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Teste Grátis
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
+)}
 
 
 
       </header>
 
       <main className="pt-32">
-  {/* Seção Hero */}
-  <section
-    id="hero"
-    ref={el => sectionsRef.current[0] = el}
-    className="container mx-auto px-3 sm:px-6 lg:px-8 sm:pt-8 pb-12 sm:pb-16 lg:pb-20 flex flex-col-reverse lg:flex-row items-center justify-between min-h-[10vh] sm:min-h-[90vh] lg:min-h-[100vh] relative"
-  >
-    {/* Bolhas grandes desktop - mantidas */}
-    <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] h-[300px] right-[50px] top-[-150px] opacity-20 blur-[80px]"></div>
-    <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] h-[200px] right-[200px] top-[-100px] opacity-15 blur-[60px]"></div>
-
-    {/* Conteúdo de texto */}
-    <div className="max-w-sm sm:max-w-md lg:max-w-lg text-left ml-4 sm:ml-8 md:ml-12 lg:ml-1 z-10 mt-8 sm:mt-10">
-      <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
-        O jeito fácil e automático de emitir NFS-E para sua empresa!
-      </h1>
-      <p className="text-sm sm:text-base mb-6 text-gray-300 max-w-xs sm:max-w-md md:max-w-md mx-0 text-justify">
-        Automatize a emissão de notas fiscais de serviços, eliminando burocracias e otimizando seu fluxo de trabalho de forma ágil e eficiente.
-      </p>
-      <div className="text-left">
-        <button
-          onClick={() => scrollToSection('mission')}
-          className="bg-[#2962FF] text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors inline-block"
+        {/* Seção Hero */}
+        <section
+          id="hero"
+          ref={el => sectionsRef.current[0] = el}
+          className="container mx-auto px-3 sm:px-6 lg:px-8 sm:pt-8 pb-12 sm:pb-16 lg:pb-20 flex flex-col-reverse lg:flex-row items-center justify-between min-h-[10vh]  lg:min-h-[100vh] relative"
         >
-          SAIBA MAIS
-        </button>
-      </div>
-    </div>
+          {/* Bolhas grandes desktop - mantidas */}
+          <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] h-[300px] right-[50px] top-[-150px] opacity-20 blur-[80px]"></div>
+          <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] h-[200px] right-[200px] top-[-100px] opacity-15 blur-[60px]"></div>
 
-    <div className="relative w-full lg:w-1/2 mt-8 sm:mt-10 lg:mt-0">
-      {/* Todas as bolinhas desktop mantidas */}
-      <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[50px] md:right-[250px] top-[-400px] md:top-[-800px]" style={{ filter: 'blur(300px)' }}></div>
-      <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] sm:w-[300px] md:w-[400px] h-[200px] sm:h-[300px] md:h-[400px] right-[200px] md:right-[1300px] top-[-200px] md:top-[-400px]" style={{ filter: 'blur(50px)' }}></div>
-      <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[50px] top-[-250px]"></div>
-      <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] right-[-50px] sm:right-[-100px] top-[-150px] sm:top-[-250px]"></div>
-
-      {/* Imagem desktop com bolinhas */}
-      <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[-50px] sm:right-[-100px] top-[-100px] sm:top-[-230px]">
-        <img
-          src={lpheroimg}
-          alt="Homem sorrindo usando tablet"
-          className="relative z-10 rounded-lg max-w-full"
-          style={{
-            position: 'absolute', 
-            top: '40%', 
-            left: '41%', 
-            transform: 'translate(-50%, -50%)', 
-            filter: 'blur(0px)',
-            maskImage: 'linear-gradient(to top, transparent 7%, black 18%)'
-          }}
-        />
-      </div>
-
-      {/* Bolinhas adicionais desktop */}
-      <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[200px] sm:right-[550px] top-[40px] sm:top-[80px]"></div>
-      <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] left-[-200px] sm:left-[-680px] top-[-100px] sm:top-[-145px]"></div>
-      <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] left-[-200px] sm:left-[-800px] top-[150px] sm:top-[265px]"></div>
-
-      {/* Versão mobile/tablet com TODAS as bolinhas mantidas */}
-      <div className="lg:hidden py-8 sm:py-10 flex items-center justify-center relative" style={{ overflow: 'visible' }}>
-        <div className="absolute top-[-24px] left-0 w-full h-[2px] bg-[#2962FF] lg:hidden"></div>
-
-        <div className="relative w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] rounded-full bg-[#2962FF]">
-          <img
-            src={lpheroimg}
-            alt="Homem sorrindo usando tablet"
-            className="rounded-lg"
-            style={{
-              objectFit: 'cover',
-              width: '150%',
-              height: '145%',
-              top: '15%',
-              left: '45%',
-              transform: 'translate(-50%, -50%)',
-              maxWidth: '500px',
-              zIndex: 10,
-              position: 'absolute',
-              filter: 'blur(0px)',
-              maskImage: 'linear-gradient(to top, transparent 7%, black 18%)'
-            }}
-          />
-
-          {/* Efeitos grandes mobile/tablet - mantidos */}
-          <div className="absolute rounded-full bg-[#2962FF] w-[300px] h-[300px] right-[50px] top-[-400px]" style={{ filter: 'blur(300px)' }}></div>
-          <div className="absolute rounded-full bg-[#2962FF] w-[150px] h-[150px] right-[-50px] top-[-200px]" style={{ filter: 'blur(50px)' }}></div>
-
-          {/* Efeitos médios mobile/tablet - mantidos */}
-          <div className="absolute rounded-full bg-[#2962FF] w-[150px] h-[150px] right-[150px] top-[-150px]" style={{ filter: 'blur(50px)' }}></div>
-
-          {/* Bolinhas pequenas mobile/tablet - mantidas */}
-          <div className="absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[-55px] top-[-50px]"></div>
-          <div className="absolute rounded-full bg-[#2962FF] w-[50px] h-[50px] right-[-120px] top-[50px]"></div>
-          <div className="absolute rounded-full bg-[#2962FF] w-[5px] h-[5px] right-[-25px] top-[-45px]"></div>
-          <div className="absolute rounded-full bg-[#2962FF] w-[5px] h-[5px] right-[225px] top-[-5px]"></div>
-          <div className="absolute rounded-full bg-[#2962FF] w-[50px] h-[50px] right-[250px] top-[150px]"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  {/* Seção Recursos */}
-  <section className="py-10 sm:py-14 lg:py-16 bg-[#161e2e] relative">
-    <div className="absolute right-0 bottom-0 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold py-8 sm:py-10 lg:py-12 text-center mb-6 sm:mb-8 lg:mb-10">
-        Uma plataforma inovadora pra facilitar a gestão de NFS-E
-      </h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
-        {/* Card 1 */}
-        <div className="bg-[#1e293b] rounded-xl overflow-hidden aspect-[4/3] relative flex flex-col">
-          <div className="flex justify-center pt-6 sm:pt-8 pb-3 sm:pb-4">
-            <div className="bg-[#2962FF] p-3 sm:p-4 rounded-full">
-              <FaFileInvoiceDollar className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-            </div>
-          </div>
-          <div className="flex-grow flex flex-col items-center justify-center p-4 sm:p-6 text-center">
-            <h3 className="text-lg sm:text-xl lg:text-xl font-semibold mb-3 sm:mb-4">Faturamento Automático</h3>
-            <p className="text-gray-400 text-sm sm:text-base">
-              Configure cobranças recorrentes e deixe nosso sistema fazer o resto.
+          {/* Conteúdo de texto */}
+          <div className="max-w-sm sm:max-w-md lg:max-w-lg text-left ml-4 sm:ml-8 md:ml-12 lg:ml-1 z-10 mt-8 sm:mt-10">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
+              O jeito fácil e automático de emitir NFS-E para sua empresa!
+            </h1>
+            <p className="text-sm sm:text-base mb-6 text-gray-300 max-w-xs sm:max-w-md md:max-w-md mx-0 text-justify">
+              Automatize a emissão de notas fiscais de serviços, eliminando burocracias e otimizando seu fluxo de trabalho de forma ágil e eficiente.
             </p>
-          </div>
-        </div>
-
-        {/* Card 2 */}
-        <div className="bg-[#1e293b] rounded-xl overflow-hidden aspect-[4/3] relative flex flex-col">
-          <div className="flex justify-center pt-6 sm:pt-8 pb-3 sm:pb-4">
-            <div className="bg-[#2962FF] p-3 sm:p-4 rounded-full">
-              <FaChartLine className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-            </div>
-          </div>
-          <div className="flex-grow flex flex-col items-center justify-center p-4 sm:p-6 text-center">
-            <h3 className="text-lg sm:text-xl lg:text-xl font-semibold mb-3 sm:mb-4">Acompanhamento Inteligente</h3>
-            <p className="text-gray-400 text-sm sm:text-base">
-              Monitore pagamentos e receba notificações de atualizações.
-            </p>
-          </div>
-        </div>
-
-        {/* Card 3 */}
-        <div className="bg-[#1e293b] rounded-xl overflow-hidden aspect-[4/3] relative flex flex-col">
-          <div className="flex justify-center pt-6 sm:pt-8 pb-3 sm:pb-4">
-            <div className="bg-[#2962FF] p-3 sm:p-4 rounded-full">
-              <FaUsers className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-            </div>
-          </div>
-          <div className="flex-grow flex flex-col items-center justify-center p-4 sm:p-6 text-center">
-            <h3 className="text-lg sm:text-xl lg:text-xl font-semibold mb-3 sm:mb-4">Portal do Cliente</h3>
-            <p className="text-gray-400 text-sm sm:text-base">
-              Ofereça aos clientes acesso ao histórico de notas fiscais.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex justify-start mt-10 sm:mt-12">
-        <Link to="/pricing" className="bg-[#2962FF] text-white px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base rounded-full font-semibold hover:bg-[#1E50D9] transition-colors relative inline-block">
-          <span className="absolute left-[8px] top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full"></span>
-          TESTE GRÁTIS
-        </Link>
-      </div>
-    </div>
-  </section>
-
-  {/* Seção Missão */}
-  {/* Seção Missão */}
-  <section
-    id="mission"
-    ref={el => sectionsRef.current[1] = el}
-    className="py-8 sm:py-10 lg:py-12 bg-[#161e2e] relative"
-  >
-    <div className="absolute left-10 w-7 h-7 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <h1 className="text-3xl sm:text-4xl lg:text-5xl py-6 sm:py-8 font-bold">
-        AUTOMATIZE SUA NFS-E E ESQUEÇA A BUROCRACIA!
-      </h1>
-
-      <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 items-center">
-        <div className="w-full lg:w-2/3 flex flex-col lg:flex-row gap-6 sm:gap-8">
-          <div className="w-full lg:w-1/2">
-            <div className="mb-6 sm:mb-8">
-              <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-5">NOSSA MISSÃO</h2>
-              <p className="text-lg sm:text-xl text-justify">
-                Oferecer uma plataforma inovadora que facilite a gestão de NFS-E para empresas que prestam serviços contínuos, eliminando burocracias e otimizando processos.
-              </p>
+            <div className="text-left">
+              <button
+                onClick={() => scrollToSection('mission')}
+                className="bg-[#2962FF] text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors inline-block"
+              >
+                SAIBA MAIS
+              </button>
             </div>
           </div>
 
-          <div className="w-full lg:w-1/2">
-            <div className="mb-6 sm:mb-8">
-              <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">NOSSO PROPÓSITO</h2>
-              <p className="text-lg sm:text-xl text-justify mb-6 sm:mb-8">
-                Automatizar a emissão de NFS-E recorrentes, tornando o processo mais ágil, simples e eficiente.
-              </p>
+          <div className="relative w-full lg:w-1/2 mt-8 sm:mt-10 lg:mt-0">
+            {/* Todas as bolinhas desktop mantidas */}
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[50px] md:right-[250px] top-[-400px] md:top-[-800px]" style={{ filter: 'blur(300px)' }}></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[200px] sm:w-[300px] md:w-[400px] h-[200px] sm:h-[300px] md:h-[400px] right-[200px] md:right-[1300px] top-[-200px] md:top-[-400px]" style={{ filter: 'blur(50px)' }}></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[50px] top-[-250px]"></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] right-[-50px] sm:right-[-100px] top-[-150px] sm:top-[-250px]"></div>
+
+            {/* Imagem desktop com bolinhas */}
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] right-[-50px] sm:right-[-100px] top-[-100px] sm:top-[-230px]">
+              <img
+                src={lpheroimg}
+                alt="Homem sorrindo usando tablet"
+                className="relative z-10 rounded-lg max-w-full"
+                style={{
+                  position: 'absolute',
+                  top: '40%',
+                  left: '41%',
+                  transform: 'translate(-50%, -50%)',
+                  filter: 'blur(0px)',
+                  maskImage: 'linear-gradient(to top, transparent 7%, black 18%)'
+                }}
+              />
+            </div>
+
+            {/* Bolinhas adicionais desktop */}
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[200px] sm:right-[550px] top-[40px] sm:top-[80px]"></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] left-[-200px] sm:left-[-680px] top-[-100px] sm:top-[-145px]"></div>
+            <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] left-[-200px] sm:left-[-800px] top-[150px] sm:top-[265px]"></div>
+
+            {/* Versão mobile/tablet com TODAS as bolinhas mantidas */}
+            <div className="lg:hidden py-8 sm:py-10 flex items-center justify-center relative" style={{ overflow: 'visible' }}>
+              <div className="absolute top-[-24px] left-0 w-full h-[2px] bg-[#2962FF] lg:hidden"></div>
+
+              <div className="relative w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] rounded-full bg-[#2962FF]">
+                <img
+                  src={lpheroimg}
+                  alt="Homem sorrindo usando tablet"
+                  className="rounded-lg"
+                  style={{
+                    objectFit: 'cover',
+                    width: '150%',
+                    height: '145%',
+                    top: '15%',
+                    left: '45%',
+                    transform: 'translate(-50%, -50%)',
+                    maxWidth: '500px',
+                    zIndex: 10,
+                    position: 'absolute',
+                    filter: 'blur(0px)',
+                    maskImage: 'linear-gradient(to top, transparent 7%, black 18%)'
+                  }}
+                />
+
+                {/* Efeitos grandes mobile/tablet - mantidos */}
+                <div className="absolute rounded-full bg-[#2962FF] w-[300px] h-[300px] right-[50px] top-[-400px]" style={{ filter: 'blur(300px)' }}></div>
+                <div className="absolute rounded-full bg-[#2962FF] w-[150px] h-[150px] right-[-50px] top-[-200px]" style={{ filter: 'blur(50px)' }}></div>
+
+                {/* Efeitos médios mobile/tablet - mantidos */}
+                <div className="absolute rounded-full bg-[#2962FF] w-[150px] h-[150px] right-[150px] top-[-150px]" style={{ filter: 'blur(50px)' }}></div>
+
+                {/* Bolinhas pequenas mobile/tablet - mantidas */}
+                <div className="absolute rounded-full bg-[#2962FF] w-[20px] h-[20px] right-[-55px] top-[-50px]"></div>
+                <div className="absolute rounded-full bg-[#2962FF] w-[50px] h-[50px] right-[-120px] top-[50px]"></div>
+                <div className="absolute rounded-full bg-[#2962FF] w-[5px] h-[5px] right-[-25px] top-[-45px]"></div>
+                <div className="absolute rounded-full bg-[#2962FF] w-[5px] h-[5px] right-[225px] top-[-5px]"></div>
+                <div className="absolute rounded-full bg-[#2962FF] w-[50px] h-[50px] right-[250px] top-[150px]"></div>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className="w-full lg:w-1/3 flex justify-center lg:justify-end">
-          <div className="rounded-full w-[180px] h-[180px] sm:w-[250px] sm:h-[250px] lg:w-[350px] lg:h-[350px]">
-            <img
-              src={bolaImagem}
-              alt="Imagem decorativa"
-              className="w-full h-full object-cover opacity-70"
-              loading="lazy"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="w-full flex mt-8 sm:mt-10">
-        <Link 
-          to="/pricing" 
-          className="bg-[#2962FF] text-white px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base rounded-full font-semibold hover:bg-[#1E50D9] transition-colors relative"
-        >
-          <span className="absolute left-[8px] top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full"></span>
-          TESTE GRÁTIS
-        </Link>
-      </div>
-    </div>
-  </section>
-
-  {/* Seção Simplicidade */}
-  <section
-    id="simplicity"
-    ref={el => sectionsRef.current[2] = el}
-    className="bg-[#161e2e] relative pb-8 sm:pb-12 lg:pb-16"
-  >
-    <div className="absolute left-20 top-1/2 w-6 h-6 rounded-full bg-[#2962FF] opacity-30"></div>
-    <div className="absolute right-32 bottom-32 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8">   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
-        <div className="lg:col-span-5">
-          <div className="text-center lg:text-left pt-8 sm:pt-10 lg:pt-12">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-white">
-              VEJA COMO É SIMPLES
+        {/* Seção Recursos */}
+        <section className="py-10 sm:py-14 lg:py-16 bg-[#161e2e] relative">
+          <div className="absolute right-0 bottom-0 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold py-8 sm:py-10 lg:py-12 text-center mb-6 sm:mb-8 lg:mb-10">
+              Uma plataforma inovadora pra facilitar a gestão de NFS-E
             </h2>
-            <p className="text-lg sm:text-xl lg:text-xl text-gray-300 text-center lg:text-justify">
-              O AgiNotas é simples de usar. Basta assinar o teste grátis, preencher algumas informações de autenticação com sua prefeitura e pronto, você já pode usar.
-            </p>
-          </div>
-        </div>
 
-        <div className="lg:col-span-6 lg:col-start-7 flex items-center justify-center">
-          <img
-            src={delvindapp}
-            alt="Tablet com AgiNotas"
-            className="w-full max-w-[500px] sm:max-w-[600px] mx-auto lg:mx-0"
-            loading="lazy"
-          />
-        </div>
-      </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
+              {/* Card 1 */}
+              <div className="bg-[#1e293b] rounded-xl overflow-hidden aspect-[4/3] relative flex flex-col">
+                <div className="flex justify-center pt-6 sm:pt-8 pb-3 sm:pb-4">
+                  <div className="bg-[#2962FF] p-3 sm:p-4 rounded-full">
+                    <FaFileInvoiceDollar className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                  </div>
+                </div>
+                <div className="flex-grow flex flex-col items-center justify-center p-4 sm:p-6 text-center">
+                  <h3 className="text-lg sm:text-xl lg:text-xl font-semibold mb-3 sm:mb-4">Faturamento Automático</h3>
+                  <p className="text-gray-400 text-sm sm:text-base">
+                    Configure cobranças recorrentes e deixe nosso sistema fazer o resto.
+                  </p>
+                </div>
+              </div>
 
-      <div className="flex justify-center mt-10 sm:mt-12">
-        <Link
-          to="/manual"
-          className="bg-[#C0C0C0] text-black px-5 sm:px-6 py-2 sm:py-3 rounded-md font-semibold flex items-center min-w-[250px] sm:min-w-[280px] hover:bg-gray-300 transition-colors duration-200"
-        >
-          <img
-            src={logocomnome}
-            alt="Logo Delvind"
-            className="h-10 w-10 sm:h-12 sm:w-12 bg-[#161e2e] rounded-md p-1 mr-3 sm:mr-4"
-          />
-          <div className="flex flex-col items-start flex-grow">
-            <div className="flex items-center justify-between w-full">
-              <span className="text-base sm:text-lg font-medium">BAIXAR</span>
-              <FaChevronRight className="ml-2" />
+              {/* Card 2 */}
+              <div className="bg-[#1e293b] rounded-xl overflow-hidden aspect-[4/3] relative flex flex-col">
+                <div className="flex justify-center pt-6 sm:pt-8 pb-3 sm:pb-4">
+                  <div className="bg-[#2962FF] p-3 sm:p-4 rounded-full">
+                    <FaChartLine className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                  </div>
+                </div>
+                <div className="flex-grow flex flex-col items-center justify-center p-4 sm:p-6 text-center">
+                  <h3 className="text-lg sm:text-xl lg:text-xl font-semibold mb-3 sm:mb-4">Acompanhamento Inteligente</h3>
+                  <p className="text-gray-400 text-sm sm:text-base">
+                    Monitore pagamentos e receba notificações de atualizações.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 3 */}
+              <div className="bg-[#1e293b] rounded-xl overflow-hidden aspect-[4/3] relative flex flex-col">
+                <div className="flex justify-center pt-6 sm:pt-8 pb-3 sm:pb-4">
+                  <div className="bg-[#2962FF] p-3 sm:p-4 rounded-full">
+                    <FaUsers className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                  </div>
+                </div>
+                <div className="flex-grow flex flex-col items-center justify-center p-4 sm:p-6 text-center">
+                  <h3 className="text-lg sm:text-xl lg:text-xl font-semibold mb-3 sm:mb-4">Portal do Cliente</h3>
+                  <p className="text-gray-400 text-sm sm:text-base">
+                    Ofereça aos clientes acesso ao histórico de notas fiscais.
+                  </p>
+                </div>
+              </div>
             </div>
-            <span className="text-xs sm:text-sm opacity-70 mt-1">Manual</span>
+
+            <div className="flex justify-start mt-10 sm:mt-12">
+              <Link to="/pricing" className="bg-[#2962FF] text-white px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base rounded-full font-semibold hover:bg-[#1E50D9] transition-colors relative inline-block">
+                <span className="absolute left-[8px] top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full"></span>
+                TESTE GRÁTIS
+              </Link>
+            </div>
           </div>
-        </Link>
-      </div>
-    </div>
-  </section>
-</main>
+        </section>
+
+        {/* Seção Missão */}
+        {/* Seção Missão */}
+        <section
+          id="mission"
+          ref={el => sectionsRef.current[1] = el}
+          className="py-8 sm:py-10 lg:py-12 bg-[#161e2e] relative"
+        >
+          <div className="absolute left-10 w-7 h-7 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl py-6 sm:py-8 font-bold">
+              AUTOMATIZE SUA NFS-E E ESQUEÇA A BUROCRACIA!
+            </h1>
+
+            <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 items-center">
+              <div className="w-full lg:w-2/3 flex flex-col lg:flex-row gap-6 sm:gap-8">
+                <div className="w-full lg:w-1/2">
+                  <div className="mb-6 sm:mb-8">
+                    <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-5">NOSSA MISSÃO</h2>
+                    <p className="text-lg sm:text-xl text-justify">
+                      Oferecer uma plataforma inovadora que facilite a gestão de NFS-E para empresas que prestam serviços contínuos, eliminando burocracias e otimizando processos.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="w-full lg:w-1/2">
+                  <div className="mb-6 sm:mb-8">
+                    <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">NOSSO PROPÓSITO</h2>
+                    <p className="text-lg sm:text-xl text-justify mb-6 sm:mb-8">
+                      Automatizar a emissão de NFS-E recorrentes, tornando o processo mais ágil, simples e eficiente.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-full lg:w-1/3 flex justify-center lg:justify-end">
+                <div className="rounded-full w-[180px] h-[180px] sm:w-[250px] sm:h-[250px] lg:w-[350px] lg:h-[350px]">
+                  <img
+                    src={bolaImagem}
+                    alt="Imagem decorativa"
+                    className="w-full h-full object-cover opacity-70"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full flex mt-8 sm:mt-10">
+              <Link
+                to="/pricing"
+                className="bg-[#2962FF] text-white px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base rounded-full font-semibold hover:bg-[#1E50D9] transition-colors relative"
+              >
+                <span className="absolute left-[8px] top-1/2 transform -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full"></span>
+                TESTE GRÁTIS
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Seção Simplicidade */}
+        <section
+          id="simplicity"
+          ref={el => sectionsRef.current[2] = el}
+          className="bg-[#161e2e] relative pb-8 sm:pb-12 lg:pb-16"
+        >
+          <div className="absolute left-20 top-1/2 w-6 h-6 rounded-full bg-[#2962FF] opacity-30"></div>
+          <div className="absolute right-32 bottom-32 w-20 h-20 rounded-full bg-[#2962FF] opacity-25 blur-sm"></div>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
+            <div className="lg:col-span-5">
+              <div className="text-center lg:text-left pt-8 sm:pt-10 lg:pt-12">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-white">
+                  VEJA COMO É SIMPLES
+                </h2>
+                <p className="text-lg sm:text-xl lg:text-xl text-gray-300 text-center lg:text-justify">
+                  O AgiNotas é simples de usar. Basta assinar o teste grátis, preencher algumas informações de autenticação com sua prefeitura e pronto, você já pode usar.
+                </p>
+              </div>
+            </div>
+
+            <div className="lg:col-span-6 lg:col-start-7 flex items-center justify-center">
+              <img
+                src={delvindapp}
+                alt="Tablet com AgiNotas"
+                className="w-full max-w-[500px] sm:max-w-[600px] mx-auto lg:mx-0"
+                loading="lazy"
+              />
+            </div>
+          </div>
+
+            <div className="flex justify-center mt-10 sm:mt-12">
+              <Link
+                to="/manual"
+                className="bg-[#C0C0C0] text-black px-5 sm:px-6 py-2 sm:py-3 rounded-md font-semibold flex items-center min-w-[250px] sm:min-w-[280px] hover:bg-gray-300 transition-colors duration-200"
+              >
+                <img
+                  src={logocomnome}
+                  alt="Logo Delvind"
+                  className="h-10 w-10 sm:h-12 sm:w-12 bg-[#161e2e] rounded-md p-1 mr-3 sm:mr-4"
+                />
+                <div className="flex flex-col items-start flex-grow">
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-base sm:text-lg font-medium">BAIXAR</span>
+                    <FaChevronRight className="ml-2" />
+                  </div>
+                  <span className="text-xs sm:text-sm opacity-70 mt-1">Manual</span>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
 
       <footer className="bg-[#0f172a] py-12">
         <div className="container mx-auto px-4">
