@@ -106,6 +106,21 @@ export function SubscriptionManagement() {
         }
     }
 
+    const handleCancelSubscription = async (subscriptionId: string) => {
+
+        if (!window.confirm("Tem certeza que deseja cancelar a assinatura?")) {
+            return;
+        }
+
+        try {
+            await api.Cancel_Subscription(subscriptionId);
+            loadData();
+        } catch (error) {   
+            alert('Ocorreu um erro!');
+            return;    
+        }
+    }
+
     async function loadData() {
         setLoading(true);
 
@@ -230,10 +245,12 @@ export function SubscriptionManagement() {
                     <div className="mt-4 flex space-x-2">
 {/*                     <button className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">
                         Editar
-                    </button>
-                    <button className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
-                        Excluir
-                    </button> */}
+                    </button>*/}
+                    {subscription.status !== 'canceled' && (
+                        <button onClick={()=> handleCancelSubscription(subscription.id)} className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
+                            Desativar Assinatura
+                        </button>
+                    )}
                     </div>
                 </div>
                 ))}

@@ -488,4 +488,20 @@ export const api = {
 
     return response.json();
   }, 
+
+  async Cancel_Subscription(id: String) {
+    const response = await fetch(`${API_URL}/pagarme/cancel-subscription/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao cancelar assinatura');
+    }
+
+    return response.json();
+  },
+  
 };
