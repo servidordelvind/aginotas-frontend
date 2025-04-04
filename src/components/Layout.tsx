@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   Settings,
+  User2
 } from 'lucide-react';
 import Cookies from 'js-cookie';
 
@@ -21,10 +22,13 @@ export function Layout() {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
   });
+
+  const [userName, setUserName] = useState('Usuário');
 
   useEffect(() => {
     const adminToken = Cookies.get('admin_token');
@@ -54,6 +58,14 @@ export function Layout() {
     localStorage.clear();
   };
 
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      setUserName(user.name || 'Usuário');
+    }
+  }, []);
+
   const navItems = [
     ...(isAdmin
       ? [
@@ -63,6 +75,7 @@ export function Layout() {
         { icon: Settings, label: 'Admin Subscriptions', path: '/admin/subscriptions' },
       ]
       : [
+        { icon: User2, label: `Olá, ${userName}. Seja bem vindo!` },
         { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
         { icon: Users, label: 'Clientes', path: '/customers' },
         { icon: MessageSquare, label: 'Chat com Suporte', path: '/chat' },
