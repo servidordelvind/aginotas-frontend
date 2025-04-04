@@ -380,6 +380,7 @@ export function Customers() {
         toast.success('Agendamento configurado com sucesso!');
         setIsSubscriptionModalOpen(false);
         setIsGerating(false);
+        location.reload();
       } else {
         toast.success('O contrato está inativo!');
       }
