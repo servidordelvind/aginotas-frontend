@@ -83,7 +83,7 @@ export function Subscriptions() {
                 </h2>
                 <div className="flex items-baseline gap-2 mb-4">
                   <span className="text-3xl font-bold text-gray-900">
-                    {`R$ ${subscription.items[0]?.pricing_scheme.price.toFixed(2) || '0,00'}`}
+                    {`R$ ${subscription.items[0]?.pricing_scheme.price / 100 || 0}`.replace('.', ',')}
                   </span>
                   <span className="text-gray-500">/mês</span>
                 </div>
@@ -98,11 +98,11 @@ export function Subscriptions() {
                   </div>
                   <div
                     className={`flex items-center gap-2 ${
-                      subscription.status === 'active' ? 'text-green-600' : 'text-red-600'
+                      subscription.status === 'active' || subscription.status === 'future' ? 'text-green-600' : 'text-red-600'
                     }`}
                   >
                     <XCircle className="w-5 h-5" />
-                    <span>Status: {subscription.status === 'active' ? 'Ativo' : 'Inativo'}</span>
+                    <span>Status: {subscription.status === 'active' || subscription.status === 'future' ? 'Ativo' : 'Inativo'}</span>
                   </div>
                 </div>
               </div>
