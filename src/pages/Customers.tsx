@@ -235,6 +235,7 @@ export function Customers() {
     description: '',
     issueDate: new Date().toISOString().split('T')[0],
     dueDate: new Date().toISOString().split('T')[0],
+    dateOfCompetence: new Date().toISOString().split('T')[0],
     observations: '',
     razao_social: '',
     nome_fantasia: '',
@@ -404,9 +405,13 @@ export function Customers() {
         cnae: parseFloat(invoice.cnae),
         quantidade: parseFloat(invoice.quantidade.toString()),
         valor_unitario: parseFloat(invoice.valor_unitario.toString()),
-        desconto: parseFloat(invoice.desconto.toString())
+        desconto: parseFloat(invoice.desconto.toString()),
+        issueDate: invoice.issueDate,
+        dateOfCompetence: invoice.dateOfCompetence,
       }
     }
+
+    //console.log(data);
 
     try {
       if (selectedCustomer.status === 'active') {
@@ -1235,17 +1240,7 @@ export function Customers() {
             </div>
             <div className="p-6 overflow-y-auto flex-1">
               <form id="subscriptionForm" onSubmit={handleSaveSubscription} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Discriminação do Serviço</label>
-                  <input
-                    type="text"
-                    value={invoice.discriminacao || ''}
-                    onChange={(e) => setInvoice({ ...invoice, discriminacao: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-                <div>
+              <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">CNAE</label>
                   <input
                     type="text"
@@ -1257,7 +1252,7 @@ export function Customers() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Item da Lista de Serviço</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Serviço LC</label>
                   <input
                     type="text"
                     value={invoice.item_lista || ''} // Posição do item, se necessário
@@ -1267,10 +1262,20 @@ export function Customers() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço LC</label>
                   <textarea
                     value={invoice.descricao || ''} // Passa a descrição da CNAE para o campo de texto
                     onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Discriminação</label>
+                  <input
+                    type="text"
+                    value={invoice.discriminacao || ''}
+                    onChange={(e) => setInvoice({ ...invoice, discriminacao: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
@@ -1377,17 +1382,7 @@ export function Customers() {
             </div>
             <div className="p-6 overflow-y-auto flex-1">
               <form id="invoiceForm" onSubmit={handleGenerateInvoice} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Discriminação do Serviço</label>
-                  <input
-                    type="text"
-                    value={invoice.discriminacao || ''}
-                    onChange={(e) => setInvoice({ ...invoice, discriminacao: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-                <div>
+              <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">CNAE</label>
                   <input
                     type="text"
@@ -1399,7 +1394,7 @@ export function Customers() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Item da Lista de Serviço</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Serviço LC</label>
                   <input
                     type="text"
                     value={invoice.item_lista}
@@ -1409,10 +1404,20 @@ export function Customers() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço LC</label>
                   <textarea
                     value={invoice.descricao}
                     onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Discriminação</label>
+                  <input
+                    type="text"
+                    value={invoice.discriminacao || ''}
+                    onChange={(e) => setInvoice({ ...invoice, discriminacao: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
@@ -1455,7 +1460,7 @@ export function Customers() {
                   />
                 </div>
 
-                <div>
+{/*                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Data de Emissão</label>
                   <input
                     type="date"
@@ -1464,14 +1469,14 @@ export function Customers() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
-                </div>
+                </div> */}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Vencimento</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Data de Competência</label>
                   <input
                     type="date"
-                    value={invoice.dueDate}
-                    onChange={(e) => setInvoice({ ...invoice, dueDate: e.target.value })}
+                    value={invoice.dateOfCompetence}
+                    onChange={(e) => setInvoice({ ...invoice, dateOfCompetence: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   />
