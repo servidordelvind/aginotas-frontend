@@ -92,10 +92,10 @@ export function Subscriptions() {
                     <Receipt className="w-5 h-5" />
                     <span>Notas Fiscais Ilimitadas</span>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-600">
+{/*                   <div className="flex items-center gap-2 text-gray-600">
                     <AlertCircle className="w-5 h-5" />
                     <span>Cobrança realizada no dia {subscription.billing_day} de cada mês</span>
-                  </div>
+                  </div> */}
                   <div
                     className={`flex items-center gap-2 ${
                       subscription.status === 'active' || subscription.status === 'future' ? 'text-green-600' : 'text-red-600'
