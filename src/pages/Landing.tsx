@@ -112,79 +112,78 @@ export function Landing() {
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
         >
-          {mobileMenuOpen ? <FaTimes size={22} /> : <FaBars size={50} />}
+          {mobileMenuOpen ? <FaTimes size={22} /> : <FaBars size={25} />}
         </button>
       </div>
 
         {/* Menu mobile - aparece abaixo de 1024px */}
         {mobileMenuOpen && (
-  <div className="fixed inset-0 flex flex-col bg-[#0f172a]/95 backdrop-blur-sm h-full min-h-screen z-50">
-    <div
-      className="absolute inset-0 bg-[#0f172a]/95 backdrop-blur-sm"
-      onClick={() => setMobileMenuOpen(false)}
-    />
+          <div className="fixed inset-0 flex flex-col bg-[#0f172a]/95 backdrop-blur-sm h-full min-h-screen">
+            <div
+              className="absolute inset-0 bg-[#0f172a]/95 backdrop-blur-sm"
+              onClick={() => setMobileMenuOpen(false)}
+            />
 
-    {/* Container principal */}
-    <div className="relative h-full flex flex-col pt-8">
+            {/* Container principal */}
+            <div className="relative h-full flex flex-col">
 
-      {/* Logo centralizada no topo */}
-      <div className="flex justify-center mt-8">
-        <img
-          src={nomelogodelvind}
-          alt="Nome Logo Delvind"
-          className="w-full max-w-[550px] aspect-[16/9] object-contain"
-        />
-      </div>
+              {/* Logo centralizada no topo */}
+              <div className="flex justify-center">
+                <img
+                  src={nomelogodelvind}
+                  alt="Nome Logo Delvind"
+                  className="w-full max-w-[284px] aspect-[16/9] object-contain md:max-w-[320px]"
+                />
+              </div>
 
-      {/* Botão de fechar no canto superior direito */}
-      <button
-        className="absolute top-48 right-6 text-gray-300 hover:text-white transition-colors"
-        onClick={() => setMobileMenuOpen(false)}
-        aria-label="Fechar menu"
-      >
-        <FaTimes size={32} />
-      </button>
+              {/* Botão de fechar no canto superior direito */}
+              <button
+                className="absolute top-16 right-4 text-gray-300 hover:text-white transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Fechar menu"
+              >
+                <FaTimes size={28} />
+              </button>
 
-      {/* Lista de seções */}
-      <div key={Date.now()} className="flex-grow  px-8 overflow-y-auto mt-12">
-        <div className="space-y-8 pb-32">
-          {sections.map((section) => (
-            <button
-              key={section.id}
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setTimeout(() => scrollToSection(section.id), 100);
-              }}
-              className={`block w-full text-right py-4 px-6 rounded-lg text-3xl transition-all ${activeSection === section.id 
-                ? ' text-white font-bold text-3xl' 
-                : 'text-gray-400 hover:text-white hover:bg-[#1e293b] text-2xl'}`}
-            >
-              {section.label}
-            </button>
-          ))}
-          <Link
-            to="/login"
-            className="block w-full text-right py-4 text-3xl px-6 rounded-lg text-gray-400 hover:text-white hover:bg-[#1e293b] transition-colors text-2xl"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Login
-          </Link>
-        </div>
-      </div>
+              {/* Lista de seções */}
+              <div key={Date.now()} className="flex-grow px-6 overflow-y-auto">
+                <div className="space-y-6 pb-72 text-right">
+                  {sections.map((section) => (
+                    <button
+                      key={section.id}
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        setTimeout(() => scrollToSection(section.id), 100);
+                      }}
+                      className={`block text-xl font-medium w-full text-right ${activeSection === section.id ? 'text-white font-bold' : 'text-gray-400 hover:text-white'
+                        }`}
+                    >
+                      {section.label}
+                    </button>
+                  ))}
+                  <Link
+                    to="/login"
+                    className="block text-xl text-gray-400 hover:text-white transition-colors w-full text-right"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                </div>
+              </div>
 
-      {/* Botão "Teste Grátis" */}
-      <div className="sticky bottom-0 left-0 w-full bg-[#0f172a] border-t border-[#1e293b] p-20 flex justify-center">
-        <Link
-          to="/pricing"
-          className="bg-[#2962FF] w-full max-w-md  text-white px-8 py-4 rounded-full font-bold hover:bg-[#1E50D9] transition-colors text-center text-4xl"
-          onClick={() => setMobileMenuOpen(false)}
-        >
-          Teste Grátis
-        </Link>
-      </div>
-    </div>
-  </div>
-)}
+              {/* Botão "Teste Grátis" fixado no bottom 0 e centralizado */}
+              <div className="fixed bottom-0 left-0 w-full bg-[#0f172a] border-t border-[#1e293b] p-4 flex justify-center">
+                <Link
+                  to="/pricing"
+                  className="bg-[#2962FF] w-80 text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1E50D9] transition-colors text-center"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Teste Grátis
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
 
 
 
