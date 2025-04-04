@@ -179,6 +179,21 @@ export const api = {
 
     return response.json();
   },
+
+  async find_customers_user() {
+    const response = await fetch(`${API_URL}/customer/findbyuser`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao buscar clientes');
+    }
+
+    return response.json();
+  },
   
   async find_subscription(id: string) {
     const response = await fetch(`${API_URL}/pagarme/get-subscription/${id}`, {

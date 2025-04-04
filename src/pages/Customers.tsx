@@ -556,7 +556,7 @@ export function Customers() {
 
   const loadCustomers = async () => {
     try {
-      const data = await api.find_customers();
+      const data = await api.find_customers_user();
       const scheduledata = await api.find_schedulings();
       setCustomers(data || []);
       setSchedulings(scheduledata || []);
