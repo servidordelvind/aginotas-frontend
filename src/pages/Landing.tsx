@@ -248,8 +248,8 @@ export function Landing() {
             <div className="hidden lg:block absolute rounded-full bg-[#2962FF] w-[50px] sm:w-[100px] h-[50px] sm:h-[100px] left-[-200px] sm:left-[-800px] top-[150px] sm:top-[265px]"></div>
 
             {/* Versão mobile/tablet com TODAS as bolinhas mantidas */}
-            <div className="lg:hidden py-8 sm:py-10 flex items-center justify-center relative" style={{ overflow: 'visible' }}>
-              <div className="absolute top-[-24px] left-0 w-full h-[2px] bg-[#2962FF] lg:hidden"></div>
+            <div className="lg:hidden py-20 sm:py-10 flex items-center justify-center relative" style={{ overflow: 'visible' }}>
+              <div className="absolute top-[25px] left-0 w-full h-[2px] bg-[#2962FF] lg:hidden"></div>
 
               <div className="relative w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] rounded-full bg-[#2962FF]">
                 <img
