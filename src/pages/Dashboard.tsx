@@ -43,7 +43,7 @@ export function Dashboard() {
   const load_data = async () => {
     const datainvoices = await api.find_invoices();
     setInvoice(datainvoices);
-    const datacustomers = await api.find_customers();
+    const datacustomers = await api.find_customers_user();
     setCustomer(datacustomers);
     const datacustomeractive = await api.find_customers_actives();
     setCustomerActive(datacustomeractive);
