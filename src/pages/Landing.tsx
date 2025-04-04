@@ -73,8 +73,7 @@ export function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#161e2e] text-white flex flex-col" style={{ fontFamily: 'Montserrat, sans-serif' }}> 
-     <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#161e2e]/95 backdrop-blur-sm shadow-lg py-[0.0rem] md:py-0 lg:py-0' : 'py-[0.0rem] md:py-0 lg:py-0'}`}>
+    <div className="min-h-screen bg-[#161e2e] text-white flex flex-col overflow-x-hidden" style={{ fontFamily: 'Montserrat, sans-serif' }}>   <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-[#161e2e]/95 backdrop-blur-sm shadow-lg py-[0.0rem] md:py-0 lg:py-0' : 'py-[0.0rem] md:py-0 lg:py-0'}`}>
   <div className="container mx-auto px-4 flex justify-between items-center">
         <div className="flex items-center">
           <img
