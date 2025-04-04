@@ -169,7 +169,6 @@ export const api = {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${Cookies.get('token')}`,
       },
     });
 
@@ -185,6 +184,7 @@ export const api = {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Cookies.get('token')}`,
       },
     });
 
