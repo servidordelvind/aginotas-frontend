@@ -8,6 +8,7 @@ import isoWeek from 'dayjs/plugin/isoWeek';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { saveAs } from 'file-saver';
 
 dayjs.extend(customParseFormat);
 dayjs.extend(isBetween);
@@ -21,6 +22,7 @@ interface Nota {
   _id: string;
   name: string;
   user: string;
+  razaoSocial: string;
 },
   valor: number;
   status: string;
@@ -124,6 +126,12 @@ export function Dashboard() {
     setDayInvoiceToday(days.notasHoje.length);
     setDayInvoiceLast7Days(days.notasUltimos7Dias.length);
   },[days])
+
+  function downloadCustomerXml(customer: any) {
+    const blob = new Blob([customer.xml], { type: 'application/xml' });
+    const fileName = `${customer.data.Rps.Servico.Discriminacao}_nota.xml`;
+    saveAs(blob, fileName);
+  }
 
 
   return (
@@ -230,14 +238,14 @@ export function Dashboard() {
                       : '!'} {item.status}
                     </span>
                     </td>
-                  <td className="py-3 px-4 text-gray-700">{item.customer.name}</td>
+                  <td className="py-3 px-4 text-gray-700">{item.customer.name || item.customer.razaoSocial}</td>
                     <td className="py-3 px-4 text-gray-500">
                     {dayjs(item.date).format('DD/MM/YYYY HH:mm')}
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex gap-2">
                         <button
-                          onClick={() => 'api.download_xml(item.customer._id)'}
+                          onClick={() => downloadCustomerXml(item)}
                           className="text-blue-600 hover:underline"
                         >
                           Baixar XML
