@@ -208,8 +208,7 @@ export function Dashboard() {
   
     // Salvar
     const pdfBytes = await pdfDoc.save();
-    //saveAs(new Blob([pdfBytes], { type: 'application/pdf' }), 'modelo-nota-fiscal.pdf');
-    console.log(customer);
+    saveAs(new Blob([pdfBytes], { type: 'application/pdf' }), 'modelo-nota-fiscal.pdf');
   }
 
 
