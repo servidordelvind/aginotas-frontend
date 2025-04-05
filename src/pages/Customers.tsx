@@ -8,6 +8,9 @@ interface Customer {
   _id: string;
   name: string;
   cnpj: string;
+  cpf: string;
+  razaoSocial: string;
+  nomeFantasia: string;
   email: string;
   phone: string;
   status: 'active' | 'inactive';
@@ -45,7 +48,7 @@ export function Customers() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGerating, setIsGerating] = useState(false);
   const [invoiceHistory, setInvoiceHistory] = useState<any[]>([]);
-  const [activeModal, setActiveModal] = useState<'none' | 'edit' | 'invoice' | 'replace' | 'subscription' | 'scheduling' | 'history'>('none');
+  const [activeModal, setActiveModal] = useState<'none' | 'edit' | 'editpessoafisica' | 'invoice' | 'replace' | 'subscription' | 'scheduling' | 'history'> ('none');
 
   const [handleinvoice, setHandleInvoice] = useState({
     _id: '',
@@ -84,6 +87,9 @@ export function Customers() {
     _id: '',
     name: '',
     cnpj: '',
+    cpf: '',
+    razaoSocial: '',
+    nomeFantasia: '',
     email: '',
     phone: '',
     inscricaoMunicipal: '',
@@ -109,6 +115,8 @@ export function Customers() {
   const [loadingCnpj, setLoadingCnpj] = useState(false);
   const [cnpjError, setCnpjError] = useState('');
 
+  const [SelectType, setSelectType] = useState('');
+
 
   // Funções para CNPJ
   const validateCnpj = (cnpj: string): boolean => {
@@ -129,7 +137,6 @@ export function Customers() {
     return true;
   };
 
-
   const formatCnpj = (value: string) => {
     const cleaned = value.replace(/\D/g, '');
 
@@ -141,6 +148,56 @@ export function Customers() {
 
     return formatted.slice(0, 18);
   };
+
+
+/*   const validateCpf = (cpf: string): boolean => {
+    const cleanedCpf = cpf.replace(/\D/g, '');
+
+    if (cleanedCpf.length !== 11) {
+      setCnpjError('CPF deve ter 11 dígitos');
+      return false;
+    }
+
+    let sum = 0;
+    let remainder;
+
+    for (let i = 1; i <= 9; i++) {
+      sum += parseInt(cleanedCpf.substring(i - 1, i)) * (11 - i);
+    }
+
+    remainder = (sum * 10) % 11;
+    if (remainder === 10 || remainder === 11) remainder = 0;
+    if (remainder !== parseInt(cleanedCpf.substring(9, 10))) {
+      setCnpjError('CPF inválido');
+      return false;
+    }
+
+    sum = 0;
+    for (let i = 1; i <= 10; i++) {
+      sum += parseInt(cleanedCpf.substring(i - 1, i)) * (12 - i);
+    }
+
+    remainder = (sum * 10) % 11;
+    if (remainder === 10 || remainder === 11) remainder = 0;
+    if (remainder !== parseInt(cleanedCpf.substring(10, 11))) {
+      setCnpjError('CPF inválido');
+      return false;
+    }
+
+    setCnpjError('');
+    return true;
+  };
+
+  const formatCpf = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+
+    let formatted = cleaned;
+    if (cleaned.length > 3) formatted = `${cleaned.slice(0, 3)}.${cleaned.slice(3)}`;
+    if (cleaned.length > 6) formatted = `${formatted.slice(0, 7)}.${formatted.slice(7)}`;
+    if (cleaned.length > 9) formatted = `${formatted.slice(0, 11)}-${formatted.slice(11, 13)}`;
+
+    return formatted.slice(0, 14);
+  }; */
 
   const fetchCompanyData = async () => {
     const cleanedCnpj = newCustomer.cnpj.replace(/\D/g, '');
@@ -193,11 +250,70 @@ export function Customers() {
     }
   };
 
+/*   const fetchPersonData = async () => {
+    const cleanedCpf = newCustomer.cpf.replace(/\D/g, '');
+
+    if (cleanedCpf.length !== 11) {
+      setCnpjError('CPF deve ter 11 dígitos');
+      return;
+    }
+
+    setLoadingCnpj(true);
+    setCnpjError('');
+
+    try {
+      const response = await fetch(`https://api.cpfdata.com/cpf/${cleanedCpf}`);
+
+      if (!response.ok) throw new Error('Erro na consulta');
+
+      const data = await response.json();
+
+      console.log(data);
+
+      if (data.status === 'ERROR' || data.error) {
+        throw new Error(data.message || 'CPF não encontrado');
+      }
+
+      setNewCustomer({
+        ...newCustomer,
+        name: data.nome || '',
+        cpf: data.cpf || '',
+        razaoSocial: data.nome || '',
+        email: data.email || '',
+        address: {
+          ...newCustomer.address,
+          street: data.endereco.logradouro || '',
+          city: data.endereco.cidade || '',
+          state: data.endereco.estado || '',
+        },
+      });
+    } catch (err) {
+      console.error('Erro na consulta:', err);
+      setCnpjError('Dados não encontrados. Preencha manualmente');
+      setNewCustomer({
+        ...newCustomer,
+        name: '',
+        email: '',
+        address: {
+          ...newCustomer.address,
+          street: '',
+          city: '',
+          state: '',
+        },
+      });
+    } finally {
+      setLoadingCnpj(false);
+    }
+  }; */
+
   useEffect(() => {
     const timer = setTimeout(() => {
       if (newCustomer.cnpj.replace(/\D/g, '').length === 14) {
         fetchCompanyData();
       }
+/*       if (newCustomer.cpf.replace(/\D/g, '').length === 11) {
+        fetchPersonData();
+      } */
     }, 1500);
 
     return () => clearTimeout(timer);
@@ -262,6 +378,40 @@ export function Customers() {
 
   const handleViewScheduleHistory = async () => {
     setActiveModal('scheduling');
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setIsSubscriptionModalOpen(false);
+    setIsInvoiceModalOpen(false);
+    setActiveModal('none');
+    setNewCustomer({
+      _id: '',
+      name: '',
+      cnpj: '',
+      cpf: '',
+      razaoSocial: '',
+      nomeFantasia: '',
+      email: '',
+      phone: '',
+      inscricaoMunicipal: '',
+      inscricaoEstadual: '',
+      user: {
+        _id: '',
+        email: '',
+        senhaelotech: '',
+      },
+      address: {
+        street: '',
+        number: '',
+        neighborhood: '',
+        cityCode: '',
+        city: '',
+        state: '',
+        zipCode: ''
+      },
+      status: 'active',
+    });
   }
 
   const handleAddCustomer = async (e: React.FormEvent) => {
@@ -519,10 +669,15 @@ export function Customers() {
   }
 
   const handleViewModalEditCustomer = async (customer: Customer) => {
-    setActiveModal('edit');
-    setNewCustomer(customer);
+    if(customer.cpf != 'undefined' && customer.cnpj === 'undefined') {
+      setActiveModal('editpessoafisica');
+      setNewCustomer(customer);
+    }
+    if(customer.cpf === 'undefined' && customer.cnpj != 'undefined') {
+      setActiveModal('edit');
+      setNewCustomer(customer);
+    }
   }
-
 
   const handleEditCustomer = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -538,6 +693,7 @@ export function Customers() {
   }
 
   const filteredCustomers = customers.filter(customer =>
+    customer.cpf.includes(searchTerm) ||
     customer.cnpj.includes(searchTerm) ||
     customer.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -603,7 +759,7 @@ export function Customers() {
             <thead>
               <tr className="bg-gray-50">
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Nome</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">CNPJ</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">CNPJ/CPF</th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Email</th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Telefone</th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Status</th>
@@ -613,8 +769,8 @@ export function Customers() {
             <tbody>
               {filteredCustomers.map((customer) => (
                 <tr key={customer._id} className="border-t border-gray-100">
-                  <td className="py-3 px-4 text-gray-900">{customer.name}</td>
-                  <td className="py-3 px-4 text-gray-600">{customer.cnpj}</td>
+                    <td className="py-3 px-4 text-gray-900">{customer.name || customer.razaoSocial}</td>
+                    <td className="py-3 px-4 text-gray-600">{customer.cnpj === 'undefined' ? customer.cpf : customer.cnpj}</td>
                   <td className="py-3 px-4 text-gray-600">{customer.email}</td>
                   <td className="py-3 px-4 text-gray-600">{customer.phone}</td>
                   <td className="py-3 px-4">
@@ -721,6 +877,194 @@ export function Customers() {
               <h2 className="text-xl font-bold text-gray-900">Novo Cliente</h2>
             </div>
 
+            <div className="p-6">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Selecione uma Opção</label>
+              <select
+              value={SelectType}
+              onChange={(e) => setSelectType(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+              <option value="Empresa">Empresa</option>
+              <option value="Pessoa Física">Pessoa Física</option>
+              </select>
+            </div>
+
+            {SelectType === 'Pessoa Física' ? (
+            <div className="p-6 overflow-y-auto flex-1">
+            <form id="newCustomerForm" onSubmit={handleAddCustomer} className="space-y-6">
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-gray-900">Informações Básicas</h3>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    CPF {loadingCnpj && <Loader2 className="inline w-4 h-4 ml-2 animate-spin" />}
+                  </label>
+                  <input
+                    type="text"
+                    value={newCustomer.cpf}
+                    onChange={(e) => setNewCustomer({ ...newCustomer, cpf: e.target.value})}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${cnpjError ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    required
+                    placeholder="000.000.000-00"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Razao Social
+                  </label>
+                  <input
+                    type="text"
+                    value={newCustomer.razaoSocial}
+                    onChange={(e) => setNewCustomer({ ...newCustomer, razaoSocial: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>            
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                  <input
+                    type="email"
+                    value={newCustomer.email}
+                    onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                  <input
+                    type="tel"
+                    value={newCustomer.phone}
+                    onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-gray-900">Endereço</h3>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Rua</label>
+                  <input
+                    type="text"
+                    value={newCustomer.address.street}
+                    onChange={(e) =>
+                      setNewCustomer({
+                        ...newCustomer,
+                        address: { ...newCustomer.address, street: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Número</label>
+                  <input
+                    type="text"
+                    value={newCustomer.address.number}
+                    onChange={(e) =>
+                      setNewCustomer({
+                        ...newCustomer,
+                        address: { ...newCustomer.address, number: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Bairro</label>
+                  <input
+                    type="text"
+                    value={newCustomer.address.neighborhood}
+                    onChange={(e) =>
+                      setNewCustomer({
+                        ...newCustomer,
+                        address: { ...newCustomer.address, neighborhood: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
+                  <input
+                    type="text"
+                    value={newCustomer.address.city}
+                    onChange={(e) =>
+                      setNewCustomer({
+                        ...newCustomer,
+                        address: { ...newCustomer.address, city: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                  <input
+                    type="text"
+                    value={newCustomer.address.state}
+                    onChange={(e) =>
+                      setNewCustomer({
+                        ...newCustomer,
+                        address: { ...newCustomer.address, state: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">CEP</label>
+                  <input
+                    type="text"
+                    value={newCustomer.address.zipCode}
+                    onChange={(e) =>
+                      setNewCustomer({
+                        ...newCustomer,
+                        address: { ...newCustomer.address, zipCode: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Código do Município
+                  </label>
+                  <input
+                    type="text"
+                    value={newCustomer.address.cityCode}
+                    onChange={(e) =>
+                      setNewCustomer({
+                        ...newCustomer,
+                        address: { ...newCustomer.address, cityCode: e.target.value },
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+              </div>
+            </form>
+            </div>
+            ) : 
             <div className="p-6 overflow-y-auto flex-1">
               <form id="newCustomerForm" onSubmit={handleAddCustomer} className="space-y-6">
                 <div className="space-y-4">
@@ -754,9 +1098,7 @@ export function Customers() {
                       required
                     />
                   </div>
-
-                  
-
+               
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Inscrição Municipal</label>
                     <input
@@ -767,27 +1109,6 @@ export function Customers() {
                       
                     />
                   </div>
-
-{/*                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Inscrição Municipal</label>
-                    <input
-                      type="text"
-                      value={newCustomer.inscricaoMunicipal || ''}
-                      onChange={(e) => setNewCustomer({ ...newCustomer, inscricaoMunicipal: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      required
-                    />
-                  </div> */}
-
-                  {/*                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Inscrição Estadual</label>
-                    <input
-                      type="text"
-                      value={newCustomer.inscricaoEstadual || ''}
-                      onChange={(e) => setNewCustomer({ ...newCustomer, inscricaoEstadual: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div> */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
                     <input
@@ -930,11 +1251,13 @@ export function Customers() {
                 </div>
               </form>
             </div>
+            }
+            
 
             <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
               <button
                 type="button"
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => handleCloseModal()}
                 className="px-4 py-2 text-gray-700 hover:text-gray-900"
               >
                 Cancelar
@@ -1001,6 +1324,209 @@ export function Customers() {
 
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                    <input
+                      type="email"
+                      placeholder={newCustomer.email}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                    <input
+                      type="tel"
+                      placeholder={newCustomer.phone}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900">Endereço</h3>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Rua</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.street}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, street: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Número</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.number}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, number: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Bairro</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.neighborhood}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, neighborhood: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.city}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, city: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.state}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, state: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">CEP</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.zipCode}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, zipCode: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Código do Município
+                    </label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.address.cityCode}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          address: { ...newCustomer.address, cityCode: e.target.value },
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+
+                    />
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={closeAllModals}
+                className="px-4 py-2 text-gray-700 hover:text-gray-900"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                form="editCustomerForm"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Salvar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeModal === 'editpessoafisica' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-h-[90vh] w-full max-w-2xl flex flex-col">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-bold text-gray-900">Editar Cliente</h2>
+            </div>
+
+            <div className="p-6 overflow-y-auto flex-1">
+              <form
+                id="editCustomerForm"
+                onSubmit={(e) => handleEditCustomer(e)}
+                className="space-y-6"
+              >
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-gray-900">Informações Básicas</h3>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">CPF</label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.cpf}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, cpf: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Razao Social
+                    </label>
+                    <input
+                      type="text"
+                      placeholder={newCustomer.razaoSocial}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, razaoSocial: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+
+                    />
+                  </div>
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
                     <input
