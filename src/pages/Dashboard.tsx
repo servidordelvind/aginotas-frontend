@@ -174,8 +174,8 @@ export function Dashboard() {
     
     // Dados do tomador
     drawText('DADOS DO TOMADOR DO SERVIÇO', 50, 625, 11);
-    drawText(`Nome/Razão Social: ${customer.customer.razaoSocial}`, 50, 610);
-    drawText(`CPF/CNPJ: ${customer.customer.cpf || customer.customer.cnpj}`, 50, 595);
+    drawText(`Nome/Razão Social: ${customer.customer.razaoSocial || customer.customer.name }`, 50, 610);
+    drawText(`CPF/CNPJ: ${customer.customer.cnpj !== 'undefined' ? customer.customer.cnpj : customer.customer.cpf !== 'undefined' ? customer.customer.cpf : 'N/A'}`, 50, 595);
     drawText(`Endereço: ${customer.customer.address.street}, ${customer.customer.address.number} - ${customer.customer.address.neighborhood}`, 50, 580);
     drawText(`Município/UF: ${customer.customer.address.city}-${customer.customer.address.state} | CEP: ${customer.customer.address.zipCode}`, 50, 565);
     drawText(`Fone: ${customer.customer.phone} | E-mail: ${customer.customer.email}`, 50, 550);
