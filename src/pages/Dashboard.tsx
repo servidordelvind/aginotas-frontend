@@ -209,7 +209,7 @@ export function Dashboard() {
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Status</th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Cliente</th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Data/Hora</th>
-{/*                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Ações</th> */}
+                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Ações</th> 
               </tr>
             </thead>
             <tbody>
@@ -233,6 +233,22 @@ export function Dashboard() {
                   <td className="py-3 px-4 text-gray-700">{item.customer.name}</td>
                     <td className="py-3 px-4 text-gray-500">
                     {dayjs(item.date).format('DD/MM/YYYY HH:mm')}
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => 'api.download_xml(item.customer._id)'}
+                          className="text-blue-600 hover:underline"
+                        >
+                          Baixar XML
+                        </button>
+                        <button
+                          onClick={() => 'api.download_pdf(item.customer._id)'}
+                          className="text-blue-600 hover:underline"
+                        >
+                          Baixar PDF
+                        </button>
+                      </div>
                     </td>
                 </tr>
               ))}
