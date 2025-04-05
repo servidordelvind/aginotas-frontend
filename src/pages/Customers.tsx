@@ -1015,16 +1015,17 @@ export function Customers() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
                   <input
-                    type="text"
-                    value={newCustomer.address.state}
-                    onChange={(e) =>
-                      setNewCustomer({
-                        ...newCustomer,
-                        address: { ...newCustomer.address, state: e.target.value },
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
+                  type="text"
+                  value={newCustomer.address.state}
+                  onChange={(e) => {
+                    const value = e.target.value.toUpperCase().slice(0, 2); // Allow only two uppercase letters
+                    setNewCustomer({
+                    ...newCustomer,
+                    address: { ...newCustomer.address, state: value },
+                    });
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
                   />
                 </div>
 
@@ -1199,21 +1200,22 @@ export function Customers() {
                     />
                   </div>
 
-                  <div>
+                    <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
                     <input
                       type="text"
                       value={newCustomer.address.state}
-                      onChange={(e) =>
-                        setNewCustomer({
-                          ...newCustomer,
-                          address: { ...newCustomer.address, state: e.target.value },
-                        })
-                      }
+                      onChange={(e) => {
+                      const value = e.target.value.toUpperCase().slice(0, 2); // Allow only two uppercase letters
+                      setNewCustomer({
+                        ...newCustomer,
+                        address: { ...newCustomer.address, state: value },
+                      });
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
-                  </div>
+                    </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">CEP</label>
@@ -1521,7 +1523,7 @@ export function Customers() {
                     <input
                       type="text"
                       placeholder={newCustomer.razaoSocial}
-                      onChange={(e) => setNewCustomer({ ...newCustomer, razaoSocial: e.target.value })}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, ra: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 
                     />
