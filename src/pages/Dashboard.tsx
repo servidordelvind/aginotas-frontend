@@ -136,9 +136,8 @@ export function Dashboard() {
   }
 
 
-  async function criarNotaFiscal(customer: any) {
-    console.log(customer);
-
+   async function criarNotaFiscal(customer: any) {
+    //console.log(customer);
 
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([595.28, 841.89]); // A4 em pontos
@@ -209,7 +208,7 @@ export function Dashboard() {
     // Salvar
     const pdfBytes = await pdfDoc.save();
     saveAs(new Blob([pdfBytes], { type: 'application/pdf' }), 'modelo-nota-fiscal.pdf');
-  }
+  } 
 
 
   return (
