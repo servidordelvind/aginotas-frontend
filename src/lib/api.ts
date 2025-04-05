@@ -328,12 +328,11 @@ export const api = {
     return response.json();
   },
 
-  async find_schedulings(){
-    const response = await fetch(`${API_URL}/scheduling/find`, {
+  async find_schedulings(id: string){
+    const response = await fetch(`${API_URL}/scheduling/find/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${Cookies.get('token')}`,
       },
     });
 

@@ -376,8 +376,9 @@ export function Customers() {
     setSearchTerm(e.target.value);
   };
 
-  const handleViewScheduleHistory = async () => {
+  const handleViewScheduleHistory = async (id: string) => {
     setActiveModal('scheduling');
+    loadInvoiceHistory(id);
   }
 
   const handleCloseModal = () => {
@@ -708,14 +709,13 @@ export function Customers() {
 
   const closeAllModals = () => {
     setActiveModal('none');  // Fechando todos os modais
+    setSchedulings([]);
   };
 
   const loadCustomers = async () => {
     try {
       const data = await api.find_customers_user();
-      const scheduledata = await api.find_schedulings();
       setCustomers(data || []);
-      setSchedulings(scheduledata || []);
     } catch (error) {
       toast.error('Erro ao carregar clientes');
       console.error('Erro ao carregar clientes:', error);
@@ -723,6 +723,16 @@ export function Customers() {
       setIsLoading(false);
     }
   };
+
+  const loadInvoiceHistory = async (id: string) => {
+    try {
+      const scheduledata = await api.find_schedulings(id);
+      setSchedulings(scheduledata || []);
+    } catch (error) {
+      toast.error('Erro ao buscar agendamentos do cliente');
+    }
+  }
+
 
   useEffect(() => {
     loadCustomers();
@@ -802,16 +812,13 @@ export function Customers() {
                       </button>
 
 
-
-                      {schedulings.some(schedule => schedule.customer_id === customer._id) && (
                         <button
-                          onClick={() => handleViewScheduleHistory()}
+                          onClick={() => handleViewScheduleHistory(customer._id)}
                           className="text-blue-600 hover:text-blue-700"
                           title="Gerenciar agendamentos"
                         >
                           <Clock className="w-5 h-5" />
                         </button>
-                      )}
 
 
                       <button
@@ -2169,32 +2176,29 @@ export function Customers() {
                 <table className="w-full table-auto">
                   <thead>
                     <tr className="border-b">
-                      <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Cliente</th>
+                      {/* <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Cliente</th> */}
                       <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Descrição</th>
                       <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Dia do Faturamento</th>
                       <th className="py-2 px-4 text-right text-sm font-medium text-gray-600">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {schedulings.map((schedule) => {
-                      const customer = customers.find(c => c._id === schedule.customer_id);
-                      return (
-                        <tr key={schedule.customer_id} className="border-b">
-                          <td className="py-2 px-4 text-sm text-gray-700">{customer?.name || 'Cliente não encontrado'}</td>
-                          <td className="py-2 px-4 text-sm text-gray-700">{schedule.data.servico.Discriminacao}</td>
-                          <td className="py-2 px-4 text-sm text-gray-700">{schedule.billing_day}</td>
-                          <td className="py-2 px-4 text-right">
-                            <button
-                              onClick={() => handleCancelSchedule(schedule.customer_id)}
-                              className="text-red-600 hover:text-red-800"
-                              title="Cancelar Agendamento"
-                            >
-                              <Trash2 className="w-5 h-5" />
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                    {schedulings.map((schedule) => (
+                      <tr key={schedule.customer_id} className="border-b">
+                        {/* <td className="py-2 px-4 text-sm text-gray-700">{schedule?.name || schedule?.razaoSocial}</td> */}
+                        <td className="py-2 px-4 text-sm text-gray-700">{schedule.data?.servico?.Discriminacao || ''}</td>
+                        <td className="py-2 px-4 text-sm text-gray-700">{schedule.billing_day}</td>
+                        <td className="py-2 px-4 text-right">
+                        <button
+                          onClick={() => handleCancelSchedule(schedule.customer_id)}
+                          className="text-red-600 hover:text-red-800"
+                          title="Cancelar Agendamento"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               )}
