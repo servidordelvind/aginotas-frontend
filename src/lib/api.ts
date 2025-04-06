@@ -502,5 +502,50 @@ export const api = {
 
     return response.json();
   },
+
+  async Find_CNAES_ELOTECH(){
+    const response = await fetch(`${API_URL}/elotech/cnaes`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Server error');
+    }
+
+    return response.json();
+  }, 
+
+  async Find_SERVICOS_ELOTECH(){
+    const response = await fetch(`${API_URL}/elotech/servicos`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Server error');
+    }
+
+    return response.json();
+  },
+
+  async Find_SERVICO_POR_CNAE(id: string){
+    const response = await fetch(`${API_URL}/elotech/servicosporcnae/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Server error');
+    }
+
+    return response.json();
+  },
   
 };
