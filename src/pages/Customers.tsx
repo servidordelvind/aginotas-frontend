@@ -1950,7 +1950,7 @@ export function Customers() {
                     <datalist id="cnae-options">
                     {cnaes.map((cnae) => (
                       <option key={cnae.codigo} value={cnae.codigo}>
-                      {cnae.codigo}
+                      {cnae.codigo} -- {cnae.descricao}
                       </option>
                     ))}
                     </datalist>
