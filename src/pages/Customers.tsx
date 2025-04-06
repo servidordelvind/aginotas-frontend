@@ -1831,20 +1831,23 @@ export function Customers() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço LC</label>
-                  <select
-                  value={invoice.descricao}
-                  onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                  >
-                  <option value="" disabled>Selecione uma descrição</option>
-                  {itemservico.map((item, index) => (
-                    <option key={index} value={item.listaServicoVo.descricao}>
-                    {item.listaServicoVo.descricao}
-                    </option>
-                  ))}
-                  </select>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
+                    <input
+                    type="text"
+                    list="descricao-options"
+                    value={invoice.descricao}
+                    onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Digite ou selecione uma descrição"
+                    required
+                    />
+                    <datalist id="descricao-options">
+                    {itemservico.map((item, index) => (
+                      <option key={index} value={item.listaServicoVo.descricao}>
+                      {item.listaServicoVo.descricao}
+                      </option>
+                    ))}
+                    </datalist>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Discriminação</label>
@@ -1972,14 +1975,14 @@ export function Customers() {
                     <datalist id="cnae-options">
                     {cnaes.map((cnae) => (
                       <option key={cnae.codigo} value={cnae.codigo}>
-                      {cnae.codigo} -- {cnae.descricao}
+                      {cnae.codigo} - {cnae.descricao}
                       </option>
                     ))}
                     </datalist>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Serviço LC</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Item Serviço</label>
                   <select
                   value={invoice.item_lista}
                   onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
@@ -1995,20 +1998,23 @@ export function Customers() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço LC</label>
-                  <select
-                  value={invoice.descricao}
-                  onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                  >
-                  <option value="" disabled>Selecione uma descrição</option>
-                  {itemservico.map((item, index) => (
-                    <option key={index} value={item.listaServicoVo.descricao}>
-                    {item.listaServicoVo.descricao}
-                    </option>
-                  ))}
-                  </select>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
+                    <input
+                    type="text"
+                    list="descricao-options"
+                    value={invoice.descricao}
+                    onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Digite ou selecione uma descrição"
+                    required
+                    />
+                    <datalist id="descricao-options">
+                    {itemservico.map((item, index) => (
+                      <option key={index} value={item.listaServicoVo.descricao}>
+                      {item.listaServicoVo.descricao}
+                      </option>
+                    ))}
+                    </datalist>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Discriminação</label>
