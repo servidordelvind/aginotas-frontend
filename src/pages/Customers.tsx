@@ -337,12 +337,12 @@ export function Customers() {
   const [invoice, setInvoice] = useState({
     discriminacao: '',
     descricao: '',
-    item_lista: '104',
+    item_lista: '',
     cnpj: selectedCustomer?.cnpj || "",
-    cnae: '6201501',
+    cnae: '',
     quantidade: 1,
     valor_unitario: '',
-    desconto: '',
+    desconto: '0',
     iss_retido: false,
     aliquota_iss: 4.41,
     retencoes: {
@@ -1785,7 +1785,7 @@ export function Customers() {
         </div>
       )}
 
-      {/* Modal de Configuração de Assinatura */}
+      {/* Modal de Configuração de Agendamento */}
       {activeModal === 'subscription' && selectedCustomer && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl max-h-[90vh] w-full max-w-md flex flex-col">
@@ -1794,35 +1794,57 @@ export function Customers() {
             </div>
             <div className="p-6 overflow-y-auto flex-1">
               <form id="subscriptionForm" onSubmit={handleSaveSubscription} className="space-y-4">
-              <div>
+              <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">CNAE</label>
-                  <input
+                    <input
                     type="text"
+                    list="cnae-options"
                     value={invoice.cnae || ''}
                     onChange={(e) => setInvoice({ ...invoice, cnae: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Digite ou selecione um CNAE"
                     required
-                  />
+                    />
+                    <datalist id="cnae-options">
+                    {cnaes.map((cnae) => (
+                      <option key={cnae.codigo} value={cnae.codigo}>
+                      {cnae.codigo} -- {cnae.descricao}
+                      </option>
+                    ))}
+                    </datalist>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Serviço LC</label>
-                  <input
-                    type="text"
-                    value={invoice.item_lista || ''} // Posição do item, se necessário
-                    onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
+                  <select
+                  value={invoice.item_lista}
+                  onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                  >
+                  <option value="" disabled>Selecione um serviço</option>
+                  {itemservico.map((item, index) => (
+                    <option key={index} value={item.listaServicoVo.id}>
+                    {item.listaServicoVo.id}
+                    </option>
+                  ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço LC</label>
-                  <textarea
-                    value={invoice.descricao || ''} // Passa a descrição da CNAE para o campo de texto
-                    onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
+                  <select
+                  value={invoice.descricao}
+                  onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                  >
+                  <option value="" disabled>Selecione uma descrição</option>
+                  {itemservico.map((item, index) => (
+                    <option key={index} value={item.listaServicoVo.descricao}>
+                    {item.listaServicoVo.descricao}
+                    </option>
+                  ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Discriminação</label>
