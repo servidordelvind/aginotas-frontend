@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Trash2, XCircle, Calendar, File, Check, Ban, Edit, Clock, Loader2 } from 'lucide-react';
+import { Plus, Search, Trash2, XCircle, Calendar, File, FileCodeIcon,Check, Ban, Edit, Clock, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { FaEye } from 'react-icons/fa';
 import { api } from '../lib/api.ts';
+import { saveAs } from 'file-saver';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import fs from 'fs';
 
 interface Customer {
   _id: string;
@@ -505,7 +508,7 @@ export function Customers() {
 
     if (!selectedCustomer) return;
 
-    if (selectedCustomer!.user.senhaelotech === 'undefined') return;
+    if (selectedCustomer!.user.senhaelotech === 'undefined') { toast.error('Chave de homologação/Produção inválida!'); return; };
     if (selectedCustomer!.inscricaoMunicipal === '') { toast.error('Inscrição Municipal inválida!'); return; };
 
     const data = {
@@ -548,7 +551,7 @@ export function Customers() {
     e.preventDefault();
     if (!selectedCustomer) return;
 
-    if (selectedCustomer!.user.senhaelotech === 'undefined') return;
+    if (selectedCustomer!.user.senhaelotech === 'undefined') { toast.error('Chave de homologação/Produção inválida!'); return; };
     if (selectedCustomer!.inscricaoMunicipal === '') { toast.error('Inscrição Municipal inválida!'); return; };
 
     const data = {
@@ -737,6 +740,93 @@ export function Customers() {
     }
   }
 
+  function downloadCustomerXml(customer: any) {
+    const blob = new Blob([customer.xml], { type: 'application/xml' });
+    const fileName = `${customer.data.Rps.Servico.Discriminacao}_nota.xml`;
+    saveAs(blob, fileName);
+  }
+
+  async function criarNotaFiscal(customer: any) {
+  
+        //console.log(customer);
+  
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(customer.xml, "text/xml");
+  
+        const getValue = (tagName: string) => {
+          const element = xmlDoc.getElementsByTagName(tagName)[0];
+          return element ? element.textContent || "" : "N/A";
+        };
+  
+        const pdfDoc = await PDFDocument.create();
+        const page = pdfDoc.addPage([595.28, 841.89]); // A4 em pontos
+  
+        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const fontSize = 10;
+  
+        const drawText = (text: string, x: number, y: number, size = fontSize) => {
+          page.drawText(text, {
+            x,
+            y,
+            size,
+            font,
+            color: rgb(0, 0, 0),
+          });
+        };
+  
+        // Cabeçalho
+        drawText('MUNICIPIO DE MEDIANEIRA - Nota Fiscal de Serviços Eletrônica', 150, 800, 12);
+        drawText(`Número: ${getValue("ns2:Numero")}`, 50, 780);
+        drawText(`Data Prestação: ${getValue("ns2:DataEmissao")}`, 250, 780);
+        drawText(`Autenticidade: ${getValue("ns2:CodigoVerificacao")}`, 450, 780);
+        drawText('SITE AUTENTICIDADE: https://medianeira.oxy.elotech.com.br/iss/autenticar-documento-fiscal', 50, 765, 8);
+  
+        // Dados do prestador
+        drawText('DADOS DO PRESTADOR DO SERVIÇO', 50, 740, 11);
+        drawText(`Nome/Razão Social: ${getValue("ns2:RazaoSocial")}`, 50, 725);
+        drawText(`CNPJ: ${getValue("ns2:Cnpj")}`, 50, 710);
+        drawText(`Insc. Municipal: ${getValue("ns2:InscricaoMunicipal")}`, 50, 695);
+        drawText(`Endereço: ${getValue("ns2:Endereco")}, ${getValue("ns2:Numero")}`, 50, 680);
+        drawText(`Município/UF: ${getValue("ns2:CodigoMunicipio")}-${getValue("ns2:Uf")} | CEP: ${getValue("ns2:Cep")}`, 50, 665);
+        drawText(`Fone: ${getValue("ns2:Telefone")} | E-mail: ${getValue("ns2:Email")}`, 50, 650);
+  
+        // Dados do tomador
+        drawText('DADOS DO TOMADOR DO SERVIÇO', 50, 625, 11);
+        drawText(`Nome/Razão Social: ${customer.data.Rps.Tomador.RazaoSocial || 'N/A'}`, 50, 610);
+        drawText(`CPF/CNPJ: ${customer.data.Rps.Tomador.IdentificacaoTomador.CpfCnpj || 'N/A'}`, 50, 595);
+        drawText(`Endereço: ${customer.data.Rps.Tomador.Endereco.Endereco}, ${customer.data.Rps.Tomador.Endereco.Numero} - ${customer.data.Rps.Tomador.Endereco.Bairro}`, 50, 580);
+        drawText(`Município/UF: ${customer.data.Rps.Tomador.Endereco.CodigoMunicipio}-${customer.data.Rps.Tomador.Endereco.Uf} | CEP: ${customer.data.Rps.Tomador.Endereco.Cep}`, 50, 565);
+        drawText(`Fone: ${customer.data.Rps.Tomador.Contato.Telefone || 'N/A'} | E-mail: ${customer.data.Rps.Tomador.Contato.Email || 'N/A'}`, 50, 550);
+  
+        // Serviço
+        drawText('DEFINIÇÃO DO SERVIÇO', 50, 525, 11);
+        drawText(`Item da Lista de Serviços: ${getValue("ns2:ItemListaServico")} ${getValue("ns2:Descricao")}`, 50, 510);
+        drawText(`CNAE: ${getValue("ns2:CodigoCnae")} | Competência: ${getValue("ns2:Competencia")}`, 50, 495);
+        drawText(`Local da Prestação: ${getValue("ns2:CodigoMunicipio")}-${getValue("ns2:Uf")}`, 50, 480);
+        drawText('Natureza da Operação: EXIGÍVEL', 50, 465);
+  
+        // Discriminação
+        drawText('DISCRIMINAÇÃO DO SERVIÇO', 50, 440, 11);
+        drawText(`- ${getValue("ns2:Discriminacao")}`, 50, 425);
+        drawText(`Descrição: ${getValue("ns2:Descricao")} | Qtde: ${getValue("ns2:Quantidade")} | Valor Unitário: R$ ${getValue("ns2:ValorUnitario")} | Valor Total: R$ ${getValue("ns2:ValorServicos")}`, 50, 410);
+  
+        // Tributos
+        drawText('TRIBUTOS INCIDENTES', 50, 380, 11);
+        drawText(`ISSQN: R$ ${getValue("ns2:ValorIss")} | Alíquota: ${getValue("ns2:Aliquota")}% | Retido: ${getValue("ns2:IssRetido") === "2" ? "Não" : "Sim"}`, 50, 365);
+  
+        // Totais
+        drawText('TOTALIZAÇÃO DO DOCUMENTO FISCAL', 50, 320, 11);
+        drawText(`Base de Cálculo ISSQN: R$ ${getValue("ns2:BaseCalculo")}`, 50, 305);
+        drawText(`Valor Total: R$ ${getValue("ns2:ValorServicos")} | Descontos: R$ ${getValue("ns2:DescontoIncondicionado")} | Valor Líquido: R$ ${getValue("ns2:ValorLiquidoNfse")}`, 50, 290);
+  
+        // Assinatura
+        drawText(`Recebemos de ${getValue("ns2:RazaoSocial")} os serviços constantes nesta NFS-e.`, 50, 260);
+        drawText('DATA: ____/____/_____   Assinatura: ____________________________', 50, 240);
+  
+        // Salvar
+        const pdfBytes = await pdfDoc.save();
+        saveAs(new Blob([pdfBytes], { type: "application/pdf" }), "modelo-nota-fiscal.pdf");
+  }
 
   useEffect(() => {
     loadCustomers();
@@ -909,7 +999,7 @@ export function Customers() {
               onChange={(e) => setSelectType(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-              <option value="Empresa">Empresa</option>
+              <option value="Empresa">Pessoa Jurídica</option>
               <option value="Pessoa Física">Pessoa Física</option>
               </select>
             </div>
@@ -937,7 +1027,7 @@ export function Customers() {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Razao Social
+                    Nome
                   </label>
                   <input
                     type="text"
@@ -1072,7 +1162,7 @@ export function Customers() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Código do Município
+                    Código do Município (IBGE)
                   </label>
                   <input
                     type="text"
@@ -1114,7 +1204,7 @@ export function Customers() {
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Nome da Empresa
+                      Nome
                     </label>
                     <input
                       type="text"
@@ -1260,7 +1350,7 @@ export function Customers() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Código do Município
+                      Código do Município (IBGE)
                     </label>
                     <input
                       type="text"
@@ -1765,6 +1855,20 @@ export function Customers() {
                           >
                             <File className="w-4 h-4" />
                           </button> */}
+                          <button
+                            onClick={() => downloadCustomerXml(invoice)}
+                            className="text-blue-600 hover:text-blue-800 p-1"
+                            title="Baixar XML"
+                          >
+                            <FileCodeIcon className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => criarNotaFiscal(invoice)}
+                            className="text-blue-600 hover:text-blue-800 p-1"
+                            title="Baixar PDF"
+                          >
+                            <File className="w-4 h-4" />
+                          </button>
                           {(invoice.status === 'emitida' || invoice.status === 'substituida') && (
                             <button
                               onClick={() => handleCancelInvoice(invoice)}
