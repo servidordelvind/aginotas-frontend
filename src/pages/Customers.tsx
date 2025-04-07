@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Trash2, XCircle, Calendar, File, FileCodeIcon,Check, Ban, Edit, Clock, Loader2 } from 'lucide-react';
+import { Plus, Search, Trash2, XCircle, Calendar, File, FileCodeIcon,Check,Copy, Ban, Edit, Clock, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { FaEye } from 'react-icons/fa';
 import { api } from '../lib/api.ts';
@@ -846,6 +846,7 @@ export function Customers() {
     fetchItemServico();
   },[invoice.cnae])
 
+  console.log(invoiceHistory);
  
   return (
     <div className="space-y-6">
@@ -1835,7 +1836,7 @@ export function Customers() {
                       <td colSpan={5} className="py-2 px-4 text-center text-sm text-gray-500">Nenhuma nota fiscal encontrada</td>
                     </tr>
                   ) : (
-                    invoiceHistory.map((invoice) => (
+                    invoiceHistory.map((invoice) => (               
                       <tr key={invoice.id} className="border-b">
                         <td className="py-2 px-4 text-sm text-gray-700">{invoice.status || ''}</td>
                         <td className="py-2 px-4 text-sm text-gray-700">{invoice.data.Rps.Servico.Discriminacao || ''}</td>
@@ -1878,6 +1879,13 @@ export function Customers() {
                               <XCircle className="w-4 h-4" />
                             </button>
                           )}
+                          <button
+                              onClick={() => navigator.clipboard.writeText(`https://www.aginotas.com.br/${invoice._id}`)}
+                              className="text-blue-600 hover:text-blue-800 p-1"
+                              title="Copiar Link"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </button>
                         </td>
                       </tr>
                     ))
