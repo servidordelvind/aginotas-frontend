@@ -846,7 +846,7 @@ export function Customers() {
     fetchItemServico();
   },[invoice.cnae])
 
-  console.log(invoiceHistory);
+  //console.log(invoiceHistory);
  
   return (
     <div className="space-y-6">
