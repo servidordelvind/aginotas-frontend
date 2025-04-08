@@ -20,6 +20,7 @@ import { AdminUsers } from './pages/AdminUsers';
 import { AdminReports } from './pages/AdminReports';
 import { UserChat } from './pages/UserChat';
 import { SubscriptionManagement } from './pages/SubscriptionManagement';
+import { DetalhesNfse } from './pages/DetalhesNfse';
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
         <Route path="/admin/login" element={<AdminLogin/>} />
         <Route path="/register" element={<Register />} />
         <Route path="/recover" element={<Recover/>} />
+        <Route path="/detalhesNfse/:id" element={<DetalhesNfse />} />
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/customers" element={<Customers />} />
@@ -48,8 +50,6 @@ function App() {
           <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
         </Route>
         </Route>
-
-        
       </Routes>
     </BrowserRouter>
   );

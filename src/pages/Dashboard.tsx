@@ -370,57 +370,64 @@ export function Dashboard() {
       <div className="bg-white p-6 rounded-xl shadow-sm">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Status de Envio de Notas</h2>
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Status</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Cliente</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Data/Hora</th>
-                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Ações</th> 
-              </tr>
-            </thead>
-            <tbody>
-              {invoice.map((item) => (
-                <tr key={item.customer._id} className="border-b border-gray-100">
-                    <td className="py-3 px-4">
-                    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm ${
-                      item.status.toLowerCase() === 'emitida' 
-                      ? 'bg-green-100 text-green-700'
-                      : item.status.toLowerCase() === 'substituida'
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'bg-red-100 text-red-700'
-                    }`}>
-                      {item.status.toLowerCase() === 'emitida' 
-                      ? '✓' 
-                      : item.status.toLowerCase() === 'substituida'
-                      ? '↺'
-                      : '!'} {item.status}
-                    </span>
-                    </td>
-                  <td className="py-3 px-4 text-gray-700">{item.customer.name || item.customer.razaoSocial}</td>
-                    <td className="py-3 px-4 text-gray-500">
-                    {dayjs(item.date).format('DD/MM/YYYY HH:mm')}
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => downloadCustomerXml(item)}
-                          className="text-blue-600 hover:underline"
-                        >
-                          Baixar XML
-                        </button>
-                        <button
-                          onClick={() =>  criarNotaFiscal(item)}
-                          className="text-blue-600 hover:underline"
-                        >
-                          Baixar PDF
-                        </button>
-                      </div>
-                    </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="max-h-96 overflow-y-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-gray-200">
+          <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Status</th>
+          <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Cliente</th>
+          <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Data/Hora</th>
+          <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {invoice.map((item) => (
+          <tr key={item.customer._id} className="border-b border-gray-100">
+            <td className="py-3 px-4">
+              <span
+            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm ${
+              item.status.toLowerCase() === 'emitida'
+                ? 'bg-green-100 text-green-700'
+                : item.status.toLowerCase() === 'substituida'
+                ? 'bg-blue-100 text-blue-700'
+                : 'bg-red-100 text-red-700'
+            }`}
+              >
+            {item.status.toLowerCase() === 'emitida'
+              ? '✓'
+              : item.status.toLowerCase() === 'substituida'
+              ? '↺'
+              : '!'}{' '}
+            {item.status}
+              </span>
+            </td>
+            <td className="py-3 px-4 text-gray-700">
+              {item.customer.name || item.customer.razaoSocial}
+            </td>
+            <td className="py-3 px-4 text-gray-500">
+              {dayjs(item.date).format('DD/MM/YYYY HH:mm')}
+            </td>
+            <td className="py-3 px-4">
+              <div className="flex gap-2">
+            <button
+              onClick={() => downloadCustomerXml(item)}
+              className="text-blue-600 hover:underline"
+            >
+              Baixar XML
+            </button>
+            <button
+              onClick={() => criarNotaFiscal(item)}
+              className="text-blue-600 hover:underline"
+            >
+              Baixar PDF
+            </button>
+              </div>
+            </td>
+          </tr>
+            ))}
+          </tbody>
+        </table>
+          </div>
         </div>
       </div>
     </div>

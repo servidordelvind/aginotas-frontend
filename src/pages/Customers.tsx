@@ -702,7 +702,8 @@ export function Customers() {
   const filteredCustomers = customers.filter(customer =>
     customer.cpf.includes(searchTerm) ||
     customer.cnpj.includes(searchTerm) ||
-    customer.name.toLowerCase().includes(searchTerm.toLowerCase())
+    (customer.name ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (customer.razaoSocial ?? '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (isLoading) {
@@ -1052,11 +1053,14 @@ export function Customers() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
                   <input
-                    type="tel"
-                    value={newCustomer.phone}
-                    onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
+                  type="tel"
+                  value={newCustomer.phone}
+                  onChange={(e) => {
+                    const numericValue = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+                    setNewCustomer({ ...newCustomer, phone: numericValue });
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
                   />
                 </div>
               </div>
@@ -1148,16 +1152,17 @@ export function Customers() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">CEP</label>
                   <input
-                    type="text"
-                    value={newCustomer.address.zipCode}
-                    onChange={(e) =>
-                      setNewCustomer({
-                        ...newCustomer,
-                        address: { ...newCustomer.address, zipCode: e.target.value },
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
+                  type="text"
+                  value={newCustomer.address.zipCode}
+                  onChange={(e) => {
+                    const numericValue = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+                    setNewCustomer({
+                    ...newCustomer,
+                    address: { ...newCustomer.address, zipCode: numericValue },
+                    });
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
                   />
                 </div>
 
@@ -1237,16 +1242,19 @@ export function Customers() {
                     />
                   </div>
 
-                  <div>
+                    <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
                     <input
                       type="tel"
                       value={newCustomer.phone}
-                      onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
+                      onChange={(e) => {
+                      const numericValue = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+                      setNewCustomer({ ...newCustomer, phone: numericValue });
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
-                  </div>
+                    </div>
                 </div>
 
                 <div className="space-y-4">
@@ -1333,21 +1341,22 @@ export function Customers() {
                     />
                     </div>
 
-                  <div>
+                    <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">CEP</label>
                     <input
                       type="text"
                       value={newCustomer.address.zipCode}
-                      onChange={(e) =>
-                        setNewCustomer({
-                          ...newCustomer,
-                          address: { ...newCustomer.address, zipCode: e.target.value },
-                        })
-                      }
+                      onChange={(e) => {
+                      const numericValue = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+                      setNewCustomer({
+                        ...newCustomer,
+                        address: { ...newCustomer.address, zipCode: numericValue },
+                      });
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
-                  </div>
+                    </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1453,16 +1462,18 @@ export function Customers() {
                     />
                   </div>
 
-                  <div>
+                    <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
                     <input
                       type="tel"
                       placeholder={newCustomer.phone}
-                      onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
+                      onChange={(e) => {
+                      const numericValue = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+                      setNewCustomer({ ...newCustomer, phone: numericValue });
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-
                     />
-                  </div>
+                    </div>
                 </div>
 
                 <div className="space-y-4">
@@ -1548,21 +1559,21 @@ export function Customers() {
                     />
                   </div>
 
-                  <div>
+                    <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">CEP</label>
                     <input
                       type="text"
                       placeholder={newCustomer.address.zipCode}
-                      onChange={(e) =>
-                        setNewCustomer({
-                          ...newCustomer,
-                          address: { ...newCustomer.address, zipCode: e.target.value },
-                        })
-                      }
+                      onChange={(e) => {
+                      const numericValue = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+                      setNewCustomer({
+                        ...newCustomer,
+                        address: { ...newCustomer.address, zipCode: numericValue },
+                      });
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-
                     />
-                  </div>
+                    </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1656,16 +1667,18 @@ export function Customers() {
                     />
                   </div>
 
-                  <div>
+                    <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
                     <input
                       type="tel"
                       placeholder={newCustomer.phone}
-                      onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
+                      onChange={(e) => {
+                      const numericValue = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+                      setNewCustomer({ ...newCustomer, phone: numericValue });
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-
                     />
-                  </div>
+                    </div>
                 </div>
 
                 <div className="space-y-4">
@@ -1751,21 +1764,20 @@ export function Customers() {
                     />
                   </div>
 
-                  <div>
+                    <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">CEP</label>
                     <input
                       type="text"
                       placeholder={newCustomer.address.zipCode}
                       onChange={(e) =>
-                        setNewCustomer({
-                          ...newCustomer,
-                          address: { ...newCustomer.address, zipCode: e.target.value },
-                        })
+                      setNewCustomer({
+                        ...newCustomer,
+                        address: { ...newCustomer.address, zipCode: e.target.value.replace(/\D/g, '') },
+                      })
                       }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-
                     />
-                  </div>
+                    </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1879,8 +1891,11 @@ export function Customers() {
                               <XCircle className="w-4 h-4" />
                             </button>
                           )}
-                          <button
-                              onClick={() => navigator.clipboard.writeText(`https://www.aginotas.com.br/${invoice._id}`)}
+                            <button
+                              onClick={() => {
+                              navigator.clipboard.writeText(`https://www.aginotas.com.br/detalhesNfse/${invoice._id}`);
+                              toast.success('Link copiado para a área de transferência!');
+                              }}
                               className="text-blue-600 hover:text-blue-800 p-1"
                               title="Copiar Link"
                             >
