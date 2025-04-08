@@ -547,5 +547,20 @@ export const api = {
 
     return response.json();
   },
+
+  async Find_Invoice_ByID(id: string){
+    const response = await fetch(`${API_URL}/invoice/find/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Server error');
+    }
+
+    return response.json();
+  },
   
 };
