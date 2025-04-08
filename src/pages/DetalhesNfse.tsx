@@ -5,7 +5,7 @@ import { api } from '../lib/api.ts';
 import { useEffect, useState } from "react";
 
 export function DetalhesNfse() {
-    const id = useParams<{ id: string }>();
+    const { id } = useParams<{ id: string }>();
 
     const [invoice, setInvoice] = useState<any>(null);
     const [loading, setLoading] = useState(false);
@@ -98,34 +98,41 @@ export function DetalhesNfse() {
             saveAs(new Blob([pdfBytes], { type: "application/pdf" }), "modelo-nota-fiscal.pdf");
     }
 
-    useEffect(()=>{
-        async function fetchData() {
-            try {
-                setLoading(true);
-                const response = await api.Find_Invoice_ByID(`${id}`);
-                const customer = response.data;
-                console.log(customer);
-                downloadCustomerXml(customer);
-                criarNotaFiscal(customer);
-                setLoading(false);
-            } catch (error) {
-                console.error("Erro ao buscar os dados:", error);
-            }
+    async function fetchData() {
+        try {
+            setLoading(true);
+            const response = await api.Find_Invoice_ByID(`${id}`);
+            setInvoice(response);
+            setLoading(false);
+        } catch (error) {
+            console.error("Erro ao buscar os dados:", error);
         }
+    }
+
+    useEffect(()=>{
         fetchData();
     },[])
+
 
     if (loading) {
         return <div className="flex items-center justify-center min-h-screen">Carregando...</div>;
     }
 
+    if (!invoice) {
+        return <div className="flex items-center justify-center min-h-screen">Nenhum dado encontrado.</div>;
+    }
+
     return(
         <div className="flex flex-col items-center justify-center min-h-screen">
             <div className="flex justify-center gap-4 mb-6">
-            <button className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600">
+            <button 
+            onClick={() => downloadCustomerXml(invoice)}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600">
             Baixar XML
             </button>
-            <button className="px-4 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600">
+            <button 
+            onClick={() => criarNotaFiscal(invoice)}
+            className="px-4 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600">
             Baixar PDF
             </button>
             </div>
@@ -133,45 +140,51 @@ export function DetalhesNfse() {
             <h2 className="text-lg font-bold mb-4 text-center">Resumo da NFSe</h2>
             <div className="grid grid-cols-2 gap-4">
             <div>
-            <p><span className="font-semibold">Número Nota:</span> 4</p>
-            <p><span className="font-semibold">Data Prestação:</span> 29/03/2025</p>
+            <p><span className="font-semibold">Número Nota:</span> {invoice?.data?.Rps?.IdentificacaoRps?.Numero || 'N/A'}</p>
+            <p><span className="font-semibold">Data Prestação:</span> {invoice?.data?.Rps?.DataEmissao || 'N/A'}</p>
+            <p><span className="font-semibold">Código de Verificação:</span> {(() => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(invoice?.xml || "", "text/xml");
+                const codigoVerificacao = xmlDoc.getElementsByTagName("ns2:CodigoVerificacao")[0]?.textContent || 'N/A';
+                return codigoVerificacao;
+            })()}</p>
             </div>
             <div>
             <p><span className="font-semibold">Tipo Documento:</span> NFS-e (NOTA FISCAL DE SERVIÇOS ELETRONICA)</p>
             </div>
             <div>
-            <p><span className="font-semibold">Prestador:</span> 57.278.676/0001-69 - DELVIND TECNOLOGIA DA INFORMAÇÃO LTDA</p>
+            <p><span className="font-semibold">Prestador:</span> {invoice?.user?.cnpj || 'N/A'} - {invoice?.user?.name || 'N/A'}</p>
             </div>
             <div>
-            <p><span className="font-semibold">Tomador:</span> 11.769.293/0001-92 - Z D FRACARO LTDA</p>
+            <p><span className="font-semibold">Tomador:</span> {invoice?.customer?.cnpj || 'N/A'} - {invoice?.customer?.name || 'N/A'}</p>
             </div>
             <div>
             <p><span className="font-semibold">Natureza da Operação:</span> EXIGÍVEL</p>
             </div>
             <div>
-            <p><span className="font-semibold">Código do Serviço:</span> 102</p>
+            <p><span className="font-semibold">Código do Serviço:</span> {invoice?.data?.Rps?.Servico?.ListaItensServico[0]?.ItemListaServico || 'N/A'}</p>
             </div>
             <div className="col-span-2">
-            <p><span className="font-semibold">Dados da Criação do Documento:</span> Emitido via Integração de Sistemas - 29/03/2025 19:13</p>
+            <p><span className="font-semibold">Dados da Criação do Documento:</span> Emitido via Integração de Sistemas - {new Date(invoice?.date).toLocaleString() || 'N/A'}</p>
             </div>
             </div>
 
             <h2 className="text-lg font-bold mt-6 mb-4 text-center">Valores Totais</h2>
             <div className="grid grid-cols-2 gap-4">
             <div>
-            <p><span className="font-semibold">Total Descontos Condicionados:</span> R$ 0,00</p>
-            <p><span className="font-semibold">Total Descontos Incondicionados:</span> R$ 0,00</p>
-            <p><span className="font-semibold">% Deduções:</span> 0,00 %</p>
+            <p><span className="font-semibold">Total Descontos Condicionados:</span> R$ {parseFloat(invoice?.data?.Rps?.Servico?.Valores?.DescontoCondicionado || 0).toFixed(2)}</p>
+            <p><span className="font-semibold">Total Descontos Incondicionados:</span> R$ {parseFloat(invoice?.data?.Rps?.Servico?.Valores?.DescontoIncondicionado || 0).toFixed(2)}</p>
+            <p><span className="font-semibold">% Deduções:</span> {parseFloat(invoice?.data?.Rps?.Servico?.Valores?.Aliquota || 0).toFixed(2)} %</p>
             </div>
             <div>
-            <p><span className="font-semibold">Base de Cálculo do ISS:</span> R$ 1.224,00</p>
-            <p><span className="font-semibold">Valor dos Impostos:</span> R$ 53,98</p>
-            <p><span className="font-semibold">Valor Líquido:</span> R$ 1.224,00</p>
+            <p><span className="font-semibold">Base de Cálculo do ISS:</span> R$ {parseFloat(invoice?.data?.Rps?.Servico?.Valores?.BaseCalculo || 0).toFixed(2)}</p>
+            <p><span className="font-semibold">Valor dos Impostos:</span> R$ {parseFloat(invoice?.data?.Rps?.Servico?.Valores?.ValorIss || 0).toFixed(2)}</p>
+            <p><span className="font-semibold">Valor Líquido:</span> R$ {parseFloat(invoice?.data?.Rps?.Servico?.Valores?.ValorLiquido || 0).toFixed(2)}</p>
             </div>
             </div>
 
             <div className="mt-6 p-4 bg-green-100 rounded-lg">
-            <p className="text-green-700 font-bold text-center">Total da Nota Fiscal: R$ 1.224,00</p>
+            <p className="text-green-700 font-bold text-center">Total da Nota Fiscal: R$ {parseFloat(invoice?.data?.Rps?.Servico?.Valores?.ValorServicos || 0).toFixed(2)}</p>
             </div>
             </div>
         </div>
