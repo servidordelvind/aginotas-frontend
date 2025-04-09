@@ -927,12 +927,12 @@ export function Customers() {
           drawTitleBar("DADOS DO PRESTADOR DO SERVIÇO", 50, y, 495);
            page.drawImage(logoEmpresa, {
               x: 55,
-              y: y - 70,
+              y: y - 50,
               width: empresaDims.width,
               height: empresaDims.height,
           }); 
       
-          y -= 40;
+          y -= 20;
           drawText(`Nome/Razão Social: ${getValue("ns2:RazaoSocial")}`, 130, y);
           drawText(`CNPJ: ${getValue("ns2:Cnpj")}`, 130, y - 14);
           drawText(`Inscrição Municipal: ${getValue("ns2:InscricaoMunicipal")}`, 350, y - 14);
@@ -980,7 +980,7 @@ export function Customers() {
           // DISCRIMINAÇÃO DO SERVIÇO
           drawTitleBar("DISCRIMINAÇÃO DO SERVIÇO", 50, y, 495);
           y -= 18;
-          drawText(`Descrição: ${getValue("ns2:Descricao")}`, 55, y);
+          drawText(`${getValue("ns2:Descricao")}`, 55, y);
           y -= 14;
           drawLine(50, y, 545, y);
           y -= 10;
