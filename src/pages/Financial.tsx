@@ -43,7 +43,7 @@ const [view, setView] = useState("dashboard");
           customer: selectedCustomer,
           value: parseFloat((value / installments).toFixed(2)),
           dueDate: due.toISOString().split("T")[0],
-          status: "A Receber",
+          status: "Parcelado",
         });
       }
     } else if (paymentType === "recurring") {
@@ -93,7 +93,7 @@ const [view, setView] = useState("dashboard");
     },
     {
       name: "Parcelamentos",
-      total: receivables.filter((r) => r.status === "Parcelamento").reduce((sum, r) => sum + r.value, 0),
+      total: receivables.filter((r) => r.status === "Parcelado").reduce((sum, r) => sum + r.value, 0),
     },
     {
       name: "Em atraso",
