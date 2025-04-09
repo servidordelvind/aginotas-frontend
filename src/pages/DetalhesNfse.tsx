@@ -113,6 +113,7 @@ export function DetalhesNfse() {
         fetchData();
     },[])
 
+    console.log(invoice);
 
     if (loading) {
         return <div className="flex items-center justify-center min-h-screen">Carregando...</div>;
@@ -153,16 +154,32 @@ export function DetalhesNfse() {
             <p><span className="font-semibold">Tipo Documento:</span> NFS-e (NOTA FISCAL DE SERVIÇOS ELETRONICA)</p>
             </div>
             <div>
-            <p><span className="font-semibold">Prestador:</span> {invoice?.user?.cnpj || 'N/A'} - {invoice?.user?.name || 'N/A'}</p>
+            <p><span className="font-semibold">Prestador:</span> {(() => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(invoice?.xml || "", "text/xml");
+                const cnpj = xmlDoc.getElementsByTagName("ns2:Cnpj")[0]?.textContent || 'N/A';
+                const razaoSocial = xmlDoc.getElementsByTagName("ns2:RazaoSocial")[0]?.textContent || 'N/A';
+                return `${cnpj} - ${razaoSocial}`;
+            })()}</p>
             </div>
             <div>
-            <p><span className="font-semibold">Tomador:</span> {invoice?.customer?.cnpj || 'N/A'} - {invoice?.customer?.name || 'N/A'}</p>
+            <p><span className="font-semibold">Tomador:</span> {(() => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(invoice?.xml || "", "text/xml");
+                const cpfCnpj = xmlDoc.getElementsByTagName("ns2:Cpf")[0]?.textContent || xmlDoc.getElementsByTagName("ns2:Cnpj")[0]?.textContent || 'N/A';
+                const razaoSocial = xmlDoc.getElementsByTagName("ns2:RazaoSocial")[1]?.textContent || 'N/A';
+                return `${cpfCnpj} - ${razaoSocial}`;
+            })()}</p>
             </div>
             <div>
             <p><span className="font-semibold">Natureza da Operação:</span> EXIGÍVEL</p>
             </div>
             <div>
-            <p><span className="font-semibold">Código do Serviço:</span> {invoice?.data?.Rps?.Servico?.ListaItensServico[0]?.ItemListaServico || 'N/A'}</p>
+            <p><span className="font-semibold">Código do Serviço:</span> {(() => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(invoice?.xml || "", "text/xml");
+                return xmlDoc.getElementsByTagName("ns2:ItemListaServico")[0]?.textContent || 'N/A';
+            })()}</p>
             </div>
             <div className="col-span-2">
             <p><span className="font-semibold">Dados da Criação do Documento:</span> Emitido via Integração de Sistemas - {new Date(invoice?.date).toLocaleString() || 'N/A'}</p>
@@ -172,14 +189,38 @@ export function DetalhesNfse() {
             <h2 className="text-lg font-bold mt-6 mb-4 text-center">Valores Totais</h2>
             <div className="grid grid-cols-2 gap-4">
             <div>
-            <p><span className="font-semibold">Total Descontos Condicionados:</span> R$ {parseFloat(invoice?.data?.Rps?.Servico?.Valores?.DescontoCondicionado || 0).toFixed(2)}</p>
-            <p><span className="font-semibold">Total Descontos Incondicionados:</span> R$ {parseFloat(invoice?.data?.Rps?.Servico?.Valores?.DescontoIncondicionado || 0).toFixed(2)}</p>
-            <p><span className="font-semibold">% Deduções:</span> {parseFloat(invoice?.data?.Rps?.Servico?.Valores?.Aliquota || 0).toFixed(2)} %</p>
+            <p><span className="font-semibold">Total Descontos Condicionados:</span> R$ {(() => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(invoice?.xml || "", "text/xml");
+                return parseFloat(xmlDoc.getElementsByTagName("ns2:DescontoCondicionado")[0]?.textContent || "0").toFixed(2);
+            })()}</p>
+            <p><span className="font-semibold">Total Descontos Incondicionados:</span> R$ {(() => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(invoice?.xml || "", "text/xml");
+                return parseFloat(xmlDoc.getElementsByTagName("ns2:DescontoIncondicionado")[0]?.textContent || "0").toFixed(2);
+            })()}</p>
+            <p><span className="font-semibold">% Deduções:</span> {(() => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(invoice?.xml || "", "text/xml");
+                return parseFloat(xmlDoc.getElementsByTagName("ns2:Aliquota")[0]?.textContent || "0").toFixed(2);
+            })()} %</p>
             </div>
             <div>
-            <p><span className="font-semibold">Base de Cálculo do ISS:</span> R$ {parseFloat(invoice?.data?.Rps?.Servico?.Valores?.BaseCalculo || 0).toFixed(2)}</p>
-            <p><span className="font-semibold">Valor dos Impostos:</span> R$ {parseFloat(invoice?.data?.Rps?.Servico?.Valores?.ValorIss || 0).toFixed(2)}</p>
-            <p><span className="font-semibold">Valor Líquido:</span> R$ {parseFloat(invoice?.data?.Rps?.Servico?.Valores?.ValorLiquido || 0).toFixed(2)}</p>
+            <p><span className="font-semibold">Base de Cálculo do ISS:</span> R$ {(() => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(invoice?.xml || "", "text/xml");
+                return parseFloat(xmlDoc.getElementsByTagName("ns2:BaseCalculo")[0]?.textContent || "0").toFixed(2);
+            })()}</p>
+            <p><span className="font-semibold">Valor dos Impostos:</span> R$ {(() => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(invoice?.xml || "", "text/xml");
+                return parseFloat(xmlDoc.getElementsByTagName("ns2:ValorIss")[0]?.textContent || "0").toFixed(2);
+            })()}</p>
+            <p><span className="font-semibold">Valor Líquido:</span> R$ {(() => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(invoice?.xml || "", "text/xml");
+                return parseFloat(xmlDoc.getElementsByTagName("ns2:ValorLiquidoNfse")[0]?.textContent || "0").toFixed(2);
+            })()}</p>
             </div>
             </div>
 
