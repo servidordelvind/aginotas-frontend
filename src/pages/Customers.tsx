@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Trash2, XCircle, Calendar, File, FileCodeIcon,Check,Copy, Ban, Edit, Clock, Loader2 } from 'lucide-react';
+import { Plus, Search, Trash2, XCircle, CircleEllipsis, Calendar, File, FileCodeIcon,Check,Copy, Ban, Edit, Clock, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { FaEye } from 'react-icons/fa';
 import { api } from '../lib/api.ts';
@@ -368,6 +368,12 @@ export function Customers() {
     numero: '',
 
   });
+
+  const [openMenuId, setOpenMenuId] = useState(null);
+
+const toggleMenu = (id) => {
+  setOpenMenuId(prev => prev === id ? null : id);
+};
 
   const handleViewInvoiceHistory = async (customer: Customer) => {
     try {
@@ -1055,7 +1061,9 @@ export function Customers() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
+
+        {/* DESKTOP TABLE */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50">
@@ -1070,102 +1078,155 @@ export function Customers() {
             <tbody>
               {filteredCustomers.map((customer) => (
                 <tr key={customer._id} className="border-t border-gray-100">
-                    <td className="py-3 px-4 text-gray-900">{customer.name || customer.razaoSocial}</td>
-                    <td className="py-3 px-4 text-gray-600">{customer.cnpj === 'undefined' ? customer.cpf : customer.cnpj}</td>
+                  <td className="py-3 px-4 text-gray-900">{customer.name || customer.razaoSocial}</td>
+                  <td className="py-3 px-4 text-gray-600">{customer.cnpj === 'undefined' ? customer.cpf : customer.cnpj}</td>
                   <td className="py-3 px-4 text-gray-600">{customer.email}</td>
                   <td className="py-3 px-4 text-gray-600">{customer.phone}</td>
                   <td className="py-3 px-4">
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${customer.status === 'active'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-gray-100 text-gray-700'
-                      }`}>
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${customer.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
                       {customer.status === 'active' ? 'Ativo' : 'Inativo'}
                     </span>
                   </td>
                   <td className="py-3 px-4 text-right">
-                    <div className="flex justify-end gap-2">
+                          <div className="flex justify-end gap-2">
 
-                      <button
-                        onClick={() => handleConfigureInvoice(customer)}
-                        className="text-blue-600 hover:text-blue-700"
-                        title="Gerar Nota Fiscal"
-                      >
-                        <File className="w-5 h-5" />
-                      </button>
-
-                      {/* BOTAO AGENDAR */}
-                      <button
-                        onClick={() => handleConfigureSubscription(customer)}
-                        className="text-blue-600 hover:text-blue-700"
-                        title="Emissão automizada"
-                      >
-                        <Calendar className="w-5 h-5" />
-                      </button>
+                            <button
+                              onClick={() => handleConfigureInvoice(customer)}
+                              className="text-blue-600 hover:text-blue-700"
+                              title="Gerar Nota Fiscal"
+                            >
+                              <File className="w-5 h-5" />
+                            </button>
 
 
-                        <button
-                          onClick={() => handleViewScheduleHistory(customer._id)}
-                          className="text-blue-600 hover:text-blue-700"
-                          title="Gerenciar agendamentos"
-                        >
-                          <Clock className="w-5 h-5" />
-                        </button>
+                            <button
+                              onClick={() => handleConfigureSubscription(customer)}
+                              className="text-blue-600 hover:text-blue-700"
+                              title="Emissão automizada"
+                            >
+                              <Calendar className="w-5 h-5" />
+                            </button>
 
 
-                      <button
-                        onClick={() => handleViewInvoiceHistory(customer)}
-                        className="text-blue-600 hover:text-blue-800"
-                        title="Ver Histórico"
-                      >
-                        <FaEye /> {/* Ícone de olho */}
-                      </button>
+                              <button
+                                onClick={() => handleViewScheduleHistory(customer._id)}
+                                className="text-blue-600 hover:text-blue-700"
+                                title="Gerenciar agendamentos"
+                              >
+                                <Clock className="w-5 h-5" />
+                              </button>
 
 
-                      {customer.status === 'active' ? (
-                        <button
-                          onClick={() => handleDeactivateCustomer(customer._id)}
-                          className="text-gray-600 hover:text-gray-900"
-                          title="Finalizar Contrato"
-                        >
-                          <XCircle className="w-5 h-5" />
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => handleActiveCustomer(customer._id)}
-                          className="text-gray-600 hover:text-gray-900"
-                          title="Ativar Contrato"
-                        >
-                          <Check className="w-5 h-5" />
-                        </button>
-                      )}
+                            <button
+                              onClick={() => handleViewInvoiceHistory(customer)}
+                              className="text-blue-600 hover:text-blue-800"
+                              title="Ver Histórico"
+                            >
+                              <FaEye /> 
+                            </button>
 
-                      {/* BOTAO EDITAR */}
-                      <button
-                        onClick={() => handleViewModalEditCustomer(customer)}
-                        className="text-blue-600 hover:text-blue-700"
-                        title="Editar Cliente"
-                      >
-                        <Edit className="w-5 h-5" />
-                      </button>
 
-                      {!invoiceHistory.some(invoice => invoice.customer_id === customer._id) && (
-                        <button
-                          onClick={() => handleDeleteCustomer(customer._id)}
-                          className="text-red-600 hover:text-red-700"
-                          title="Excluir"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      )}
-                    </div>
-                  </td>
+                            {customer.status === 'active' ? (
+                              <button
+                                onClick={() => handleDeactivateCustomer(customer._id)}
+                                className="text-gray-600 hover:text-gray-900"
+                                title="Finalizar Contrato"
+                              >
+                                <XCircle className="w-5 h-5" />
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handleActiveCustomer(customer._id)}
+                                className="text-gray-600 hover:text-gray-900"
+                                title="Ativar Contrato"
+                              >
+                                <Check className="w-5 h-5" />
+                              </button>
+                            )}
+
+                            
+                            <button
+                              onClick={() => handleViewModalEditCustomer(customer)}
+                              className="text-blue-600 hover:text-blue-700"
+                              title="Editar Cliente"
+                            >
+                              <Edit className="w-5 h-5" />
+                            </button>
+
+                            {!invoiceHistory.some(invoice => invoice.customer_id === customer._id) && (
+                              <button
+                                onClick={() => handleDeleteCustomer(customer._id)}
+                                className="text-red-600 hover:text-red-700"
+                                title="Excluir"
+                              >
+                                <Trash2 className="w-5 h-5" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
                 </tr>
               ))}
-
             </tbody>
           </table>
         </div>
+
+        {/* MOBILE VERSION */}
+        <div className="md:hidden">
+          {filteredCustomers.map((customer) => (
+            <div key={customer._id} className="border-t border-gray-100 p-4 flex justify-between items-center">
+              <div>
+                <p className="text-gray-900 font-medium">{customer.name || customer.razaoSocial}</p>
+              </div>
+
+              <div className="relative">
+        {/* Botão para abrir menu */}
+        <button onClick={() => toggleMenu(customer._id)} className="text-gray-600 hover:text-gray-900">
+          <CircleEllipsis className="w-5 h-5" />
+        </button>
+
+        {/* Modal centralizado */}
+        {openMenuId === customer._id && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50">
+            <div className="relative w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-lg p-4">
+              {/* Botão de fechar */}
+              <button
+                onClick={() => setOpenMenuId(null)}
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl font-bold"
+              >
+                ×
+              </button>
+
+              {/* Conteúdo do menu */}
+              <div className="space-y-2 mt-6">
+              <button onClick={() => { handleConfigureInvoice(customer); setOpenMenuId(null); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-blue-600">Gerar Nota Fiscal</button>
+
+              <button onClick={() => { handleConfigureSubscription(customer); setOpenMenuId(null); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-blue-600">Emissão Automatizada</button>
+
+              <button onClick={() => { handleViewScheduleHistory(customer._id); setOpenMenuId(null); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-blue-600">Gerenciar Agendamentos</button>
+
+              <button onClick={() => { handleViewInvoiceHistory(customer); setOpenMenuId(null); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-blue-600">Ver Histórico</button>
+
+              {customer.status === 'active' ? (
+                <button onClick={() => { handleDeactivateCustomer(customer._id); setOpenMenuId(null); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-600">Finalizar Contrato</button>
+              ) : (
+                <button onClick={() => { handleActiveCustomer(customer._id); setOpenMenuId(null); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-600">Ativar Contrato</button>
+              )}
+
+              <button onClick={() => { handleViewModalEditCustomer(customer); setOpenMenuId(null); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-blue-600">Editar Cliente</button>
+
+              {!invoiceHistory.some(invoice => invoice.customer_id === customer._id) && (
+                <button onClick={() => { handleDeleteCustomer(customer._id); setOpenMenuId(null); }} className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-600">Excluir</button>
+              )}
+            </div>
+            </div>
+          </div>
+        )}
       </div>
+              
+            </div>
+          ))}
+        </div>
+      </div>      
 
       {/* Modal de Novo Cliente */}
       {isModalOpen && (
