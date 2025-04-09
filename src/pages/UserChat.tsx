@@ -123,7 +123,7 @@ export function UserChat() {
 
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div className="flex flex-col h-[90vh] bg-gray-100">
       <div className="bg-blue-600 text-white p-4 rounded-t-lg">
         <h1 className="text-lg font-semibold">Chat de Suporte</h1>
       </div>

@@ -2003,95 +2003,95 @@ export function Customers() {
 
       {/* Modal Histórico de Notas Fiscais */}
       {selectedCustomer && activeModal === 'history' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-[70%] max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto px-2">
+          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 w-[95%] sm:w-[90%] md:w-[70%] max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-900">Histórico de Notas Fiscais</h2>
               <button onClick={closeAllModals} className="text-gray-500 hover:text-gray-700">
                 <XCircle className="w-6 h-6" />
               </button>
             </div>
+
             <div className="mt-4">
               <h3 className="text-lg font-semibold text-gray-800">{selectedCustomer.name}</h3>
-              <table className="mt-4 w-full table-auto">
-                <thead>
-                  <tr className="border-b">
-                    <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Status</th>
-                    <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Descrição</th>
-                    <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Valor</th>
-                    <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Data</th>
-                    <th className="py-2 px-4 text-left text-sm font-medium text-gray-600">Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {invoiceHistory.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="py-2 px-4 text-center text-sm text-gray-500">Nenhuma nota fiscal encontrada</td>
+              <div className="overflow-x-auto">
+                <table className="mt-4 w-full table-auto text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="py-2 px-2 text-left font-medium text-gray-600">Status</th>
+                      <th className="py-2 px-2 text-left font-medium text-gray-600">Descrição</th>
+                      <th className="py-2 px-2 text-left font-medium text-gray-600">Valor</th>
+                      <th className="py-2 px-2 text-left font-medium text-gray-600">Data</th>
+                      <th className="py-2 px-2 text-left font-medium text-gray-600">Ações</th>
                     </tr>
-                  ) : (
-                    invoiceHistory.map((invoice) => (               
-                      <tr key={invoice.id} className="border-b">
-                        <td className="py-2 px-4 text-sm text-gray-700">{invoice.status || ''}</td>
-                        <td className="py-2 px-4 text-sm text-gray-700">{invoice.data.Rps.Servico.Discriminacao || ''}</td>
-                        <td className="py-2 px-4 text-sm text-gray-700">{invoice.valor * invoice.data.Rps.Servico.ListaItensServico[0].Quantidade}</td>
-                        <td className="py-2 px-4 text-sm text-gray-700">
-                          {new Date(invoice.date).toLocaleDateString('pt-BR', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                          }) || ''}
-                        </td>
-                        <td className="py-3 px-4 text-sm text-gray-700">
-{/*                           <button
-                            onClick={() => handleModalReplaceInvoice(invoice)}
-                            className="text-blue-600 hover:text-blue-800 p-1"
-                            title="Substituir Nota Fiscal"
-                          >
-                            <File className="w-4 h-4" />
-                          </button> */}
-                          <button
-                            onClick={() => downloadCustomerXml(invoice)}
-                            className="text-blue-600 hover:text-blue-800 p-1"
-                            title="Baixar XML"
-                          >
-                            <FileCodeIcon className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => criarNotaFiscal(invoice)}
-                            className="text-blue-600 hover:text-blue-800 p-1"
-                            title="Baixar PDF"
-                          >
-                            <File className="w-4 h-4" />
-                          </button>
-                          {(invoice.status === 'emitida' || invoice.status === 'substituida') && (
-                            <button
-                              onClick={() => handleCancelInvoice(invoice)}
-                              className="text-red-600 hover:text-red-800 p-1"
-                              title="Cancelar Nota Fiscal"
-                            >
-                              <XCircle className="w-4 h-4" />
-                            </button>
-                          )}
-                            <button
-                              onClick={() => {
-                              navigator.clipboard.writeText(`https://www.aginotas.com.br/detalhesNfse/${invoice._id}`);
-                              toast.success('Link copiado para a área de transferência!');
-                              }}
-                              className="text-blue-600 hover:text-blue-800 p-1"
-                              title="Copiar Link"
-                            >
-                              <Copy className="w-4 h-4" />
-                            </button>
-                        </td>
+                  </thead>
+                  <tbody>
+                    {invoiceHistory.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="py-2 px-2 text-center text-gray-500">Nenhuma nota fiscal encontrada</td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      invoiceHistory.map((invoice) => (               
+                        <tr key={invoice.id} className="border-b">
+                          <td className="py-2 px-2 text-gray-700">{invoice.status || ''}</td>
+                          <td className="py-2 px-2 text-gray-700">{invoice.data.Rps.Servico.Discriminacao || ''}</td>
+                          <td className="py-2 px-2 text-gray-700">
+                            {invoice.valor * invoice.data.Rps.Servico.ListaItensServico[0].Quantidade}
+                          </td>
+                          <td className="py-2 px-2 text-gray-700">
+                            {new Date(invoice.date).toLocaleDateString('pt-BR', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                            }) || ''}
+                          </td>
+                          <td className="py-2 px-2 text-gray-700">
+                            <div className="flex flex-wrap gap-1">
+                              <button
+                                onClick={() => downloadCustomerXml(invoice)}
+                                className="text-blue-600 hover:text-blue-800"
+                                title="Baixar XML"
+                              >
+                                <FileCodeIcon className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => criarNotaFiscal(invoice)}
+                                className="text-blue-600 hover:text-blue-800"
+                                title="Baixar PDF"
+                              >
+                                <File className="w-4 h-4" />
+                              </button>
+                              {(invoice.status === 'emitida' || invoice.status === 'substituida') && (
+                                <button
+                                  onClick={() => handleCancelInvoice(invoice)}
+                                  className="text-red-600 hover:text-red-800"
+                                  title="Cancelar Nota Fiscal"
+                                >
+                                  <XCircle className="w-4 h-4" />
+                                </button>
+                              )}
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(`https://www.aginotas.com.br/detalhesNfse/${invoice._id}`);
+                                  toast.success('Link copiado para a área de transferência!');
+                                }}
+                                className="text-blue-600 hover:text-blue-800"
+                                title="Copiar Link"
+                              >
+                                <Copy className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      )}
+      )}      
 
       {/* Modal de Configuração de Agendamento */}
       {activeModal === 'subscription' && selectedCustomer && (
