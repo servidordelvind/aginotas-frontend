@@ -91,6 +91,14 @@ const [view, setView] = useState("dashboard");
       name: "Recorrente",
       total: receivables.filter((r) => r.status === "Recorrente").reduce((sum, r) => sum + r.value, 0),
     },
+    {
+      name: "Parcelamentos",
+      total: receivables.filter((r) => r.status === "Parcelamento").reduce((sum, r) => sum + r.value, 0),
+    },
+    {
+      name: "Em atraso",
+      total: receivables.filter((r) => r.status === "Em atraso").reduce((sum, r) => sum + r.value, 0),
+    },
   ];
 
   
@@ -131,6 +139,18 @@ const [view, setView] = useState("dashboard");
           </div>
           <div className="bg-gray-100 p-4 rounded shadow">
             <p className="text-sm text-gray-600">Recorrente</p>
+            <p className="text-lg font-bold">R$ {chartData[2].total.toFixed(2)}</p>
+          </div>
+          <div className="bg-gray-100 p-4 rounded shadow">
+            <p className="text-sm text-gray-600">Em atraso</p>
+            <p className="text-lg font-bold">R$ {chartData[3].total.toFixed(2)}</p>
+          </div>
+          <div className="bg-gray-100 p-4 rounded shadow">
+            <p className="text-sm text-gray-600">Clientes</p>
+            <p className="text-lg font-bold">{chartData[2].total}</p>
+          </div>
+          <div className="bg-gray-100 p-4 rounded shadow">
+            <p className="text-sm text-gray-600">Parcelamentos</p>
             <p className="text-lg font-bold">R$ {chartData[2].total.toFixed(2)}</p>
           </div>
         </div>
