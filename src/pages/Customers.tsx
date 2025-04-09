@@ -831,7 +831,7 @@ export function Customers() {
         saveAs(new Blob([pdfBytes], { type: "application/pdf" }), "modelo-nota-fiscal.pdf");
   } */
 
-        async function criarNotaFiscal(customer: any) {
+  async function criarNotaFiscal(customer: any) {
           const parser = new DOMParser();
           const xmlDoc = parser.parseFromString(customer.xml, "text/xml");
       
@@ -1008,7 +1008,7 @@ export function Customers() {
       
           const pdfBytes = await pdfDoc.save();
           saveAs(new Blob([pdfBytes], { type: "application/pdf" }), "nota-fiscal-medianeira.pdf");
-      }
+  }
 
   useEffect(() => {
     loadCustomers();
