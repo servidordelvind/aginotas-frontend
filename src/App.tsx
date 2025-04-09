@@ -21,6 +21,7 @@ import { AdminReports } from './pages/AdminReports';
 import { UserChat } from './pages/UserChat';
 import { SubscriptionManagement } from './pages/SubscriptionManagement';
 import { DetalhesNfse } from './pages/DetalhesNfse';
+import { Financial } from './pages/Financial';
 
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/customers" element={<Customers />} />
           <Route path="/subscriptions" element={<Subscriptions />} />
+          <Route path="/financial" element={<Financial />} />
           <Route path="/history" element={<History />} />
           <Route path="/chat" element={<UserChat />} />
           <Route path="/UserConfig" element={<UserConfig />} />

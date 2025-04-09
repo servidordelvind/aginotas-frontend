@@ -1,0 +1,308 @@
+import { useEffect, useState } from "react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+
+export function Financial() {
+const [view, setView] = useState("dashboard");
+  const [customers, setCustomers] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [value, setValue] = useState(0);
+  const [paymentType, setPaymentType] = useState("immediate"); // immediate, installment, recurring
+  const [installments, setInstallments] = useState(1);
+  const [startDate, setStartDate] = useState("");
+  const [receivables, setReceivables] = useState([]);
+  const [alreadyPaid, setAlreadyPaid] = useState(false);
+
+  useEffect(() => {
+    // Simula fetch de clientes
+    setCustomers([
+      { id: 1, name: "João Silva" },
+      { id: 2, name: "Maria Souza" },
+      { id: 3, name: "Carlos Oliveira" },
+    ]);
+
+  }, []);
+
+  const handleCreateReceivable = () => {
+    if (!selectedCustomer || value <= 0 || !startDate) return;
+
+    const entries = [];
+    const baseDate = new Date(startDate);
+
+    if (paymentType === "immediate") {
+      entries.push({
+        customer: selectedCustomer,
+        value,
+        dueDate: startDate,
+        status: "A Receber",
+      });
+    } else if (paymentType === "installment") {
+      for (let i = 0; i < installments; i++) {
+        const due = new Date(baseDate);
+        due.setMonth(due.getMonth() + i);
+        entries.push({
+          customer: selectedCustomer,
+          value: parseFloat((value / installments).toFixed(2)),
+          dueDate: due.toISOString().split("T")[0],
+          status: "A Receber",
+        });
+      }
+    } else if (paymentType === "recurring") {
+        for (let i = 0; i < 12; i++) {
+          const due = new Date(baseDate);
+          due.setMonth(due.getMonth() + i);
+          entries.push({
+            customer: selectedCustomer,
+            value,
+            dueDate: due.toISOString().split("T")[0],
+            status: "Recorrente",
+          });
+        }
+      } else if (paymentType === "paid") {
+        entries.push({
+          customer: selectedCustomer,
+          value,
+          dueDate: startDate,
+          status: "Pago",
+        });
+      }
+
+    setReceivables((prev) => [...prev, ...entries]);
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setSelectedCustomer(null);
+    setValue(0);
+    setPaymentType("immediate");
+    setInstallments(1);
+    setStartDate("");
+  };
+
+  const chartData = [
+    {
+      name: "A Receber",
+      total: receivables.filter((r) => r.status === "A Receber").reduce((sum, r) => sum + r.value, 0),
+    },
+    {
+      name: "Pago",
+      total: receivables.filter((r) => r.status === "Pago").reduce((sum, r) => sum + r.value, 0),
+    },
+    {
+      name: "Recorrente",
+      total: receivables.filter((r) => r.status === "Recorrente").reduce((sum, r) => sum + r.value, 0),
+    },
+  ];
+
+  
+  return (
+    <div className="max-w-6xl mx-auto p-6">
+    <div className="flex gap-4 mb-6">
+      <button
+        onClick={() => setView("dashboard")}
+        className={`px-4 py-2 rounded font-medium ${
+          view === "dashboard" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+        }`}
+      >
+        Dashboard
+      </button>
+      <button
+        onClick={() => setView("payments")}
+        className={`px-4 py-2 rounded font-medium ${
+          view === "payments" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+        }`}
+      >
+        Pagamentos
+      </button>
+    </div>
+
+    {view === "dashboard" && (
+      <div className="bg-white rounded-lg shadow p-6 space-y-6">
+        <h2 className="text-xl font-bold">Visão Geral Financeira</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-gray-100 p-4 rounded shadow">
+            <p className="text-sm text-gray-600">Total a Receber</p>
+            <p className="text-lg font-bold">
+              R$ {chartData[0].total.toFixed(2)}
+            </p>
+          </div>
+          <div className="bg-gray-100 p-4 rounded shadow">
+            <p className="text-sm text-gray-600">Total Pago</p>
+            <p className="text-lg font-bold">R$ {chartData[1].total.toFixed(2)}</p>
+          </div>
+          <div className="bg-gray-100 p-4 rounded shadow">
+            <p className="text-sm text-gray-600">Recorrente</p>
+            <p className="text-lg font-bold">R$ {chartData[2].total.toFixed(2)}</p>
+          </div>
+        </div>
+
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData}>
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="total" fill="#3b82f6" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    )}
+
+    {view === "payments" && (
+      <div>
+            <h2 className="text-xl font-bold mb-4">Fluxo Financeiro</h2>
+            <div className="bg-white rounded-lg shadow p-4 space-y-4">
+            <div>
+            <label className="block text-sm font-medium text-gray-700">Cliente</label>
+            <select
+                value={selectedCustomer?.id || ""}
+                onChange={(e) => {
+                const id = Number(e.target.value);
+                setSelectedCustomer(customers.find((c) => c.id === id));
+                }}
+                className="w-full border mt-1 p-2 rounded"
+            >
+                <option value="">Selecione um cliente</option>
+                {customers.map((customer) => (
+                <option key={customer.id} value={customer.id}>
+                    {customer.name}
+                </option>
+                ))}
+            </select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+            <div>
+                <label className="block text-sm font-medium text-gray-700">Valor (R$)</label>
+                <input
+                type="number"
+                value={value}
+                onChange={(e) => setValue(Number(e.target.value))}
+                className="w-full border mt-1 p-2 rounded"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-700">Data de Início</label>
+                <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full border mt-1 p-2 rounded"
+                />
+            </div>
+            </div>
+
+            <div>
+            <label className="block text-sm font-medium text-gray-700">Tipo de Recebimento</label>
+            <div className="flex gap-4 mt-2">
+                <label className="flex items-center gap-2">
+                <input
+                    type="radio"
+                    value="immediate"
+                    checked={paymentType === "immediate"}
+                    onChange={() => setPaymentType("immediate")}
+                />
+                Receber Agora
+                </label>
+                <label className="flex items-center gap-2">
+                <input
+                    type="radio"
+                    value="installment"
+                    checked={paymentType === "installment"}
+                    onChange={() => setPaymentType("installment")}
+                />
+                Parcelado
+                </label>
+                <label className="flex items-center gap-2">
+                <input
+                    type="radio"
+                    value="recurring"
+                    checked={paymentType === "recurring"}
+                    onChange={() => setPaymentType("recurring")}
+                />
+                Recorrente
+                </label>
+                <label className="flex items-center gap-2">
+                <input
+                    type="radio"
+                    value="paid"
+                    checked={paymentType === "paid"}
+                    onChange={() => setPaymentType("paid")}
+                />
+                Valor pago
+                </label>
+            </div>
+            </div>
+
+            {paymentType === "installment" && (
+            <div>
+                <label className="block text-sm font-medium text-gray-700">Quantidade de Parcelas</label>
+                <input
+                type="number"
+                value={installments}
+                onChange={(e) => setInstallments(Number(e.target.value))}
+                min={1}
+                className="w-full border mt-1 p-2 rounded"
+                />
+            </div>
+            )}
+            <button
+            onClick={handleCreateReceivable}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+            Criar Recebimento
+            </button>
+        </div>
+
+        <div className="mt-8">
+            <h3 className="text-lg font-semibold mb-2">Recebimentos</h3>
+            <div className="bg-white rounded-lg shadow p-4 max-h-96 overflow-y-auto">
+                {receivables.length === 0 ? (
+                <p className="text-gray-500">Nenhum lançamento ainda.</p>
+                ) : (
+                <table className="w-full text-sm">
+                    <thead>
+                    <tr className="text-left border-b">
+                        <th className="py-2">Cliente</th>
+                        <th>Valor</th>
+                        <th>Data de Vencimento</th>
+                        <th>Status</th>
+                        <th></th> {/* Para o botão "Dar baixa" */}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {receivables.map((r, idx) => (
+                        <tr key={idx} className="border-b">
+                        <td className="py-2">{r.customer.name}</td>
+                        <td>R$ {r.value.toFixed(2)}</td>
+                        <td>{r.dueDate}</td>
+                        <td>{r.status}</td>
+                        <td className="py-2 align-middle">
+                        <div className="flex items-center h-full gap-2">
+                            <button
+                            onClick={() => 'handleMarkAsPaid(r.id)'}
+                            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-all duration-200"
+                            >
+                            Dar baixa
+                            </button>
+                            <button
+                            onClick={() => 'handleMarkAsPaid(r.id)'}
+                            className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-all duration-200"
+                            >
+                            Excluir
+                            </button>
+                        </div>
+                        </td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+                )}
+            </div>
+        </div>
+      </div>
+    )}
+    </div>
+  )
+}

@@ -13,7 +13,8 @@ import {
   Menu,
   X,
   Settings,
-  User2
+  User2,
+  NotepadText
 } from 'lucide-react';
 import Cookies from 'js-cookie';
 
@@ -78,6 +79,7 @@ export function Layout() {
           { icon: MessageSquare, label: 'Chat com Suporte', path: '/chat' },
           { icon: Settings, label: 'Configurações', path: '/UserConfig' },
           { icon: CreditCard, label: 'Assinaturas', path: '/subscriptions' },
+          { icon: NotepadText, label: 'Financeiro', path: '/financial' },
         ]),
   ];
 
