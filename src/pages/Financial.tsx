@@ -55,21 +55,36 @@ const [view, setView] = useState("dashboard");
     if (!selectedCustomer || value <= 0 || !startDate) return;
 
     //const entries = [];
-    const baseDate = new Date(startDate);
-    setLoading(true);
-    if (paymentType === "immediate") {
-      await api.Create_Receive({
-        customer: selectedCustomer,
-        value: parseFloat(value),
-        dueDate: startDate,
-        status: "A Receber",
-      })
-/*       entries.push({
-        customer: selectedCustomer,
-        value,
-        dueDate: startDate,
-        status: "A Receber",
-      }); */
+  const baseDate = new Date(startDate);
+  setLoading(true);
+
+  if (startDate) {
+      const start = new Date(startDate);
+      const today = new Date();
+    
+      start.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+    
+      if (start < today) {
+        if (paymentType === "immediate") {
+          if(startDate)
+          await api.Create_Receive({
+            customer: selectedCustomer,
+            value: parseFloat(value),
+            dueDate: startDate,
+            status: "Atrasado",
+          })        
+      }else{
+        if (paymentType === "immediate") {
+          if(startDate)
+          await api.Create_Receive({
+            customer: selectedCustomer,
+            value: parseFloat(value),
+            dueDate: startDate,
+            status: "A Receber",
+        })       
+      }
+    }
     } else if (paymentType === "installment") {
       for (let i = 0; i < installments; i++) {
         const due = new Date(baseDate);
@@ -80,12 +95,6 @@ const [view, setView] = useState("dashboard");
           dueDate: due.toISOString().split("T")[0],
           status: "Parcelado",
         })
-/*         entries.push({
-          customer: selectedCustomer,
-          value: parseFloat((value / installments).toFixed(2)),
-          dueDate: due.toISOString().split("T")[0],
-          status: "Parcelado",
-        }); */
       }
     } else if (paymentType === "recurring") {
         for (let i = 0; i < 12; i++) {
@@ -98,36 +107,21 @@ const [view, setView] = useState("dashboard");
             dueDate: due.toISOString().split("T")[0],
             status: "Recorrente",
           })
-
-/*           entries.push({
-            customer: selectedCustomer,
-            value,
-            dueDate: due.toISOString().split("T")[0],
-            status: "Recorrente",
-          }); */
         }
-      } else if (paymentType === "paid") {
-
-        await api.Create_Receive({
+    } else if (paymentType === "paid") {
+      await api.Create_Receive({
           customer: selectedCustomer,
           value: parseFloat(value),
           dueDate: startDate,
           status: "Pago",
-        })
+      })
+    }
 
-/*         entries.push({
-          customer: selectedCustomer,
-          value,
-          dueDate: startDate,
-          status: "Pago",
-        }); */
-      }
-
-    //setReceivables((prev) => [...prev, ...entries]);
     Data();
     setLoading(false);
     resetForm();
   };
+  }
 
   const resetForm = () => {
     setSelectedCustomer(null);
