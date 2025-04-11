@@ -406,7 +406,7 @@ const [loading, setLoading] = useState(false);
                                 onClick={() => handleMarkAsPaid(r._id)}
                                 className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-all duration-200"
                               >
-                                Dar baixa
+                                Pago
                               </button>
                               )}
                               <button
