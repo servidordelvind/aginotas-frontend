@@ -14,7 +14,7 @@ const [view, setView] = useState("dashboard");
   const [receivables, setReceivables] = useState([]);
   const [agrupado, setAgrupado] = useState({});
   const [alreadyPaid, setAlreadyPaid] = useState(false);
-const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
@@ -22,7 +22,7 @@ const [loading, setLoading] = useState(false);
     setExpandedIndex((prev) => (prev === idx ? null : idx));
   };
 
-  const [activeTab, setActiveTab] = useState("A receber");
+  const [activeTab, setActiveTab] = useState("Vencimento Hoje");
 
   const statusMap = {
     "Atrasado": "Atrasado",
