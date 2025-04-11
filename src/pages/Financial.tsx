@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { api } from "../lib/api";
 
 export function Financial() {
 const [view, setView] = useState("dashboard");
@@ -13,13 +14,11 @@ const [view, setView] = useState("dashboard");
   const [alreadyPaid, setAlreadyPaid] = useState(false);
 
   useEffect(() => {
-    // Simula fetch de clientes
-    setCustomers([
-      { id: 1, name: "João Silva" },
-      { id: 2, name: "Maria Souza" },
-      { id: 3, name: "Carlos Oliveira" },
-    ]);
-
+    async function Data() {
+      const clientes = await api.find_customers_user();
+      setCustomers(clientes);    
+    }
+    Data();
   }, []);
 
   const handleCreateReceivable = () => {
@@ -101,7 +100,6 @@ const [view, setView] = useState("dashboard");
     },
   ];
 
-  
   return (
     <div className="max-w-6xl mx-auto p-6">
     <div className="flex gap-4 mb-6">
@@ -175,19 +173,20 @@ const [view, setView] = useState("dashboard");
             <div>
             <label className="block text-sm font-medium text-gray-700">Cliente</label>
             <select
-                value={selectedCustomer?.id || ""}
-                onChange={(e) => {
-                const id = Number(e.target.value);
-                setSelectedCustomer(customers.find((c) => c.id === id));
-                }}
-                className="w-full border mt-1 p-2 rounded"
+              value={selectedCustomer?._id || ""}
+              onChange={(e) => {
+                const id = e.target.value;
+                const customer = customers.find((c) => c._id === id);
+                setSelectedCustomer(customer);
+              }}
+              className="w-full border mt-1 p-2 rounded"
             >
-                <option value="">Selecione um cliente</option>
-                {customers.map((customer) => (
-                <option key={customer.id} value={customer.id}>
-                    {customer.name}
+              <option value="">Selecione um cliente</option>
+              {customers.map((customer) => (
+                <option key={customer._id} value={customer._id}>
+                  {customer.name || customer.razaoSocial}
                 </option>
-                ))}
+              ))}
             </select>
             </div>
 
@@ -294,7 +293,7 @@ const [view, setView] = useState("dashboard");
                     <tbody>
                     {receivables.map((r, idx) => (
                         <tr key={idx} className="border-b">
-                        <td className="py-2">{r.customer.name}</td>
+                        <td className="py-2">{r.customer.name || r.customer.razaoSocial}</td>
                         <td>R$ {r.value.toFixed(2)}</td>
                         <td>{r.dueDate}</td>
                         <td>{r.status}</td>
