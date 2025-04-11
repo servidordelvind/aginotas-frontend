@@ -14,6 +14,7 @@ const [view, setView] = useState("dashboard");
   const [receivables, setReceivables] = useState([]);
   const [agrupado, setAgrupado] = useState({});
   const [alreadyPaid, setAlreadyPaid] = useState(false);
+const [loading, setLoading] = useState(false);
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
@@ -30,7 +31,9 @@ const [view, setView] = useState("dashboard");
   }
 
   useEffect(() => {
+    setLoading(true);
     Data();
+    setLoading(false);
   }, []);
 
   const handleCreateReceivable = async () => {
@@ -39,7 +42,7 @@ const [view, setView] = useState("dashboard");
 
     //const entries = [];
     const baseDate = new Date(startDate);
-
+    setLoading(true);
     if (paymentType === "immediate") {
       await api.Create_Receive({
         customer: selectedCustomer,
@@ -108,6 +111,7 @@ const [view, setView] = useState("dashboard");
 
     //setReceivables((prev) => [...prev, ...entries]);
     Data();
+    setLoading(false);
     resetForm();
   };
 
@@ -139,16 +143,18 @@ const [view, setView] = useState("dashboard");
     },
     {
       name: "Em atraso",
-      total: agrupado['Em Atraso'].length /* receivables.filter((r) => r.status === "Em atraso").reduce((sum, r) => sum + r.value, 0) */,
+      total: (agrupado['Em Atraso'] || []).length /* receivables.filter((r) => r.status === "Em atraso").reduce((sum, r) => sum + r.value, 0) */,
     },
   ];
 
   const handleMarkAsPaid = async (id: string) => {
     try {
+      setLoading(true);
       const status = 'Pago';
       await api.Update_Receive(id , status);
       toast.success('Operação realizada com sucesso!');
       Data();
+      setLoading(false);
     } catch (error) {
       toast.error('Erro ao realizar operação');
       return;
@@ -157,9 +163,11 @@ const [view, setView] = useState("dashboard");
 
   const handleDelete = async (id: string) => {
     try {
+      setLoading(true);
       await api.Delete_Receive(id);
       toast.success('Operação realizada com sucesso!');
       Data();
+      setLoading(false);
     } catch (error) {
       toast.error('Erro ao realizar operação');
       return;
@@ -199,6 +207,8 @@ const [view, setView] = useState("dashboard");
   
     return resultado;
   }
+
+  if (loading) return <div>Carregando...</div>;
 
   return (
     <div className="max-w-6xl mx-auto p-6">
