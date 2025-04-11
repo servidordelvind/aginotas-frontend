@@ -22,6 +22,20 @@ const [loading, setLoading] = useState(false);
     setExpandedIndex((prev) => (prev === idx ? null : idx));
   };
 
+  const [activeTab, setActiveTab] = useState("A receber");
+
+  const statusMap = {
+    "Atrasado": "Atrasado",
+    "Vencimento Hoje": "A Receber",
+    "Parcelado": "Parcelado",
+    "Recorrente": "Recorrente",
+    "Pago": "Pago",
+  };
+
+  const filteredReceivables = receivables.filter(
+    (r) => r.status === statusMap[activeTab]
+  );
+
   async function Data() {
     const clientes = await api.find_customers_user();
     const Receipts = await api.Find_Receipts();
@@ -123,29 +137,39 @@ const [loading, setLoading] = useState(false);
     setStartDate("");
   };
 
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+
+  const filteredReceivables2 = receivables.filter((r) => {
+    const date = new Date(r.dueDate);
+    return date.getMonth() === selectedMonth;
+  });
 
   const chartData = [
     {
       name: "A Receber",
-      total: receivables.filter((r) => r.status === "A Receber").reduce((sum, r) => sum + r.value, 0),
+      total: filteredReceivables2.filter((r) => r.status === "A Receber").reduce((sum, r) => sum + r.value, 0),
     },
     {
       name: "Pago",
-      total: receivables.filter((r) => r.status === "Pago").reduce((sum, r) => sum + r.value, 0),
+      total: filteredReceivables2.filter((r) => r.status === "Pago").reduce((sum, r) => sum + r.value, 0),
     },
     {
       name: "Recorrente",
-      total: receivables.filter((r) => r.status === "Recorrente").reduce((sum, r) => sum + r.value, 0),
+      total: filteredReceivables2.filter((r) => r.status === "Recorrente").reduce((sum, r) => sum + r.value, 0),
     },
     {
       name: "Parcelamentos",
-      total: receivables.filter((r) => r.status === "Parcelado").reduce((sum, r) => sum + r.value, 0),
+      total: filteredReceivables2.filter((r) => r.status === "Parcelado").reduce((sum, r) => sum + r.value, 0),
     },
     {
       name: "Em atraso",
-      total: (agrupado['Em Atraso'] || []).length /* receivables.filter((r) => r.status === "Em atraso").reduce((sum, r) => sum + r.value, 0) */,
+      total: (agrupado['Em Atraso'] || []).filter((r) => {
+        const date = new Date(r.dueDate);
+        return date.getMonth() === selectedMonth;
+      }).length,
     },
   ];
+
 
   const handleMarkAsPaid = async (id: string) => {
     try {
@@ -210,6 +234,8 @@ const [loading, setLoading] = useState(false);
 
   if (loading) return <div>Carregando...</div>;
 
+  //console.log(receivables);
+
   return (
     <div className="max-w-6xl mx-auto p-6">
     <div className="flex gap-4 mb-6">
@@ -231,6 +257,32 @@ const [loading, setLoading] = useState(false);
       </button>
     </div>
 
+    <div className="flex justify-end mb-4">
+    <select
+      value={selectedMonth}
+      onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+      className="px-3 py-2 rounded border border-gray-300"
+    >
+      {[
+        "Janeiro",
+        "Fevereiro",
+        "Março",
+        "Abril",
+        "Maio",
+        "Junho",
+        "Julho",
+        "Agosto",
+        "Setembro",
+        "Outubro",
+        "Novembro",
+        "Dezembro",
+      ].map((month, index) => (
+        <option key={index} value={index}>
+          {month}
+        </option>
+      ))}
+    </select>
+  </div>
     {view === "dashboard" && (
       <div className="bg-white rounded-lg shadow p-6 space-y-6">
         <h2 className="text-xl font-bold">Visão Geral Financeira</h2>
@@ -238,20 +290,24 @@ const [loading, setLoading] = useState(false);
           <div className="bg-gray-100 p-4 rounded shadow">
             <p className="text-sm text-gray-600">Total a Receber</p>
             <p className="text-lg font-bold">
-              R$ {chartData[0].total.toFixed(2)}
+              R$ {chartData[0].total.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
           </div>
           <div className="bg-gray-100 p-4 rounded shadow">
             <p className="text-sm text-gray-600">Total Pago</p>
-            <p className="text-lg font-bold">R$ {chartData[1].total.toFixed(2)}</p>
+            <p className="text-lg font-bold">R$ 
+            {chartData[1].total.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </p>
           </div>
           <div className="bg-gray-100 p-4 rounded shadow">
             <p className="text-sm text-gray-600">Recorrente</p>
-            <p className="text-lg font-bold">R$ {chartData[2].total.toFixed(2)}</p>
+            <p className="text-lg font-bold">R$ 
+              {chartData[2].total.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
           </div>
           <div className="bg-gray-100 p-4 rounded shadow">
             <p className="text-sm text-gray-600">Em atraso</p>
-            <p className="text-lg font-bold">R$ {chartData[4].total.toFixed(2)}</p>
+            <p className="text-lg font-bold">R$ 
+              {chartData[4].total.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
           </div>
           <div className="bg-gray-100 p-4 rounded shadow">
             <p className="text-sm text-gray-600">Clientes</p>
@@ -259,7 +315,8 @@ const [loading, setLoading] = useState(false);
           </div>
           <div className="bg-gray-100 p-4 rounded shadow">
             <p className="text-sm text-gray-600">Parcelamentos</p>
-            <p className="text-lg font-bold">R$ {chartData[3].total.toFixed(2)}</p>
+            <p className="text-lg font-bold">R$ 
+              {chartData[3].total.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
           </div>
         </div>
 
@@ -384,7 +441,7 @@ const [loading, setLoading] = useState(false);
             Criar Recebimento
             </button>
             </div>
-              <div className="mt-8">
+{/*             <div className="mt-8">
                 <h3 className="text-lg font-semibold mb-2">Recebimentos</h3>
                 <div className="bg-white rounded-lg shadow p-4 max-h-96 overflow-y-auto">
                   {receivables.length === 0 ? (
@@ -441,9 +498,112 @@ const [loading, setLoading] = useState(false);
                     </div>
                   )}
                 </div>
+            </div> */}
+            <div className="mt-8">
+              <h3 className="text-lg font-semibold mb-2">Recebimentos</h3>
+
+              {/* Abas de status */}
+              <div className="flex gap-2 mb-4">
+                {Object.keys(statusMap).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-4 py-2 rounded ${
+                      activeTab === tab
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                    } transition-all duration-200`}
+                  >
+                    {tab}
+                  </button>
+                ))}
               </div>
+
+              {/* Lista de recebimentos filtrados */}
+              <div className="bg-white rounded-lg shadow p-4 max-h-96 overflow-y-auto">
+                {filteredReceivables.length === 0 ? (
+                  <p className="text-gray-500">Nenhum lançamento ainda.</p>
+                ) : (
+                  <div className="flex flex-col gap-4">
+                    {filteredReceivables.map((r, idx) => (
+                      <div
+                        key={idx}
+                        className="border rounded p-3 flex flex-col gap-2 bg-gray-50"
+                      >
+                        <div className="flex justify-between items-center">
+                          <p className="font-medium max-w-[100px] md:max-w-[250px] truncate">
+                            {r.customer.name || r.customer.razaoSocial}
+                          </p>
+                          <div className="flex gap-2">
+                            {r.status !== "Pago" && (
+                              <button
+                                onClick={() => handleMarkAsPaid(r._id)}
+                                className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-all duration-200"
+                              >
+                                Pago
+                              </button>
+                            )}
+                            <button
+                              onClick={() => handleDelete(r._id)}
+                              className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-all duration-200"
+                            >
+                              Excluir
+                            </button>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => toggleDetails(idx)}
+                          className="text-blue-600 text-sm underline self-start"
+                        >
+                          {expandedIndex === idx ? "Ocultar detalhes" : "Ver detalhes"}
+                        </button>
+                        {expandedIndex === idx && (
+                          <div className="text-sm text-gray-700">
+                            <p>
+                              <strong>Valor:</strong> R$ {r.value.toFixed(2)}
+                            </p>
+                            <p>
+                              <strong>Vencimento:</strong> {r.dueDate}
+                            </p>
+                            <p>
+                              <strong>Status:</strong> {r.status}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>            
       </div>
     )}
     </div>
   )
 }
+
+
+
+
+/* const chartData = [
+  {
+    name: "A Receber",
+    total: receivables.filter((r) => r.status === "A Receber").reduce((sum, r) => sum + r.value, 0),
+  },
+  {
+    name: "Pago",
+    total: receivables.filter((r) => r.status === "Pago").reduce((sum, r) => sum + r.value, 0),
+  },
+  {
+    name: "Recorrente",
+    total: receivables.filter((r) => r.status === "Recorrente").reduce((sum, r) => sum + r.value, 0),
+  },
+  {
+    name: "Parcelamentos",
+    total: receivables.filter((r) => r.status === "Parcelado").reduce((sum, r) => sum + r.value, 0),
+  },
+  {
+    name: "Em atraso",
+    total: (agrupado['Em Atraso'] || []).length 
+  }
+];   */
