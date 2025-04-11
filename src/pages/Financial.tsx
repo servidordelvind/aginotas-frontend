@@ -397,7 +397,7 @@ const [loading, setLoading] = useState(false);
                           className="border rounded p-3 flex flex-col gap-2 bg-gray-50"
                         >
                           <div className="flex justify-between items-center">
-                          <p className="font-medium max-w-[100px] truncate">
+                          <p className="font-medium max-w-[100px] md:max-w-[250px] truncate">
                             {r.customer.name || r.customer.razaoSocial}
                           </p>
                             <div className="flex gap-2">
