@@ -75,11 +75,11 @@ export function Layout() {
       : [
           { icon: User2, label: `Olá, ${userName}. Seja bem vindo!` },
           { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
+          { icon: NotepadText, label: 'Financeiro', path: '/financial' },
           { icon: Users, label: 'Clientes', path: '/customers' },
           { icon: MessageSquare, label: 'Chat com Suporte', path: '/chat' },
           { icon: Settings, label: 'Configurações', path: '/UserConfig' },
           { icon: CreditCard, label: 'Assinaturas', path: '/subscriptions' },
-          { icon: NotepadText, label: 'Financeiro', path: '/financial' },
         ]),
   ];
 
