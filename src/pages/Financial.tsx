@@ -147,7 +147,7 @@ const [view, setView] = useState("dashboard");
     try {
       const status = 'Pago';
       await api.Update_Receive(id , status);
-      toast.success('Operção realizada com sucesso!');
+      toast.success('Operação realizada com sucesso!');
       Data();
     } catch (error) {
       toast.error('Erro ao realizar operação');
@@ -158,7 +158,7 @@ const [view, setView] = useState("dashboard");
   const handleDelete = async (id: string) => {
     try {
       await api.Delete_Receive(id);
-      toast.success('Operção realizada com sucesso!');
+      toast.success('Operação realizada com sucesso!');
       Data();
     } catch (error) {
       toast.error('Erro ao realizar operação');
