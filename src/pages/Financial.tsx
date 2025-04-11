@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { api } from "../lib/api";
 
@@ -12,6 +12,12 @@ const [view, setView] = useState("dashboard");
   const [startDate, setStartDate] = useState("");
   const [receivables, setReceivables] = useState([]);
   const [alreadyPaid, setAlreadyPaid] = useState(false);
+
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+
+  const toggleDetails = (idx: number) => {
+    setExpandedIndex((prev) => (prev === idx ? null : idx));
+  };
 
   useEffect(() => {
     async function Data() {
@@ -214,44 +220,44 @@ const [view, setView] = useState("dashboard");
 
             <div>
             <label className="block text-sm font-medium text-gray-700">Tipo de Recebimento</label>
-            <div className="flex gap-4 mt-2">
+              <div className="flex flex-wrap gap-4 mt-2">
                 <label className="flex items-center gap-2">
-                <input
+                  <input
                     type="radio"
                     value="immediate"
                     checked={paymentType === "immediate"}
                     onChange={() => setPaymentType("immediate")}
-                />
-                Receber Agora
+                  />
+                  Receber Agora
                 </label>
                 <label className="flex items-center gap-2">
-                <input
+                  <input
                     type="radio"
                     value="installment"
                     checked={paymentType === "installment"}
                     onChange={() => setPaymentType("installment")}
-                />
-                Parcelado
+                  />
+                  Parcelado
                 </label>
                 <label className="flex items-center gap-2">
-                <input
+                  <input
                     type="radio"
                     value="recurring"
                     checked={paymentType === "recurring"}
                     onChange={() => setPaymentType("recurring")}
-                />
-                Recorrente
+                  />
+                  Recorrente
                 </label>
                 <label className="flex items-center gap-2">
-                <input
+                  <input
                     type="radio"
                     value="paid"
                     checked={paymentType === "paid"}
                     onChange={() => setPaymentType("paid")}
-                />
-                Valor pago
+                  />
+                  Valor pago
                 </label>
-            </div>
+              </div>            
             </div>
 
             {paymentType === "installment" && (
@@ -273,53 +279,62 @@ const [view, setView] = useState("dashboard");
             Criar Recebimento
             </button>
         </div>
-
-        <div className="mt-8">
+          <div className="mt-8">
             <h3 className="text-lg font-semibold mb-2">Recebimentos</h3>
             <div className="bg-white rounded-lg shadow p-4 max-h-96 overflow-y-auto">
-                {receivables.length === 0 ? (
+              {receivables.length === 0 ? (
                 <p className="text-gray-500">Nenhum lançamento ainda.</p>
-                ) : (
-                <table className="w-full text-sm">
-                    <thead>
-                    <tr className="text-left border-b">
-                        <th className="py-2">Cliente</th>
-                        <th>Valor</th>
-                        <th>Data de Vencimento</th>
-                        <th>Status</th>
-                        <th></th> {/* Para o botão "Dar baixa" */}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {receivables.map((r, idx) => (
-                        <tr key={idx} className="border-b">
-                        <td className="py-2">{r.customer.name || r.customer.razaoSocial}</td>
-                        <td>R$ {r.value.toFixed(2)}</td>
-                        <td>{r.dueDate}</td>
-                        <td>{r.status}</td>
-                        <td className="py-2 align-middle">
-                        <div className="flex items-center h-full gap-2">
-                            <button
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {receivables.map((r, idx) => (
+                    <div
+                      key={idx}
+                      className="border rounded p-3 flex flex-col gap-2 bg-gray-50"
+                    >
+                      <div className="flex justify-between items-center">
+                        <p className="font-medium">
+                          {r.customer.name || r.customer.razaoSocial}
+                        </p>
+                        <div className="flex gap-2">
+                          <button
                             onClick={() => 'handleMarkAsPaid(r.id)'}
                             className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-all duration-200"
-                            >
+                          >
                             Dar baixa
-                            </button>
-                            <button
-                            onClick={() => 'handleMarkAsPaid(r.id)'}
+                          </button>
+                          <button
+                            onClick={() => 'handleDelete(r.id)'}
                             className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-all duration-200"
-                            >
+                          >
                             Excluir
-                            </button>
+                          </button>
                         </div>
-                        </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-                )}
+                      </div>
+                      <button
+                        onClick={() => toggleDetails(idx)}
+                        className="text-blue-600 text-sm underline self-start"
+                      >
+                        {expandedIndex === idx ? "Ocultar detalhes" : "Ver detalhes"}
+                      </button>
+                      {expandedIndex === idx && (
+                        <div className="text-sm text-gray-700">
+                          <p>
+                            <strong>Valor:</strong> R$ {r.value.toFixed(2)}
+                          </p>
+                          <p>
+                            <strong>Vencimento:</strong> {r.dueDate}
+                          </p>
+                          <p>
+                            <strong>Status:</strong> {r.status}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-        </div>
+          </div>
       </div>
     )}
     </div>
