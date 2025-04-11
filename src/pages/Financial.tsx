@@ -12,6 +12,7 @@ const [view, setView] = useState("dashboard");
   const [installments, setInstallments] = useState(1);
   const [startDate, setStartDate] = useState("");
   const [receivables, setReceivables] = useState([]);
+  const [agrupado, setAgrupado] = useState({});
   const [alreadyPaid, setAlreadyPaid] = useState(false);
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -24,6 +25,7 @@ const [view, setView] = useState("dashboard");
     const clientes = await api.find_customers_user();
     const Receipts = await api.Find_Receipts();
     setReceivables(Receipts);
+    setAgrupado(agruparPorStatus(Receipts));
     setCustomers(clientes);    
   }
 
@@ -117,6 +119,7 @@ const [view, setView] = useState("dashboard");
     setStartDate("");
   };
 
+
   const chartData = [
     {
       name: "A Receber",
@@ -136,7 +139,7 @@ const [view, setView] = useState("dashboard");
     },
     {
       name: "Em atraso",
-      total: receivables.filter((r) => r.status === "Em atraso").reduce((sum, r) => sum + r.value, 0),
+      total: agrupado['Em Atraso'].length /* receivables.filter((r) => r.status === "Em atraso").reduce((sum, r) => sum + r.value, 0) */,
     },
   ];
 
@@ -161,6 +164,40 @@ const [view, setView] = useState("dashboard");
       toast.error('Erro ao realizar operação');
       return;
     }
+  }
+
+  function agruparPorStatus(faturas: any[]) {
+    const resultado: any = {
+      Pago: [],
+      Recorrente: [],
+      Parcelado: [],
+      'A Receber': [],
+      'Em Atraso': [],
+      Outros: []
+    };
+  
+    const hoje = new Date();
+  
+    for (const fatura of faturas) {
+      const status = fatura.status;
+      const dueDate = new Date(fatura.dueDate);
+  
+      if (status === 'Pago') {
+        resultado.Pago.push(fatura);
+      } else if (status === 'Recorrente') {
+        resultado.Recorrente.push(fatura);
+      } else if (status === 'Parcelado') {
+        resultado.Parcelado.push(fatura);
+      } else if (status === 'A Receber') {
+        resultado['A Receber'].push(fatura);
+      } else if (dueDate < hoje && status !== 'Pago') {
+        resultado['Em Atraso'].push(fatura);
+      } else {
+        resultado.Outros.push(fatura);
+      }
+    }
+  
+    return resultado;
   }
 
   return (
