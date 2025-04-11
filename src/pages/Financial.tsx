@@ -6,7 +6,7 @@ export function Financial() {
 const [view, setView] = useState("dashboard");
   const [customers, setCustomers] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState();
   const [paymentType, setPaymentType] = useState("immediate"); // immediate, installment, recurring
   const [installments, setInstallments] = useState(1);
   const [startDate, setStartDate] = useState("");
@@ -202,6 +202,7 @@ const [view, setView] = useState("dashboard");
                 <input
                 type="number"
                 value={value}
+                placeholder="Ex: 1600,90"
                 onChange={(e) => setValue(Number(e.target.value))}
                 className="w-full border mt-1 p-2 rounded"
                 />
