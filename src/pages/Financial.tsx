@@ -397,9 +397,9 @@ const [loading, setLoading] = useState(false);
                           className="border rounded p-3 flex flex-col gap-2 bg-gray-50"
                         >
                           <div className="flex justify-between items-center">
-                            <p className="font-medium">
-                              {r.customer.name || r.customer.razaoSocial}
-                            </p>
+                          <p className="font-medium max-w-[100px] truncate">
+                            {r.customer.name || r.customer.razaoSocial}
+                          </p>
                             <div className="flex gap-2">
                               {r.status != 'Pago' && (
                               <button
