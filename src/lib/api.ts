@@ -744,6 +744,71 @@ export const api = {
 
     const pdfBytes = await pdfDoc.save();
     saveAs(new Blob([pdfBytes], { type: "application/pdf" }), `${getValue("ns2:Descricao")}.pdf`);
-  }
-  
+  },
+
+  async Find_Receipts(){
+    const response = await fetch(`${API_URL}/financial/receipts`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Cookies.get('token')}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao buscar recebimentos');
+    }
+
+    return response.json();
+  },
+
+  async Create_Receive(data: any) {
+    const response = await fetch(`${API_URL}/financial/create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Cookies.get('token')}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao criar recebimento');
+    }
+
+    return response.json();
+  },
+
+  async Update_Receive(id: string, status: string) {
+    const response = await fetch(`${API_URL}/financial/update/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Cookies.get('token')}`,
+      },
+      body: JSON.stringify({status}),
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao dar baixa no recibo');
+    }
+
+    return response.json();
+  },
+
+  async Delete_Receive(id: string) {
+    const response = await fetch(`${API_URL}/financial/delete/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Cookies.get('token')}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao dar excluir recibo');
+    }
+
+    return response.json();
+  },
 };

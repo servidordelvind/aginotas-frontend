@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { api } from "../lib/api";
+import { toast } from 'sonner';
 
 export function Financial() {
 const [view, setView] = useState("dashboard");
@@ -19,59 +20,92 @@ const [view, setView] = useState("dashboard");
     setExpandedIndex((prev) => (prev === idx ? null : idx));
   };
 
+  async function Data() {
+    const clientes = await api.find_customers_user();
+    const Receipts = await api.Find_Receipts();
+    setReceivables(Receipts);
+    setCustomers(clientes);    
+  }
+
   useEffect(() => {
-    async function Data() {
-      const clientes = await api.find_customers_user();
-      setCustomers(clientes);    
-    }
     Data();
   }, []);
 
-  const handleCreateReceivable = () => {
+  const handleCreateReceivable = async () => {
+    if (!value){return;};
     if (!selectedCustomer || value <= 0 || !startDate) return;
 
-    const entries = [];
+    //const entries = [];
     const baseDate = new Date(startDate);
 
     if (paymentType === "immediate") {
-      entries.push({
+      await api.Create_Receive({
+        customer: selectedCustomer,
+        value: parseFloat(value),
+        dueDate: startDate,
+        status: "A Receber",
+      })
+/*       entries.push({
         customer: selectedCustomer,
         value,
         dueDate: startDate,
         status: "A Receber",
-      });
+      }); */
     } else if (paymentType === "installment") {
       for (let i = 0; i < installments; i++) {
         const due = new Date(baseDate);
         due.setMonth(due.getMonth() + i);
-        entries.push({
+        await api.Create_Receive({
           customer: selectedCustomer,
           value: parseFloat((value / installments).toFixed(2)),
           dueDate: due.toISOString().split("T")[0],
           status: "Parcelado",
-        });
+        })
+/*         entries.push({
+          customer: selectedCustomer,
+          value: parseFloat((value / installments).toFixed(2)),
+          dueDate: due.toISOString().split("T")[0],
+          status: "Parcelado",
+        }); */
       }
     } else if (paymentType === "recurring") {
         for (let i = 0; i < 12; i++) {
           const due = new Date(baseDate);
           due.setMonth(due.getMonth() + i);
-          entries.push({
+    
+          await api.Create_Receive({
+            customer: selectedCustomer,
+            value: parseFloat(value),
+            dueDate: due.toISOString().split("T")[0],
+            status: "Recorrente",
+          })
+
+/*           entries.push({
             customer: selectedCustomer,
             value,
             dueDate: due.toISOString().split("T")[0],
             status: "Recorrente",
-          });
+          }); */
         }
       } else if (paymentType === "paid") {
-        entries.push({
+
+        await api.Create_Receive({
+          customer: selectedCustomer,
+          value: parseFloat(value),
+          dueDate: startDate,
+          status: "Pago",
+        })
+
+/*         entries.push({
           customer: selectedCustomer,
           value,
           dueDate: startDate,
           status: "Pago",
-        });
+        }); */
       }
 
-    setReceivables((prev) => [...prev, ...entries]);
+    //setReceivables((prev) => [...prev, ...entries]);
+    Data();
     resetForm();
   };
 
@@ -106,7 +140,28 @@ const [view, setView] = useState("dashboard");
     },
   ];
 
-  console.log(receivables);
+  const handleMarkAsPaid = async (id: string) => {
+    try {
+      const status = 'Pago';
+      await api.Update_Receive(id , status);
+      toast.success('Operção realizada com sucesso!');
+      Data();
+    } catch (error) {
+      toast.error('Erro ao realizar operação');
+      return;
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    try {
+      await api.Delete_Receive(id);
+      toast.success('Operção realizada com sucesso!');
+      Data();
+    } catch (error) {
+      toast.error('Erro ao realizar operação');
+      return;
+    }
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -149,15 +204,15 @@ const [view, setView] = useState("dashboard");
           </div>
           <div className="bg-gray-100 p-4 rounded shadow">
             <p className="text-sm text-gray-600">Em atraso</p>
-            <p className="text-lg font-bold">R$ {chartData[3].total.toFixed(2)}</p>
+            <p className="text-lg font-bold">R$ {chartData[4].total.toFixed(2)}</p>
           </div>
           <div className="bg-gray-100 p-4 rounded shadow">
             <p className="text-sm text-gray-600">Clientes</p>
-            <p className="text-lg font-bold">{chartData[2].total}</p>
+            <p className="text-lg font-bold">{customers.length}</p>
           </div>
           <div className="bg-gray-100 p-4 rounded shadow">
             <p className="text-sm text-gray-600">Parcelamentos</p>
-            <p className="text-lg font-bold">R$ {chartData[2].total.toFixed(2)}</p>
+            <p className="text-lg font-bold">R$ {chartData[3].total.toFixed(2)}</p>
           </div>
         </div>
 
@@ -281,63 +336,65 @@ const [view, setView] = useState("dashboard");
             >
             Criar Recebimento
             </button>
-        </div>
-          <div className="mt-8">
-            <h3 className="text-lg font-semibold mb-2">Recebimentos</h3>
-            <div className="bg-white rounded-lg shadow p-4 max-h-96 overflow-y-auto">
-              {receivables.length === 0 ? (
-                <p className="text-gray-500">Nenhum lançamento ainda.</p>
-              ) : (
-                <div className="flex flex-col gap-4">
-                  {receivables.map((r, idx) => (
-                    <div
-                      key={idx}
-                      className="border rounded p-3 flex flex-col gap-2 bg-gray-50"
-                    >
-                      <div className="flex justify-between items-center">
-                        <p className="font-medium">
-                          {r.customer.name || r.customer.razaoSocial}
-                        </p>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => 'handleMarkAsPaid(r.id)'}
-                            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-all duration-200"
-                          >
-                            Dar baixa
-                          </button>
-                          <button
-                            onClick={() => 'handleDelete(r.id)'}
-                            className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-all duration-200"
-                          >
-                            Excluir
-                          </button>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => toggleDetails(idx)}
-                        className="text-blue-600 text-sm underline self-start"
-                      >
-                        {expandedIndex === idx ? "Ocultar detalhes" : "Ver detalhes"}
-                      </button>
-                      {expandedIndex === idx && (
-                        <div className="text-sm text-gray-700">
-                          <p>
-                            <strong>Valor:</strong> R$ {r.value.toFixed(2)}
-                          </p>
-                          <p>
-                            <strong>Vencimento:</strong> {r.dueDate}
-                          </p>
-                          <p>
-                            <strong>Status:</strong> {r.status}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
-          </div>
+              <div className="mt-8">
+                <h3 className="text-lg font-semibold mb-2">Recebimentos</h3>
+                <div className="bg-white rounded-lg shadow p-4 max-h-96 overflow-y-auto">
+                  {receivables.length === 0 ? (
+                    <p className="text-gray-500">Nenhum lançamento ainda.</p>
+                  ) : (
+                    <div className="flex flex-col gap-4">
+                      {receivables.map((r, idx) => (
+                        <div
+                          key={idx}
+                          className="border rounded p-3 flex flex-col gap-2 bg-gray-50"
+                        >
+                          <div className="flex justify-between items-center">
+                            <p className="font-medium">
+                              {r.customer.name || r.customer.razaoSocial}
+                            </p>
+                            <div className="flex gap-2">
+                              {r.status != 'Pago' && (
+                              <button
+                                onClick={() => handleMarkAsPaid(r._id)}
+                                className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-all duration-200"
+                              >
+                                Dar baixa
+                              </button>
+                              )}
+                              <button
+                                onClick={() => handleDelete(r._id)}
+                                className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-all duration-200"
+                              >
+                                Excluir
+                              </button>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => toggleDetails(idx)}
+                            className="text-blue-600 text-sm underline self-start"
+                          >
+                            {expandedIndex === idx ? "Ocultar detalhes" : "Ver detalhes"}
+                          </button>
+                          {expandedIndex === idx && (
+                            <div className="text-sm text-gray-700">
+                              <p>
+                                <strong>Valor:</strong> R$ {r.value.toFixed(2)}
+                              </p>
+                              <p>
+                                <strong>Vencimento:</strong> {r.dueDate}
+                              </p>
+                              <p>
+                                <strong>Status:</strong> {r.status}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
       </div>
     )}
     </div>
