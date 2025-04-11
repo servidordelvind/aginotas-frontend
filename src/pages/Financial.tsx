@@ -497,7 +497,7 @@ const [view, setView] = useState("dashboard");
               <h3 className="text-lg font-semibold mb-2">Recebimentos</h3>
 
               {/* Abas de status */}
-              <div className="flex gap-2 mb-4">
+{/*               <div className="flex gap-2 mb-4">
                 {Object.keys(statusMap).map((tab) => (
                   <button
                     key={tab}
@@ -511,6 +511,39 @@ const [view, setView] = useState("dashboard");
                     {tab}
                   </button>
                 ))}
+              </div> */}
+              <div className="mb-4">
+                {/* Mobile (dropdown) */}
+                <div className="md:hidden">
+                  <select
+                    value={activeTab}
+                    onChange={(e) => setActiveTab(e.target.value)}
+                    className="w-full px-4 py-2 rounded bg-gray-200 text-gray-800"
+                  >
+                    {Object.keys(statusMap).map((tab) => (
+                      <option key={tab} value={tab}>
+                        {tab}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Desktop (horizontal buttons) */}
+                <div className="hidden md:flex gap-2">
+                  {Object.keys(statusMap).map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`px-4 py-2 rounded ${
+                        activeTab === tab
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                      } transition-all duration-200`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Lista de recebimentos filtrados */}
