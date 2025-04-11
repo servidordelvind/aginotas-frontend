@@ -837,7 +837,7 @@ const toggleMenu = (id) => {
         saveAs(new Blob([pdfBytes], { type: "application/pdf" }), "modelo-nota-fiscal.pdf");
   } */
 
-  async function criarNotaFiscal(customer: any) {
+/*   async function criarNotaFiscal(customer: any) {
           const parser = new DOMParser();
           const xmlDoc = parser.parseFromString(customer.xml, "text/xml");
       
@@ -847,12 +847,12 @@ const toggleMenu = (id) => {
           };
       
           const pdfDoc = await PDFDocument.create();
-          const page = pdfDoc.addPage([595.28, 841.89]); // A4
+          const page = pdfDoc.addPage([595.28, 841.89]); 
           const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
           const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
       
           const fontSize = 10;
-          const titleColor = rgb(0.3, 0.3, 0.6); // Azul escuro puxado para roxo
+          const titleColor = rgb(0.3, 0.3, 0.6); 
       
           const drawText = (
               text: string,
@@ -906,7 +906,7 @@ const toggleMenu = (id) => {
       
           let y = 800;
       
-          // Cabeçalho + logo prefeitura
+
            page.drawImage(logoPrefeitura, {
               x: 50,
               y: y + -40,
@@ -931,12 +931,6 @@ const toggleMenu = (id) => {
       
           // DADOS DO PRESTADOR
           drawTitleBar("DADOS DO PRESTADOR DO SERVIÇO", 50, y, 495);
-           page.drawImage(logoEmpresa, {
-              x: 55,
-              y: y - 50,
-              width: empresaDims.width,
-              height: empresaDims.height,
-          }); 
       
           y -= 20;
           drawText(`Nome/Razão Social: ${getValue("ns2:RazaoSocial")}`, 130, y);
@@ -1014,7 +1008,7 @@ const toggleMenu = (id) => {
       
           const pdfBytes = await pdfDoc.save();
           saveAs(new Blob([pdfBytes], { type: "application/pdf" }), "nota-fiscal-medianeira.pdf");
-  }
+  } */
 
   useEffect(() => {
     loadCustomers();
@@ -2116,7 +2110,7 @@ const toggleMenu = (id) => {
                                 <FileCodeIcon className="w-4 h-4" />
                               </button>
                               <button
-                                onClick={() => criarNotaFiscal(invoice)}
+                                onClick={() => api.Export_Invoice_PDF(invoice)}
                                 className="text-blue-600 hover:text-blue-800"
                                 title="Baixar PDF"
                               >

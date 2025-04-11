@@ -16,7 +16,7 @@ export function DetalhesNfse() {
         saveAs(blob, fileName);
     }
 
-    async function criarNotaFiscal(customer: any) {
+/*     async function criarNotaFiscal(customer: any) {
     
             //console.log(customer);
     
@@ -96,7 +96,7 @@ export function DetalhesNfse() {
             // Salvar
             const pdfBytes = await pdfDoc.save();
             saveAs(new Blob([pdfBytes], { type: "application/pdf" }), "modelo-nota-fiscal.pdf");
-    }
+    } */
 
     async function fetchData() {
         try {
@@ -113,7 +113,6 @@ export function DetalhesNfse() {
         fetchData();
     },[])
 
-    console.log(invoice);
 
     if (loading) {
         return <div className="flex items-center justify-center min-h-screen">Carregando...</div>;
@@ -132,7 +131,7 @@ export function DetalhesNfse() {
             Baixar XML
             </button>
             <button 
-            onClick={() => criarNotaFiscal(invoice)}
+            onClick={() => api.Export_Invoice_PDF(invoice)}
             className="px-4 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600">
             Baixar PDF
             </button>

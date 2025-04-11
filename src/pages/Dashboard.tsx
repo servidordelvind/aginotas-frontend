@@ -416,7 +416,7 @@ export function Dashboard() {
               Baixar XML
             </button>
             <button
-              onClick={() => criarNotaFiscal(item)}
+              onClick={() => api.Export_Invoice_PDF(item)}
               className="text-blue-600 hover:underline"
             >
               Baixar PDF

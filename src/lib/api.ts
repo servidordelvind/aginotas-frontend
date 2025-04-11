@@ -1,3 +1,7 @@
+import { saveAs } from 'file-saver';
+import logomedianeira from '../public/medianeira.jpg';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+
 const API_URL = import.meta.env.VITE_API_URL;
 import Cookies from "js-cookie";
 
@@ -562,5 +566,184 @@ export const api = {
 
     return response.json();
   },
+
+  async Export_Invoice_PDF(customer: any){
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(customer.xml, "text/xml");
+
+    const getValue = (tagName: string) => {
+        const element = xmlDoc.getElementsByTagName(tagName)[0];
+        return element ? element.textContent || "" : "N/A";
+    };
+
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([595.28, 841.89]); // A4
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    const fontSize = 10;
+    const titleColor = rgb(0.3, 0.3, 0.6); // Azul escuro puxado para roxo
+
+    const drawText = (
+        text: string,
+        x: number,
+        y: number,
+        size = fontSize,
+        bold = false
+    ) => {
+        page.drawText(text, {
+            x,
+            y,
+            size,
+            font: bold ? fontBold : font,
+            color: rgb(0, 0, 0),
+        });
+    };
+
+    const drawTitleBar = (text: string, x: number, y: number, width: number) => {
+        page.drawRectangle({
+            x,
+            y,
+            width,
+            height: 16,
+            color: rgb(0.8, 0.8, 1), // lilás claro
+            borderColor: rgb(0, 0, 0),
+            borderWidth: 1,
+        });
+        drawText(text, x + 5, y + 4, 10, true);
+    };
+
+    const drawLine = (x1: number, y1: number, x2: number, y2: number) => {
+        page.drawLine({
+            start: { x: x1, y: y1 },
+            end: { x: x2, y: y2 },
+            thickness: 1,
+            color: rgb(0, 0, 0),
+        });
+    };
+
+
+    const response = await fetch(logomedianeira);
+    const logoBytes = await response.arrayBuffer();
+
+/*     const response2 = await fetch(logodelvind);
+    const logoBytes2 = await response2.arrayBuffer(); */
+
+    const logoPrefeitura = await pdfDoc.embedJpg(logoBytes);
+    //const logoEmpresa = await pdfDoc.embedJpg(logoBytes2);
+    const prefeituraDims = logoPrefeitura.scale(0.3);
+    //const empresaDims = logoEmpresa.scale(0.4); 
+
+    let y = 800;
+
+    // Cabeçalho + logo prefeitura
+     page.drawImage(logoPrefeitura, {
+        x: 50,
+        y: y + -40,
+        width: prefeituraDims.width,
+        height: prefeituraDims.height,
+    }); 
+
+    drawText("MUNICÍPIO DE MEDIANEIRA", 150, y, 12, true);
+    drawText("Nota Fiscal de Serviços Eletrônica", 150, y - 14, 10);
+    drawText(`Número: ${getValue("ns2:Numero")}`, 400, y, 10);
+    drawText(`Data de Emissão: ${getValue("ns2:DataEmissao")}`, 400, y - 14, 10);
+    drawText(`Código Verificação: ${getValue("ns2:CodigoVerificacao")}`, 400, y - 28, 10);
+    y -= 60;
+
+    drawText(
+        "SITE AUTENTICIDADE: https://medianeira.oxy.elotech.com.br/iss/autenticar-documento-fiscal",
+        50,
+        y,
+        8
+    );
+    y -= 25;
+
+    // DADOS DO PRESTADOR
+    drawTitleBar("DADOS DO PRESTADOR DO SERVIÇO", 50, y, 495);
+/*            page.drawImage(logoEmpresa, {
+        x: 55,
+        y: y - 50,
+        width: empresaDims.width,
+        height: empresaDims.height,
+    }); */ 
+
+    y -= 20;
+    drawText(`Nome/Razão Social: ${getValue("ns2:RazaoSocial")}`, 130, y);
+    drawText(`CNPJ: ${getValue("ns2:Cnpj")}`, 130, y - 14);
+    drawText(`Inscrição Municipal: ${getValue("ns2:InscricaoMunicipal")}`, 350, y - 14);
+    drawText(
+        `Endereço: ${getValue("ns2:Endereco")} ${getValue("ns2:Numero")}`,
+        130,
+        y - 28
+    );
+    y -= 42;
+    drawLine(50, y, 545, y);
+    y -= 10;
+
+    // DADOS DO TOMADOR
+    drawTitleBar("DADOS DO TOMADOR DO SERVIÇO", 50, y, 495);
+    y -= 18;
+    drawText(
+        `Nome/Razão Social: ${customer.data.Rps.Tomador.RazaoSocial || "N/A"}`,
+        55,
+        y
+    );
+    drawText(
+        `CPF/CNPJ: ${customer.data.Rps.Tomador.IdentificacaoTomador.CpfCnpj || "N/A"}`,
+        55,
+        y - 14
+    );
+    drawText(
+        `Endereço: ${customer.data.Rps.Tomador.Endereco.Endereco}, ${customer.data.Rps.Tomador.Endereco.Numero}`,
+        270,
+        y - 14
+    );
+    y -= 28;
+    drawLine(50, y, 545, y);
+    y -= 10;
+
+    // DEFINIÇÃO DO SERVIÇO
+    drawTitleBar("DEFINIÇÃO DO SERVIÇO", 50, y, 495);
+    y -= 18;
+    drawText(`Item da Lista de Serviços: ${getValue("ns2:ItemListaServico")}`, 55, y);
+    drawText(`CNAE: ${getValue("ns2:CodigoCnae")}`, 210, y);
+    drawText(`Local da Prestação: ${getValue("ns2:CodigoMunicipio")}-PR`, 370, y);
+    y -= 14;
+    drawLine(50, y, 545, y);
+    y -= 10;
+
+    // DISCRIMINAÇÃO DO SERVIÇO
+    drawTitleBar("DISCRIMINAÇÃO DO SERVIÇO", 50, y, 495);
+    y -= 18;
+    drawText(`${getValue("ns2:Descricao")}`, 55, y);
+    y -= 14;
+    drawLine(50, y, 545, y);
+    y -= 10;
+
+    // TRIBUTOS
+    drawTitleBar("TRIBUTOS INCIDENTES", 50, y, 495);
+    y -= 18;
+    drawText(`ISSQN: R$ ${getValue("ns2:ValorIss")} | Alíquota: ${getValue("ns2:Aliquota")}%`, 55, y);
+    y -= 14;
+    drawLine(50, y, 545, y);
+    y -= 10;
+
+    // TOTALIZAÇÃO
+    drawTitleBar("TOTALIZAÇÃO DO DOCUMENTO FISCAL", 50, y, 495);
+    y -= 18;
+    drawText(`Base de Cálculo ISSQN: R$ ${getValue("ns2:BaseCalculo")}`, 55, y);
+    drawText(`Valor Total: R$ ${getValue("ns2:ValorServicos")}`, 300, y);
+    y -= 14;
+    drawLine(50, y, 545, y);
+    y -= 25;
+
+    // Assinatura
+    drawText(`Recebemos de ${getValue("ns2:RazaoSocial")} os serviços constantes nesta NFS-e.`, 50, y);
+    drawText("DATA: ___/___/_____    Assinatura: ________________________________", 50, y - 20);
+
+    const pdfBytes = await pdfDoc.save();
+    saveAs(new Blob([pdfBytes], { type: "application/pdf" }), `${getValue("ns2:Descricao")}.pdf`);
+  }
   
 };
