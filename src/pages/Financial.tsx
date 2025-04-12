@@ -14,9 +14,8 @@ const [view, setView] = useState("dashboard");
   const [startDate, setStartDate] = useState("");
   const [receivables, setReceivables] = useState([]);
   const [agrupado, setAgrupado] = useState({});
-  const [alreadyPaid, setAlreadyPaid] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -35,18 +34,17 @@ const [view, setView] = useState("dashboard");
     "Pago": "Pago",
   };
   
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
   const filteredReceivables = receivables.filter((r) => {
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     const [day, month, year] = r.dueDate.split('/');
     const dueDate = new Date(`${year}-${month}-${day}`);
     dueDate.setHours(0, 0, 0, 0);
 
-    console.log('today:', today);
-    console.log('dueDate:',dueDate);
+    //console.log('today:', today);
+    //console.log('dueDate:',dueDate);
 
     const status = r.status;
   
@@ -86,23 +84,7 @@ const [view, setView] = useState("dashboard");
       default:
         return false;
     }
-  });
-
-
-
-  async function Data() {
-    const clientes = await api.find_customers_user();
-    const Receipts = await api.Find_Receipts();
-    setReceivables(Receipts);
-    setAgrupado(agruparPorStatus(Receipts));
-    setCustomers(clientes);    
-  }
-
-  useEffect(() => {
-    setLoading(true);
-    Data();
-    setLoading(false);
-  }, []);
+  }); 
 
   const handleCreateReceivable = async () => {
     if (!value){return;};
@@ -200,7 +182,6 @@ const [view, setView] = useState("dashboard");
     },
   ];
 
-
   const handleMarkAsPaid = async (id: string) => {
     try {
       setLoading(true);
@@ -262,9 +243,22 @@ const [view, setView] = useState("dashboard");
     return resultado;
   }
 
-  if (loading) return <div>Carregando...</div>;
+  async function Data() {
+    const clientes = await api.find_customers_user();
+    const Receipts = await api.Find_Receipts();
+    setReceivables(Receipts);
+    setAgrupado(agruparPorStatus(Receipts));
+    setCustomers(clientes);    
+  }
 
-  //console.log(receivables);
+  useEffect(() => {
+    setLoading(true);
+    Data();
+    setLoading(false);
+  }, []);
+
+
+  if (loading) return <div>Carregando...</div>;
 
   return (
     <div className="max-w-6xl mx-auto p-6">
