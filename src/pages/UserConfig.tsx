@@ -4,8 +4,10 @@ import { api } from "../lib/api";
 import { HiOutlineQuestionMarkCircle, HiEye, HiEyeOff } from "react-icons/hi";
 import { usePopper } from "react-popper";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export function UserConfig() {
+  const [user, setUser] = useState("");
   const [senhaElotech, setSenhaElotech] = useState("");
   const [homologacao, setHomologacao] = useState('');
   const [regimeEspecialTributacao, setRegimeEspecialTributacao] = useState(0);//valores padrões 
@@ -14,6 +16,8 @@ export function UserConfig() {
   const [showPassword, setShowPassword] = useState(false);
   const referenceRef = useRef(null);
   const popperRef = useRef(null);
+  const [base64Image, setBase64Image] = useState("");
+
 
   const navigate = useNavigate();
   const { styles, attributes } = usePopper(referenceRef.current, popperRef.current, {
@@ -54,11 +58,12 @@ export function UserConfig() {
     }else{
       verify = 'Não';
     }
+    setUser(userConvertido);
     setHomologacao(verify);
     setSenhaElotech(userConvertido.senhaelotech);
     setRegimeEspecialTributacao(userConvertido.RegimeEspecialTributacao);
     setIncentivoFiscal(userConvertido.IncentivoFiscal); //
-};
+  };
 
   const handleSaveSettings = async () => {
     try {
@@ -86,12 +91,65 @@ export function UserConfig() {
     }
   };
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result;
+      setBase64Image(base64);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleUpdateUser = async () => {
+    try {
+      await api.update_user({picture:base64Image});
+      toast.success("Imagem atualizada com sucesso!");
+      navigate('/login');
+    } catch (error) {
+      toast.error("Ocorreu um erro ao realizar essa atualização!");
+      return;
+    }
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">Configurações de Usuário</h1>
 
       <div className="bg-white p-6 rounded-xl shadow-sm">
         <div className="space-y-4">
+        {user && (
+          <div className="mt-4">
+            <p className="text-sm text-gray-500 mb-2">Pré-visualização:</p>
+            <img
+              src={user.picture}
+              alt="Preview"
+              className="max-h-48 rounded border"
+            />
+          </div>
+        )}
+
+        {base64Image && (
+          <div className="mt-4">
+            <button
+              type="button"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+              onClick={() => handleUpdateUser()}
+            >
+              Enviar imagem
+            </button>
+          </div>
+        )}
+        <div className="relative">
+        <label className="block text-sm font-semibold text-gray-600">Picture</label>
+        <input
+          type="file"
+          accept="image/*"
+          className="w-full mt-2 p-3 border border-gray-300 rounded-md"
+          onChange={handleImageUpload}
+        />
+      </div>
           <div className="relative">
             <label className="block text-sm font-semibold text-gray-600">Senha Elotech</label>
             <input
