@@ -669,12 +669,12 @@ export const api = {
     }); */ 
 
     y -= 20;
-    drawText(`Nome/Razão Social: ${getValue("ns2:RazaoSocial")}`, 130, y);
-    drawText(`CNPJ: ${getValue("ns2:Cnpj")}`, 130, y - 14);
+    drawText(`Nome/Razão Social: ${getValue("ns2:RazaoSocial")}`, 55, y);
+    drawText(`CNPJ: ${getValue("ns2:Cnpj")}`, 55, y - 14);
     drawText(`Inscrição Municipal: ${getValue("ns2:InscricaoMunicipal")}`, 350, y - 14);
     drawText(
         `Endereço: ${getValue("ns2:Endereco")} ${getValue("ns2:Numero")}`,
-        130,
+        55, //130
         y - 28
     );
     y -= 42;
@@ -694,12 +694,17 @@ export const api = {
         55,
         y - 14
     );
-    drawText(
+/*     drawText(
         `Endereço: ${customer.data.Rps.Tomador.Endereco.Endereco}, ${customer.data.Rps.Tomador.Endereco.Numero}`,
         270,
         y - 14
-    );
-    y -= 28;
+    ); */
+    drawText(
+      `Endereço: ${customer.data.Rps.Tomador.Endereco.Endereco}, ${customer.data.Rps.Tomador.Endereco.Numero}`,
+      55,
+      y - 28
+  );
+    y -= 48;
     drawLine(50, y, 545, y);
     y -= 10;
 
@@ -714,10 +719,42 @@ export const api = {
     y -= 10;
 
     // DISCRIMINAÇÃO DO SERVIÇO
-    drawTitleBar("DISCRIMINAÇÃO DO SERVIÇO", 50, y, 495);
+/*     drawTitleBar("DISCRIMINAÇÃO DO SERVIÇO", 50, y, 495);
     y -= 18;
     drawText(`${getValue("ns2:Descricao")}`, 55, y);
     y -= 14;
+    drawLine(50, y, 545, y);
+    y -= 10; */
+
+/*     drawTitleBar("DISCRIMINAÇÃO DO SERVIÇO", 50, y, 495);
+    y -= 18;
+    // Limita o texto a 100 caracteres (ajuste conforme necessário)
+    var descricao = getValue("ns2:Descricao");
+    var descricaoLimitada = descricao.length > 80 ? descricao.substring(0, 80) + "..." : descricao;
+    drawText(descricaoLimitada, 55, y);
+    y -= 14;
+    drawLine(50, y, 545, y);
+    y -= 10; */
+
+    function breakTextIntoLines(text, maxCharsPerLine) {
+      const lines = [];
+      for (let i = 0; i < text.length; i += maxCharsPerLine) {
+          lines.push(text.substring(i, i + maxCharsPerLine));
+      }
+      return lines;
+  }
+  
+    // Uso:
+    drawTitleBar("DISCRIMINAÇÃO DO SERVIÇO", 50, y, 495);
+    y -= 18;
+    const descricao = getValue("ns2:Descricao");
+    const lines = breakTextIntoLines(descricao, 60); // 60 caracteres por linha
+    
+    lines.forEach(line => {
+        drawText(line, 55, y);
+        y -= 14; // Ajuste conforme o espaçamento desejado
+    });
+    
     drawLine(50, y, 545, y);
     y -= 10;
 
