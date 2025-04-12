@@ -24,7 +24,7 @@ const [view, setView] = useState("dashboard");
 
   const [activeTab, setActiveTab] = useState("Vencimento Hoje");
 
-  const statusMap = {
+/*   const statusMap = {
     "Atrasado": "Atrasado",
     "Vencimento Hoje": "A Receber",
     "Parcelado": "Parcelado",
@@ -34,7 +34,43 @@ const [view, setView] = useState("dashboard");
 
   const filteredReceivables = receivables.filter(
     (r) => r.status === statusMap[activeTab]
-  );
+  ); */
+
+  const statusMap = {
+    "Atrasado": "Atrasado",
+    "Vencimento Hoje": "A Receber",
+    "Parcelado": "Parcelado",
+    "Recorrente": "Recorrente",
+    "Pago": "Pago",
+  };
+  
+  const today = new Date();
+  const oneMonthLater = new Date();
+  oneMonthLater.setMonth(today.getMonth() + 1);
+  
+  // transforma para "YYYY-MM-DD"
+  const pad = (num) => String(num).padStart(2, '0');
+
+  const formatDate = (date) =>
+    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  
+  const todayStr = formatDate(today);
+  const oneMonthLaterStr = formatDate(oneMonthLater);
+  
+  const filteredReceivables = receivables.filter((r) => {
+    const dueDateStr = r.dueDate;
+  
+    if (activeTab === "Atrasado") {
+      return dueDateStr < todayStr;
+    }
+  
+    if (activeTab === "Vencimento Hoje") {
+      return dueDateStr === todayStr;
+    }
+  
+    return r.status === statusMap[activeTab];
+  });
+
 
   async function Data() {
     const clientes = await api.find_customers_user();
