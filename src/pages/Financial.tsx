@@ -104,7 +104,7 @@ const [view, setView] = useState("dashboard");
       switch (activeTab) {
         case "Atrasado":
           return isDueBeforeToday && isNotPaid;
-        case "A Receber":
+        case "Vencimento Hoje":
           return isDueToday;
         case "Pago":
           return status === "Pago";
