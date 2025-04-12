@@ -58,33 +58,13 @@ const [view, setView] = useState("dashboard");
   const baseDate = new Date(startDate);
   setLoading(true);
 
-  if (startDate) {
-      const start = new Date(startDate);
-      const today = new Date();
-    
-      start.setHours(0, 0, 0, 0);
-      today.setHours(0, 0, 0, 0);
-    
-      if (start < today) {
-        if (paymentType === "immediate") {
-          if(startDate)
-          await api.Create_Receive({
-            customer: selectedCustomer,
-            value: parseFloat(value),
-            dueDate: startDate,
-            status: "Atrasado",
-          })        
-      }else{
-        if (paymentType === "immediate") {
-          if(startDate)
-          await api.Create_Receive({
+      if (paymentType === "immediate") {
+        await api.Create_Receive({
             customer: selectedCustomer,
             value: parseFloat(value),
             dueDate: startDate,
             status: "A Receber",
-        })       
-      }
-    }
+      })       
     } else if (paymentType === "installment") {
       for (let i = 0; i < installments; i++) {
         const due = new Date(baseDate);
@@ -121,7 +101,6 @@ const [view, setView] = useState("dashboard");
     setLoading(false);
     resetForm();
   };
-  }
 
   const resetForm = () => {
     setSelectedCustomer(null);
