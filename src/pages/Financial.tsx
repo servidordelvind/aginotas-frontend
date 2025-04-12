@@ -2,9 +2,13 @@ import React, { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { api } from "../lib/api";
 import { toast } from 'sonner';
+import { useRef } from "react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+
 
 export function Financial() {
-const [view, setView] = useState("dashboard");
+  const [view, setView] = useState("dashboard");
   const [customers, setCustomers] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [value, setValue] = useState();
@@ -15,7 +19,7 @@ const [view, setView] = useState("dashboard");
   const [receivables, setReceivables] = useState([]);
   const [agrupado, setAgrupado] = useState({});
   const [loading, setLoading] = useState(false);
-
+  const reportRef = useRef();
 
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -293,6 +297,29 @@ const [view, setView] = useState("dashboard");
     setCustomers(clientes);    
   }
 
+  const handleExportPDF = async () => {
+    const element = reportRef.current;
+    if (!element) return;
+  
+    const canvas = await html2canvas(element, {
+      backgroundColor: "#ffffff",
+      scale: 2,
+    });
+    const imgData = canvas.toDataURL("image/png");
+  
+    const pdf = new jsPDF("p", "mm", "a4");
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const margin = 10;
+    const imgWidth = pdfWidth - 2 * margin;
+    const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+  
+    pdf.setFontSize(16);
+    pdf.text(`Relatório Financeiro - Mês ${selectedMonth} - ${new Date().getFullYear()}`, margin, 20);
+    pdf.addImage(imgData, "PNG", margin, 30, imgWidth, imgHeight);
+    pdf.save(`relatorio-${selectedMonth}.pdf`);
+  };
+
   useEffect(() => {
     setLoading(true);
     Data();
@@ -323,7 +350,13 @@ const [view, setView] = useState("dashboard");
       </button>
     </div>
 
-    <div className="flex justify-end mb-4">
+    <div className="flex justify-end mb-4 gap-4">
+    <button
+      onClick={() => handleExportPDF()}
+      className="px-4 py-2 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg"
+    >
+      Exportar PDF
+    </button>
     <select
       value={selectedMonth}
       onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
@@ -350,7 +383,7 @@ const [view, setView] = useState("dashboard");
     </select>
   </div>
     {view === "dashboard" && (
-      <div className="bg-white rounded-lg shadow p-6 space-y-6">
+      <div ref={reportRef} className="bg-white rounded-lg shadow p-6 space-y-6">
         <h2 className="text-xl font-bold">Visão Geral Financeira</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-gray-100 p-4 rounded shadow">
