@@ -15,7 +15,7 @@ const [view, setView] = useState("dashboard");
   const [receivables, setReceivables] = useState([]);
   const [agrupado, setAgrupado] = useState({});
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+
 
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -26,6 +26,8 @@ const [view, setView] = useState("dashboard");
 
   const [activeTab, setActiveTab] = useState("Vencimento Hoje");
 
+  const [searchTerm, setSearchTerm] = useState('');
+
   const statusMap = {
     "Atrasado": "Atrasado",
     "Vencimento Hoje": "A Receber",
@@ -34,7 +36,7 @@ const [view, setView] = useState("dashboard");
     "Pago": "Pago",
   };
   
-  const filteredReceivables = receivables.filter((r) => {
+/*   const filteredReceivables = receivables.filter((r) => {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -43,8 +45,6 @@ const [view, setView] = useState("dashboard");
     const dueDate = new Date(`${year}-${month}-${day}`);
     dueDate.setHours(0, 0, 0, 0);
 
-    //console.log('today:', today);
-    //console.log('dueDate:',dueDate);
 
     const status = r.status;
   
@@ -84,7 +84,50 @@ const [view, setView] = useState("dashboard");
       default:
         return false;
     }
-  }); 
+  });  */
+
+  const filteredReceivables = receivables
+    .filter((r) => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const [day, month, year] = r.dueDate.split('/');
+      const dueDate = new Date(`${year}-${month}-${day}`);
+      dueDate.setHours(0, 0, 0, 0);
+
+      const status = r.status;
+
+      const isDueBeforeToday = dueDate < today;
+      const isDueToday = dueDate.getTime() === today.getTime();
+      const isNotPaid = status !== "Pago";
+
+      switch (activeTab) {
+        case "Atrasado":
+          return isDueBeforeToday && isNotPaid;
+        case "A Receber":
+          return isDueToday;
+        case "Pago":
+          return status === "Pago";
+        case "Parcelado":
+          return (
+            status === "Parcelado" &&
+            !isDueToday &&
+            !isDueBeforeToday
+          );
+        case "Recorrente":
+          return (
+            status === "Recorrente" &&
+            !isDueToday &&
+            !isDueBeforeToday
+          );
+        default:
+          return false;
+      }
+    })
+    .filter((r) =>
+      (r.customer?.name || r.customer?.razaoSocial || '').toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
 
   const handleCreateReceivable = async () => {
     if (!value){return;};
@@ -496,15 +539,14 @@ const [view, setView] = useState("dashboard");
                       </option>
                     ))}
                   </select>
-                  <label className="flex items-center gap-2">
+                <label className="flex items-center gap-2 w-full">
                 <input
                   type="text"
                   placeholder="Pesquisar..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="border rounded px-2 py-1"
+                  className="border rounded px-2 py-1 w-full"
                 />
-                Buscar
               </label>
                 </div>
 
@@ -524,15 +566,14 @@ const [view, setView] = useState("dashboard");
                     </button>
                     
                   ))}
-                 <label className="flex items-center gap-2">
+                 <label className="flex items-center gap-2 w-full">
                 <input
                   type="text"
                   placeholder="Pesquisar..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="border rounded px-2 py-1"
+                  className="border rounded px-2 py-1 w-full"
                 />
-                Buscar
               </label>
                 </div>
               </div>
