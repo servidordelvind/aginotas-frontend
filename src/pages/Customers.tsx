@@ -2087,9 +2087,11 @@ const toggleMenu = (id) => {
                       </tr>
                     ) : (
                       invoiceHistory.map((invoice) => (               
-                        <tr key={invoice.id} className="border-b">
+                         <tr key={invoice.id} className="border-b">
                           <td className="py-2 px-2 text-gray-700">{invoice.status || ''}</td>
-                          <td className="py-2 px-2 text-gray-700">{invoice.data.Rps.Servico.Discriminacao || ''}</td>
+                          <td className="py-2 px-2 text-gray-700 max-w-[80px] sm:max-w-[300px] truncate" title={invoice.data.Rps.Servico.Discriminacao || ''}>
+                            {invoice.data.Rps.Servico.Discriminacao || ''}
+                          </td>
                           <td className="py-2 px-2 text-gray-700">
                             {invoice.valor * invoice.data.Rps.Servico.ListaItensServico[0].Quantidade}
                           </td>
@@ -2137,7 +2139,7 @@ const toggleMenu = (id) => {
                               </button>
                             </div>
                           </td>
-                        </tr>
+                        </tr>                   
                       ))
                     )}
                   </tbody>
