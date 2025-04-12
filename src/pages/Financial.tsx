@@ -16,6 +16,8 @@ const [view, setView] = useState("dashboard");
   const [agrupado, setAgrupado] = useState({});
   const [alreadyPaid, setAlreadyPaid] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
@@ -33,31 +35,46 @@ const [view, setView] = useState("dashboard");
     "Pago": "Pago",
   };
   
-  const today = new Date();
-  const oneMonthLater = new Date();
-  oneMonthLater.setMonth(today.getMonth() + 1);
-  
-  // transforma para "YYYY-MM-DD"
-  const pad = (num) => String(num).padStart(2, '0');
 
-  const formatDate = (date) =>
-    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-  
-  const todayStr = formatDate(today);
-  const oneMonthLaterStr = formatDate(oneMonthLater);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Garantir comparação correta
+  const todayStr = today.toISOString().split("T")[0];
   
   const filteredReceivables = receivables.filter((r) => {
-    const dueDateStr = r.dueDate;
+    const dueDate = new Date(r.dueDate);
+    dueDate.setHours(0, 0, 0, 0); // Zerar hora
+    const status = r.status;
   
-    if (activeTab === "Atrasado") {
-      return dueDateStr < todayStr;
+    const isDueBeforeToday = dueDate < today;
+    const isDueToday = dueDate.getTime() === today.getTime();
+  
+    switch (activeTab) {
+      case "Atrasado":
+        return isDueBeforeToday && status !== "Pago";
+  
+      case "A Receber": // Vencimento Hoje
+        return isDueToday;
+  
+      case "Pago":
+        return status === "Pago";
+  
+      case "Parcelado":
+        return (
+          status === "Parcelado" &&
+          !isDueToday &&
+          !isDueBeforeToday
+        );
+  
+      case "Recorrente":
+        return (
+          status === "Recorrente" &&
+          !isDueToday &&
+          !isDueBeforeToday
+        );
+  
+      default:
+        return false;
     }
-  
-    if (activeTab === "A Receber") {
-      return dueDateStr === todayStr;
-    }
-  
-    return r.status === statusMap[activeTab];
   });
 
 
@@ -235,7 +252,7 @@ const [view, setView] = useState("dashboard");
 
   if (loading) return <div>Carregando...</div>;
 
-  console.log(receivables);
+  //console.log(receivables);
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -341,6 +358,7 @@ const [view, setView] = useState("dashboard");
             <div>
             <label className="block text-sm font-medium text-gray-700">Cliente</label>
             <select
+              required
               value={selectedCustomer?._id || ""}
               onChange={(e) => {
                 const id = e.target.value;
@@ -367,6 +385,7 @@ const [view, setView] = useState("dashboard");
                 placeholder="Ex: 1600,90"
                 onChange={(e) => setValue(Number(e.target.value))}
                 className="w-full border mt-1 p-2 rounded"
+                required
                 />
             </div>
 
@@ -377,6 +396,7 @@ const [view, setView] = useState("dashboard");
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
                 className="w-full border mt-1 p-2 rounded"
+                required
                 />
             </div>
             </div>
@@ -387,6 +407,7 @@ const [view, setView] = useState("dashboard");
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full border mt-1 p-2 rounded"
+                required
                 />
                 </div>
             </div>
@@ -452,83 +473,9 @@ const [view, setView] = useState("dashboard");
             Criar Recebimento
             </button>
             </div>
-{/*             <div className="mt-8">
-                <h3 className="text-lg font-semibold mb-2">Recebimentos</h3>
-                <div className="bg-white rounded-lg shadow p-4 max-h-96 overflow-y-auto">
-                  {receivables.length === 0 ? (
-                    <p className="text-gray-500">Nenhum lançamento ainda.</p>
-                  ) : (
-                    <div className="flex flex-col gap-4">
-                      {receivables.map((r, idx) => (
-                        <div
-                          key={idx}
-                          className="border rounded p-3 flex flex-col gap-2 bg-gray-50"
-                        >
-                          <div className="flex justify-between items-center">
-                          <p className="font-medium max-w-[100px] md:max-w-[250px] truncate">
-                            {r.customer.name || r.customer.razaoSocial}
-                          </p>
-                            <div className="flex gap-2">
-                              {r.status != 'Pago' && (
-                              <button
-                                onClick={() => handleMarkAsPaid(r._id)}
-                                className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-all duration-200"
-                              >
-                                Pago
-                              </button>
-                              )}
-                              <button
-                                onClick={() => handleDelete(r._id)}
-                                className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-all duration-200"
-                              >
-                                Excluir
-                              </button>
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => toggleDetails(idx)}
-                            className="text-blue-600 text-sm underline self-start"
-                          >
-                            {expandedIndex === idx ? "Ocultar detalhes" : "Ver detalhes"}
-                          </button>
-                          {expandedIndex === idx && (
-                            <div className="text-sm text-gray-700">
-                              <p>
-                                <strong>Valor:</strong> R$ {r.value.toFixed(2)}
-                              </p>
-                              <p>
-                                <strong>Vencimento:</strong> {r.dueDate}
-                              </p>
-                              <p>
-                                <strong>Status:</strong> {r.status}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-            </div> */}
             <div className="mt-8">
               <h3 className="text-lg font-semibold mb-2">Recebimentos</h3>
-
               {/* Abas de status */}
-{/*               <div className="flex gap-2 mb-4">
-                {Object.keys(statusMap).map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-4 py-2 rounded ${
-                      activeTab === tab
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                    } transition-all duration-200`}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div> */}
               <div className="mb-4">
                 {/* Mobile (dropdown) */}
                 <div className="md:hidden">
@@ -543,6 +490,16 @@ const [view, setView] = useState("dashboard");
                       </option>
                     ))}
                   </select>
+                  <label className="flex items-center gap-2">
+                <input
+                  type="text"
+                  placeholder="Pesquisar..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="border rounded px-2 py-1"
+                />
+                Buscar
+              </label>
                 </div>
 
                 {/* Desktop (horizontal buttons) */}
@@ -559,7 +516,18 @@ const [view, setView] = useState("dashboard");
                     >
                       {tab}
                     </button>
+                    
                   ))}
+                 <label className="flex items-center gap-2">
+                <input
+                  type="text"
+                  placeholder="Pesquisar..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="border rounded px-2 py-1"
+                />
+                Buscar
+              </label>
                 </div>
               </div>
 
