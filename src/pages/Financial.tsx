@@ -186,7 +186,6 @@ const [view, setView] = useState("dashboard");
 
   const resetForm = () => {
     setSelectedCustomer(null);
-    setValue(0);
     setPaymentType("immediate");
     setInstallments(1);
     setStartDate("");
@@ -433,7 +432,7 @@ const [view, setView] = useState("dashboard");
                 value={value}
                 placeholder="Ex: 1600,90"
                 onChange={(e) => setValue(Number(e.target.value))}
-                className="w-full border mt-1 p-2 rounded"
+                className="w-full border mt-1 p-2 rounded [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-inner-spin-button]:m-0 [&]:[-moz-appearance:textfield]"
                 required
                 />
             </div>
