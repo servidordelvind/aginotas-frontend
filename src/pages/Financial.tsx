@@ -8,6 +8,7 @@ const [view, setView] = useState("dashboard");
   const [customers, setCustomers] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [value, setValue] = useState();
+  const [description, setDescription] = useState('');
   const [paymentType, setPaymentType] = useState("immediate"); // immediate, installment, recurring
   const [installments, setInstallments] = useState(1);
   const [startDate, setStartDate] = useState("");
@@ -23,18 +24,6 @@ const [view, setView] = useState("dashboard");
   };
 
   const [activeTab, setActiveTab] = useState("Vencimento Hoje");
-
-/*   const statusMap = {
-    "Atrasado": "Atrasado",
-    "Vencimento Hoje": "A Receber",
-    "Parcelado": "Parcelado",
-    "Recorrente": "Recorrente",
-    "Pago": "Pago",
-  };
-
-  const filteredReceivables = receivables.filter(
-    (r) => r.status === statusMap[activeTab]
-  ); */
 
   const statusMap = {
     "Atrasado": "Atrasado",
@@ -64,7 +53,7 @@ const [view, setView] = useState("dashboard");
       return dueDateStr < todayStr;
     }
   
-    if (activeTab === "Vencimento Hoje") {
+    if (activeTab === "A Receber") {
       return dueDateStr === todayStr;
     }
   
@@ -93,10 +82,10 @@ const [view, setView] = useState("dashboard");
     //const entries = [];
   const baseDate = new Date(startDate);
   setLoading(true);
-
       if (paymentType === "immediate") {
         await api.Create_Receive({
             customer: selectedCustomer,
+            description:description,
             value: parseFloat(value),
             dueDate: startDate,
             status: "A Receber",
@@ -107,6 +96,7 @@ const [view, setView] = useState("dashboard");
         due.setMonth(due.getMonth() + i);
         await api.Create_Receive({
           customer: selectedCustomer,
+          description:description,
           value: parseFloat((value / installments).toFixed(0)),
           dueDate: due.toISOString().split("T")[0],
           status: "Parcelado",
@@ -119,6 +109,7 @@ const [view, setView] = useState("dashboard");
     
           await api.Create_Receive({
             customer: selectedCustomer,
+            description:description,
             value: parseFloat(value),
             dueDate: due.toISOString().split("T")[0],
             status: "Recorrente",
@@ -127,6 +118,7 @@ const [view, setView] = useState("dashboard");
     } else if (paymentType === "paid") {
       await api.Create_Receive({
           customer: selectedCustomer,
+          description:description,
           value: parseFloat(value),
           dueDate: startDate,
           status: "Pago",
@@ -243,7 +235,7 @@ const [view, setView] = useState("dashboard");
 
   if (loading) return <div>Carregando...</div>;
 
-  //console.log(receivables);
+  console.log(receivables);
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -387,6 +379,16 @@ const [view, setView] = useState("dashboard");
                 className="w-full border mt-1 p-2 rounded"
                 />
             </div>
+            </div>
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+            <label className="block text-sm font-medium text-gray-700">Descrição</label>
+                <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full border mt-1 p-2 rounded"
+                />
+                </div>
             </div>
 
             <div>
@@ -606,6 +608,9 @@ const [view, setView] = useState("dashboard");
                             </p>
                             <p>
                               <strong>Vencimento:</strong> {r.dueDate}
+                            </p>
+                            <p>
+                              <strong>Descrição:</strong> {r.description}
                             </p>
                             <p>
                               <strong>Status:</strong> {r.status}
