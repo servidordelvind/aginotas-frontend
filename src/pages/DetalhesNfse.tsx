@@ -140,7 +140,15 @@ export function DetalhesNfse() {
             <h2 className="text-lg font-bold mb-4 text-center">Resumo da NFSe</h2>
             <div className="grid grid-cols-2 gap-4">
             <div>
-            <p><span className="font-semibold">Número Nota:</span> {invoice?.data?.Rps?.IdentificacaoRps?.Numero || 'N/A'}</p>
+            <p>
+                <span className="font-semibold">Número Nota:</span>{" "}
+                {(() => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(invoice?.xml || "", "text/xml");
+                const numeroNota = xmlDoc.getElementsByTagName("ns2:Numero")[0]?.textContent || 'N/A';
+                return numeroNota;
+                })()}
+            </p>
             <p><span className="font-semibold">Data Prestação:</span> {invoice?.data?.Rps?.DataEmissao || 'N/A'}</p>
             <p><span className="font-semibold">Código de Verificação:</span> {(() => {
                 const parser = new DOMParser();
