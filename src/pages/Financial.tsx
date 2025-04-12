@@ -71,7 +71,7 @@ const [view, setView] = useState("dashboard");
         due.setMonth(due.getMonth() + i);
         await api.Create_Receive({
           customer: selectedCustomer,
-          value: parseFloat((value / installments).toFixed(2)),
+          value: parseFloat((value / installments).toFixed(0)),
           dueDate: due.toISOString().split("T")[0],
           status: "Parcelado",
         })
