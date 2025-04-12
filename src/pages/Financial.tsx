@@ -37,28 +37,38 @@ const [view, setView] = useState("dashboard");
   
 
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Garantir comparação correta
-  const todayStr = today.toISOString().split("T")[0];
+  today.setHours(0, 0, 0, 0);
   
   const filteredReceivables = receivables.filter((r) => {
-    const dueDate = new Date(r.dueDate);
-    dueDate.setHours(0, 0, 0, 0); // Zerar hora
+
+    const [day, month, year] = r.dueDate.split('/');
+    const dueDate = new Date(`${year}-${month}-${day}`);
+    dueDate.setHours(0, 0, 0, 0);
+
+    console.log('today:', today);
+    console.log('dueDate:',dueDate);
+
     const status = r.status;
   
     const isDueBeforeToday = dueDate < today;
     const isDueToday = dueDate.getTime() === today.getTime();
+    const isNotPaid = status !== "Pago";
   
     switch (activeTab) {
       case "Atrasado":
-        return isDueBeforeToday && status !== "Pago";
+        // Está atrasado se a data é anterior a hoje E não está pago
+        return isDueBeforeToday && isNotPaid;
   
-      case "A Receber": // Vencimento Hoje
+      case "A Receber":
+        // Deve aparecer aqui se a data for hoje, independentemente do status
         return isDueToday;
   
       case "Pago":
+        // Somente status Pago, independentemente da data
         return status === "Pago";
   
       case "Parcelado":
+        // Se for parcelado, não deve estar vencido nem ser hoje
         return (
           status === "Parcelado" &&
           !isDueToday &&
@@ -66,6 +76,7 @@ const [view, setView] = useState("dashboard");
         );
   
       case "Recorrente":
+        // Mesmo critério do parcelado, mas com status Recorrente
         return (
           status === "Recorrente" &&
           !isDueToday &&
@@ -76,6 +87,7 @@ const [view, setView] = useState("dashboard");
         return false;
     }
   });
+
 
 
   async function Data() {
