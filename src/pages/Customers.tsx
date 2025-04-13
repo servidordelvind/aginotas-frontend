@@ -121,7 +121,7 @@ export function Customers() {
   const [cnpjError, setCnpjError] = useState('');
 
   const [SelectType, setSelectType] = useState('');
-
+  const [loading, setLoading] = useState(false);
   const [cnaes, setCnaes] = useState<any[]>([]);
   const [itemservico, setItemServico] = useState<any[]>([]);
 
@@ -755,6 +755,18 @@ const toggleMenu = (id) => {
     saveAs(blob, fileName);
   }
 
+  async function criarNotaFiscalPDF (item: any) {
+    try {
+        setLoading(true);
+        await api.Export_Invoice_PDF(item);
+        setLoading(false);
+        toast.success("PDF gerado com sucesso!");
+    } catch (error) {
+        toast.error("Ocorreu um erro ao gerar o PDF");
+        return;
+    }
+  }
+
 /*   async function criarNotaFiscal(customer: any) {
   
         //console.log(customer);
@@ -1029,6 +1041,8 @@ const toggleMenu = (id) => {
   },[invoice.cnae])
 
   //console.log(invoiceHistory);
+
+  if (loading) return <div>Carregando...</div>;
  
   return (
     <div className="space-y-6">
@@ -2112,7 +2126,7 @@ const toggleMenu = (id) => {
                                 <FileCodeIcon className="w-4 h-4" />
                               </button>
                               <button
-                                onClick={() => api.Export_Invoice_PDF(invoice)}
+                                onClick={() => criarNotaFiscalPDF(invoice)}
                                 className="text-blue-600 hover:text-blue-800"
                                 title="Baixar PDF"
                               >

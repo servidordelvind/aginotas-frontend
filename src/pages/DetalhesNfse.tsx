@@ -3,6 +3,7 @@ import { saveAs } from 'file-saver';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { api } from '../lib/api.ts';
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export function DetalhesNfse() {
     const { id } = useParams<{ id: string }>();
@@ -109,6 +110,18 @@ export function DetalhesNfse() {
         }
     }
 
+    async function criarNotaFiscalPDF (item: any) {
+        try {
+          setLoading(true);
+          await api.Export_Invoice_PDF(item);
+          setLoading(false);
+          toast.success("PDF gerado com sucesso!");
+        } catch (error) {
+          toast.error("Ocorreu um erro ao gerar o PDF");
+          return;
+        }
+    }
+
     useEffect(()=>{
         fetchData();
     },[])
@@ -131,7 +144,7 @@ export function DetalhesNfse() {
             Baixar XML
             </button>
             <button 
-            onClick={() => api.Export_Invoice_PDF(invoice)}
+            onClick={() => criarNotaFiscalPDF(invoice)}
             className="px-4 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600">
             Baixar PDF
             </button>

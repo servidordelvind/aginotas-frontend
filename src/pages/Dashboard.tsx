@@ -11,6 +11,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { saveAs } from 'file-saver';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import fs from 'fs';
+import { toast } from 'sonner';
 
 dayjs.extend(customParseFormat);
 dayjs.extend(isBetween);
@@ -39,6 +40,7 @@ export function Dashboard() {
   const [invoice, setInvoice] = useState<Nota[]>([]);
   const [dayInvoicetoday, setDayInvoiceToday] = useState(0);
   const [dayInvoicelast7days, setDayInvoiceLast7Days] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     load_data(); 
@@ -210,88 +212,19 @@ export function Dashboard() {
     saveAs(new Blob([pdfBytes], { type: 'application/pdf' }), 'modelo-nota-fiscal.pdf');
   }  */
 
-    async function criarNotaFiscal(customer: any) {
-
-      console.log(customer);
-
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(customer.xml, "text/xml");
-
-      const getValue = (tagName: string) => {
-        const element = xmlDoc.getElementsByTagName(tagName)[0];
-        return element ? element.textContent || "" : "N/A";
-      };
-
-      const pdfDoc = await PDFDocument.create();
-      const page = pdfDoc.addPage([595.28, 841.89]); // A4 em pontos
-
-      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-      const fontSize = 10;
-
-      const drawText = (text: string, x: number, y: number, size = fontSize) => {
-        page.drawText(text, {
-          x,
-          y,
-          size,
-          font,
-          color: rgb(0, 0, 0),
-        });
-      };
-
-      // Cabeçalho
-      drawText('MUNICIPIO DE MEDIANEIRA - Nota Fiscal de Serviços Eletrônica', 150, 800, 12);
-      drawText(`Número: ${getValue("ns2:Numero")}`, 50, 780);
-      drawText(`Data Prestação: ${getValue("ns2:DataEmissao")}`, 250, 780);
-      drawText(`Autenticidade: ${getValue("ns2:CodigoVerificacao")}`, 450, 780);
-      drawText('SITE AUTENTICIDADE: https://medianeira.oxy.elotech.com.br/iss/autenticar-documento-fiscal', 50, 765, 8);
-
-      // Dados do prestador
-      drawText('DADOS DO PRESTADOR DO SERVIÇO', 50, 740, 11);
-      drawText(`Nome/Razão Social: ${getValue("ns2:RazaoSocial")}`, 50, 725);
-      drawText(`CNPJ: ${getValue("ns2:Cnpj")}`, 50, 710);
-      drawText(`Insc. Municipal: ${getValue("ns2:InscricaoMunicipal")}`, 50, 695);
-      drawText(`Endereço: ${getValue("ns2:Endereco")}, ${getValue("ns2:Numero")}`, 50, 680);
-      drawText(`Município/UF: ${getValue("ns2:CodigoMunicipio")}-${getValue("ns2:Uf")} | CEP: ${getValue("ns2:Cep")}`, 50, 665);
-      drawText(`Fone: ${getValue("ns2:Telefone")} | E-mail: ${getValue("ns2:Email")}`, 50, 650);
-
-      // Dados do tomador
-      drawText('DADOS DO TOMADOR DO SERVIÇO', 50, 625, 11);
-      drawText(`Nome/Razão Social: ${customer.customer.razaoSocial || customer.customer.name}`, 50, 610);
-      drawText(`CPF/CNPJ: ${customer.customer.cnpj !== 'undefined' ? customer.customer.cnpj : customer.customer.cpf !== 'undefined' ? customer.customer.cpf : 'N/A'}`, 50, 595);
-      drawText(`Endereço: ${customer.customer.address.street}, ${customer.customer.address.number} - ${customer.customer.address.neighborhood}`, 50, 580);
-      drawText(`Município/UF: ${customer.customer.address.city}-${customer.customer.address.state} | CEP: ${customer.customer.address.zipCode}`, 50, 565);
-      drawText(`Fone: ${customer.customer.phone || 'N/A'} | E-mail: ${customer.customer.email || 'N/A'}`, 50, 550);
-
-      // Serviço
-      drawText('DEFINIÇÃO DO SERVIÇO', 50, 525, 11);
-      drawText(`Item da Lista de Serviços: ${getValue("ns2:ItemListaServico")} ${getValue("ns2:Descricao")}`, 50, 510);
-      drawText(`CNAE: ${getValue("ns2:CodigoCnae")} | Competência: ${getValue("ns2:Competencia")}`, 50, 495);
-      drawText(`Local da Prestação: ${getValue("ns2:CodigoMunicipio")}-${getValue("ns2:Uf")}`, 50, 480);
-      drawText('Natureza da Operação: EXIGÍVEL', 50, 465);
-
-      // Discriminação
-      drawText('DISCRIMINAÇÃO DO SERVIÇO', 50, 440, 11);
-      drawText(`- ${getValue("ns2:Discriminacao")}`, 50, 425);
-      drawText(`Descrição: ${getValue("ns2:Descricao")} | Qtde: ${getValue("ns2:Quantidade")} | Valor Unitário: R$ ${getValue("ns2:ValorUnitario")} | Valor Total: R$ ${getValue("ns2:ValorServicos")}`, 50, 410);
-
-      // Tributos
-      drawText('TRIBUTOS INCIDENTES', 50, 380, 11);
-      drawText(`ISSQN: R$ ${getValue("ns2:ValorIss")} | Alíquota: ${getValue("ns2:Aliquota")}% | Retido: ${getValue("ns2:IssRetido") === "2" ? "Não" : "Sim"}`, 50, 365);
-
-      // Totais
-      drawText('TOTALIZAÇÃO DO DOCUMENTO FISCAL', 50, 320, 11);
-      drawText(`Base de Cálculo ISSQN: R$ ${getValue("ns2:BaseCalculo")}`, 50, 305);
-      drawText(`Valor Total: R$ ${getValue("ns2:ValorServicos")} | Descontos: R$ ${getValue("ns2:DescontoIncondicionado")} | Valor Líquido: R$ ${getValue("ns2:ValorLiquidoNfse")}`, 50, 290);
-
-      // Assinatura
-      drawText(`Recebemos de ${getValue("ns2:RazaoSocial")} os serviços constantes nesta NFS-e.`, 50, 260);
-      drawText('DATA: ____/____/_____   Assinatura: ____________________________', 50, 240);
-
-      // Salvar
-      const pdfBytes = await pdfDoc.save();
-      saveAs(new Blob([pdfBytes], { type: "application/pdf" }), "modelo-nota-fiscal.pdf");
+    async function criarNotaFiscalPDF (item: any) {
+      try {
+        setLoading(true);
+        await api.Export_Invoice_PDF(item);
+        setLoading(false);
+        toast.success("PDF gerado com sucesso!");
+      } catch (error) {
+        toast.error("Ocorreu um erro ao gerar o PDF");
+        return;
+      }
     }
 
+    if (loading) return <div>Carregando...</div>;
 
   return (
     <div className="space-y-6">
@@ -416,7 +349,7 @@ export function Dashboard() {
               Baixar XML
             </button>
             <button
-              onClick={() => api.Export_Invoice_PDF(item)}
+              onClick={() => criarNotaFiscalPDF(item)}
               className="text-blue-600 hover:underline"
             >
               Baixar PDF
