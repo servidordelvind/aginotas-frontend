@@ -399,9 +399,10 @@ export function Financial() {
       >
         Pagamentos
       </button>
+    
     </div>
 
-    <div className="flex justify-end mb-4 gap-4">
+{/*     <div className="flex justify-end mb-4 gap-4">
     <button
       onClick={() => handleExportYearPDF()}
       className="px-4 py-2 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg"
@@ -415,23 +416,23 @@ export function Financial() {
       Exportar PDF MENSAL
     </button>
     <div className="flex gap-4">
-  {/* Select de mês */}
-  <select
-    value={selectedMonth}
-    onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-    className="px-3 py-2 rounded border border-gray-300"
-  >
-    {[
-      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-    ].map((month, index) => (
-      <option key={index} value={index}>
-        {month}
-      </option>
-    ))}
-  </select>
 
-  {/* Select de ano */}
+    <select
+      value={selectedMonth}
+      onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+      className="px-3 py-2 rounded border border-gray-300"
+    >
+      {[
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+      ].map((month, index) => (
+        <option key={index} value={index}>
+          {month}
+        </option>
+      ))}
+    </select>
+
+
   <select
     value={selectedYear}
     onChange={(e) => setSelectedYear(parseInt(e.target.value))}
@@ -446,32 +447,59 @@ export function Financial() {
       );
     })}
   </select>
-</div>
-{/*     <select
+  </div>
+    </div> */}
+    <div className="flex flex-col md:flex-row justify-end mb-4 gap-4 md:items-center">
+  <div className="flex flex-col md:flex-row gap-4">
+    <button
+      onClick={() => handleExportYearPDF()}
+      className="px-4 py-2 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg"
+    >
+      Exportar PDF ANUAL
+    </button>
+    <button
+      onClick={() => handleExportPDF()}
+      className="px-4 py-2 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg"
+    >
+      Exportar PDF MENSAL
+    </button>
+  </div>
+  
+  <div className="flex flex-col md:flex-row gap-4">
+    {/* Select de mês */}
+    <select
       value={selectedMonth}
       onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
       className="px-3 py-2 rounded border border-gray-300"
     >
       {[
-        "Janeiro",
-        "Fevereiro",
-        "Março",
-        "Abril",
-        "Maio",
-        "Junho",
-        "Julho",
-        "Agosto",
-        "Setembro",
-        "Outubro",
-        "Novembro",
-        "Dezembro",
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
       ].map((month, index) => (
         <option key={index} value={index}>
           {month}
         </option>
       ))}
-    </select> */}
+    </select>
+
+    {/* Select de ano */}
+    <select
+      value={selectedYear}
+      onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+      className="px-3 py-2 rounded border border-gray-300"
+    >
+      {Array.from({ length: 10 }, (_, i) => {
+        const year = new Date().getFullYear() - i;
+        return (
+          <option key={year} value={year}>
+            {year}
+          </option>
+        );
+      })}
+    </select>
   </div>
+    </div>
+
     {view === "dashboard" && (
       <div ref={reportRef} className="bg-white rounded-lg shadow p-6 space-y-6">
         <h2 className="text-xl font-bold">Visão Geral Financeira</h2>
