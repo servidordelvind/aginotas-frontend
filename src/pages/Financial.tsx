@@ -300,7 +300,19 @@ export function Financial() {
     setCustomers(clientes);    
   }
 
+  const loadReportForMonth = async (month: number) => {
+    setSelectedMonth(month);
+  
+    // Se o relatório depende de uma chamada async (como buscar dados), aguarde ela aqui
+    // Por exemplo:
+    // await fetchDataForMonth(month);
+  
+    // Depois aguarde um tempo pra garantir que o DOM se atualizou
+    await new Promise((resolve) => setTimeout(resolve, 500)); // ajuste esse delay se necessário
+  };
+
   const handleExportPDF = async () => {
+    setLoading(true);
     const element = reportRef.current;
     if (!element) return;
   
@@ -321,6 +333,42 @@ export function Financial() {
     pdf.text(`Relatório Financeiro - Mês ${selectedMonth} - ${new Date().getFullYear()}`, margin, 20);
     pdf.addImage(imgData, "PNG", margin, 30, imgWidth, imgHeight);
     pdf.save(`relatorio-${selectedMonth}.pdf`);
+    setLoading(false);
+  };
+
+  const handleExportYearPDF = async () => {
+    const element = reportRef.current;
+    if (!element) return;
+  
+    const pdf = new jsPDF("p", "mm", "a4");
+    const year = selectedYear;
+    const margin = 10;
+  
+    for (let month = 1; month <= 12; month++) {
+      // Atualiza os dados para o mês atual
+      await loadReportForMonth(month); // <-- Essa função você precisa ter implementada
+  
+      // Espera a atualização do DOM (caso precise)
+      await new Promise((resolve) => setTimeout(resolve, 500)); // ajusta o tempo se necessário
+  
+      const canvas = await html2canvas(element, {
+        backgroundColor: "#ffffff",
+        scale: 2,
+      });
+  
+      const imgData = canvas.toDataURL("image/png");
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const imgWidth = pdfWidth - 2 * margin;
+      const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+  
+      if (month !== 1) pdf.addPage(); // só adiciona nova página depois da primeira
+  
+      pdf.setFontSize(16);
+      pdf.text(`Relatório Financeiro - Mês ${month} - ${year}`, margin, 20);
+      pdf.addImage(imgData, "PNG", margin, 30, imgWidth, imgHeight);
+    }
+    pdf.save(`relatorio-anual-${year}.pdf`);
   };
 
   useEffect(() => {
@@ -355,10 +403,16 @@ export function Financial() {
 
     <div className="flex justify-end mb-4 gap-4">
     <button
+      onClick={() => handleExportYearPDF()}
+      className="px-4 py-2 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg"
+    >
+      Exportar PDF ANUAL
+    </button>
+    <button
       onClick={() => handleExportPDF()}
       className="px-4 py-2 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg"
     >
-      Exportar PDF
+      Exportar PDF MENSAL
     </button>
     <div className="flex gap-4">
   {/* Select de mês */}
