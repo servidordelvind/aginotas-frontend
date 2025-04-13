@@ -1,7 +1,8 @@
 import { saveAs } from 'file-saver';
 import logomedianeira from '../public/medianeira.jpg';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-
+import { writeFile } from "fs/promises";
+import puppeteer from "puppeteer";
 const API_URL = import.meta.env.VITE_API_URL;
 import Cookies from "js-cookie";
 
@@ -567,7 +568,7 @@ export const api = {
     return response.json();
   },
 
-  async Export_Invoice_PDF(customer: any){
+/*   async Export_Invoice_PDF(customer: any){
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(customer.xml, "text/xml");
 
@@ -625,14 +626,8 @@ export const api = {
 
     const response = await fetch(logomedianeira);
     const logoBytes = await response.arrayBuffer();
-
-/*     const response2 = await fetch(logodelvind);
-    const logoBytes2 = await response2.arrayBuffer(); */
-
     const logoPrefeitura = await pdfDoc.embedJpg(logoBytes);
-    //const logoEmpresa = await pdfDoc.embedJpg(logoBytes2);
     const prefeituraDims = logoPrefeitura.scale(0.3);
-    //const empresaDims = logoEmpresa.scale(0.4); 
 
     let y = 800;
 
@@ -661,12 +656,6 @@ export const api = {
 
     // DADOS DO PRESTADOR
     drawTitleBar("DADOS DO PRESTADOR DO SERVIÇO", 50, y, 495);
-/*            page.drawImage(logoEmpresa, {
-        x: 55,
-        y: y - 50,
-        width: empresaDims.width,
-        height: empresaDims.height,
-    }); */ 
 
     y -= 20;
     drawText(`Nome/Razão Social: ${getValue("ns2:RazaoSocial")}`, 55, y);
@@ -694,11 +683,6 @@ export const api = {
         55,
         y - 14
     );
-/*     drawText(
-        `Endereço: ${customer.data.Rps.Tomador.Endereco.Endereco}, ${customer.data.Rps.Tomador.Endereco.Numero}`,
-        270,
-        y - 14
-    ); */
     drawText(
       `Endereço: ${customer.data.Rps.Tomador.Endereco.Endereco}, ${customer.data.Rps.Tomador.Endereco.Numero}`,
       55,
@@ -718,23 +702,6 @@ export const api = {
     drawLine(50, y, 545, y);
     y -= 10;
 
-    // DISCRIMINAÇÃO DO SERVIÇO
-/*     drawTitleBar("DISCRIMINAÇÃO DO SERVIÇO", 50, y, 495);
-    y -= 18;
-    drawText(`${getValue("ns2:Descricao")}`, 55, y);
-    y -= 14;
-    drawLine(50, y, 545, y);
-    y -= 10; */
-
-/*     drawTitleBar("DISCRIMINAÇÃO DO SERVIÇO", 50, y, 495);
-    y -= 18;
-    // Limita o texto a 100 caracteres (ajuste conforme necessário)
-    var descricao = getValue("ns2:Descricao");
-    var descricaoLimitada = descricao.length > 80 ? descricao.substring(0, 80) + "..." : descricao;
-    drawText(descricaoLimitada, 55, y);
-    y -= 14;
-    drawLine(50, y, 545, y);
-    y -= 10; */
 
     function breakTextIntoLines(text, maxCharsPerLine) {
       const lines = [];
@@ -781,8 +748,62 @@ export const api = {
 
     const pdfBytes = await pdfDoc.save();
     saveAs(new Blob([pdfBytes], { type: "application/pdf" }), `${getValue("ns2:Descricao")}.pdf`);
-  },
+  }, */
 
+  async Export_Invoice_PDF(customer: any){
+    try {
+      const response = await fetch(`${API_URL}/invoice/nfsepdf`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Cookies.get('token')}`,
+        },
+        body: JSON.stringify(customer),
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Falha ao gerar PDF');
+      }
+  
+      // Verifica se é um PDF
+      const contentType = response.headers.get('content-type');
+      if (!contentType?.includes('application/pdf')) {
+        const responseData = await response.text();
+        console.error('Resposta inesperada:', responseData);
+        throw new Error('Resposta não é um PDF válido');
+      }
+  
+      const blob = await response.blob();
+      
+      // Verificação adicional
+      if (blob.size === 0) {
+        throw new Error('PDF recebido está vazio');
+      }
+  
+      // Cria URL temporária para download
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `NFSe_${customer.numero || Date.now()}.pdf`;
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      link.click();
+  
+      // Limpeza
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+  
+    } catch (error) {
+      console.error('Erro no download:', error);
+      throw new Error(`Falha no download: ${error.message}`);
+    }
+  },
+  
+  
   async Find_Receipts(){
     const response = await fetch(`${API_URL}/financial/receipts`, {
       method: 'GET',
