@@ -756,6 +756,7 @@ const toggleMenu = (id) => {
   }
 
   async function criarNotaFiscalPDF (item: any) {
+    //console.log(item);
     try {
         setLoading(true);
         await api.Export_Invoice_PDF(item);
