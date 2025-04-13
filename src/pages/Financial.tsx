@@ -20,7 +20,7 @@ export function Financial() {
   const [agrupado, setAgrupado] = useState({});
   const [loading, setLoading] = useState(false);
   const reportRef = useRef();
-
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
@@ -199,7 +199,10 @@ export function Financial() {
 
   const filteredReceivables2 = receivables.filter((r) => {
     const date = new Date(r.dueDate);
-    return date.getMonth() === selectedMonth;
+    return (
+      date.getMonth() === selectedMonth &&
+      date.getFullYear() === selectedYear
+    );
   });
 
   const chartData = [
@@ -357,7 +360,40 @@ export function Financial() {
     >
       Exportar PDF
     </button>
-    <select
+    <div className="flex gap-4">
+  {/* Select de mês */}
+  <select
+    value={selectedMonth}
+    onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+    className="px-3 py-2 rounded border border-gray-300"
+  >
+    {[
+      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ].map((month, index) => (
+      <option key={index} value={index}>
+        {month}
+      </option>
+    ))}
+  </select>
+
+  {/* Select de ano */}
+  <select
+    value={selectedYear}
+    onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+    className="px-3 py-2 rounded border border-gray-300"
+  >
+    {Array.from({ length: 10 }, (_, i) => {
+      const year = new Date().getFullYear() - i;
+      return (
+        <option key={year} value={year}>
+          {year}
+        </option>
+      );
+    })}
+  </select>
+</div>
+{/*     <select
       value={selectedMonth}
       onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
       className="px-3 py-2 rounded border border-gray-300"
@@ -380,7 +416,7 @@ export function Financial() {
           {month}
         </option>
       ))}
-    </select>
+    </select> */}
   </div>
     {view === "dashboard" && (
       <div ref={reportRef} className="bg-white rounded-lg shadow p-6 space-y-6">
