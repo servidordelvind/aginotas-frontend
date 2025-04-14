@@ -6,6 +6,8 @@ import { usePopper } from "react-popper";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
+const ApiUrl = import.meta.env.VITE_API_URL;
+
 export function UserConfig() {
   const [user, setUser] = useState("");
   const [senhaElotech, setSenhaElotech] = useState("");
@@ -18,155 +20,28 @@ export function UserConfig() {
   const popperRef = useRef(null);
   const [base64Image, setBase64Image] = useState("");
 
+  const [anexo, setAnexo] = useState("Anexo III");
+  const [receitaBruta12Meses, setReceitaBruta12Meses] = useState(0);
+  const [receitaMes, setReceitaMes] = useState(0);
+  const [resultado, setResultado] = useState(null);
+
+  const handleCalcular = async () => {
+    try {
+      const response = await api.Calculate_Taxation({
+        anexo,
+        receitaBruta12Meses,
+        receitaMes,
+      });
+      setResultado(response);
+    } catch (error) {
+      console.error("Erro ao calcular tributos:", error);
+    }
+  };
 
   const navigate = useNavigate();
   const { styles, attributes } = usePopper(referenceRef.current, popperRef.current, {
     placement: "bottom",
   });
-
-  const [anexo, setAnexo] = useState('Anexo III');
-  const [receitaBruta, setReceitaBruta] = useState(0);
-
-  const faixasAnexoIII = [
-    {
-      descricao: 'Até 180.000,00',
-      limiteSuperior: 180000,
-      aliquota: 6.00,
-      distribuicao: [
-        { nome: 'IRPJ', valor: 4.00 },
-        { nome: 'CSLL', valor: 3.50 },
-        { nome: 'Cofins', valor: 12.82 },
-        { nome: 'PIS PASEP', valor: 2.78 },
-        { nome: 'CPP', valor: 43.40 },
-        { nome: 'ISS', valor: 33.50 },
-      ]
-    },
-    {
-      descricao: 'De 180.000,01 a 360.000,00',
-      limiteSuperior: 360000,
-      aliquota: 11.20,
-      distribuicao: [
-        { nome: 'IRPJ', valor: 4.00 },
-        { nome: 'CSLL', valor: 3.50 },
-        { nome: 'Cofins', valor: 14.05 },
-        { nome: 'PIS PASEP', valor: 3.05 },
-        { nome: 'CPP', valor: 43.40 },
-        { nome: 'ISS', valor: 32.00 },
-      ]
-    },
-    {
-      descricao: 'De 360.000,01 a 720.000,00',
-      limiteSuperior: 720000,
-      aliquota: 13.50,
-      distribuicao: [
-        { nome: 'IRPJ', valor: 4.00 },
-        { nome: 'CSLL', valor: 3.50 },
-        { nome: 'Cofins', valor: 13.64 },
-        { nome: 'PIS PASEP', valor: 2.96 },
-        { nome: 'CPP', valor: 43.40 },
-        { nome: 'ISS', valor: 32.50 },
-      ]
-    },
-    {
-      descricao: 'De 720.000,01 a 1.800.000,00',
-      limiteSuperior: 1800000,
-      aliquota: 16.00,
-      distribuicao: [
-        { nome: 'IRPJ', valor: 4.00 },
-        { nome: 'CSLL', valor: 3.50 },
-        { nome: 'Cofins', valor: 13.64 },
-        { nome: 'PIS PASEP', valor: 2.96 },
-        { nome: 'CPP', valor: 43.40 },
-        { nome: 'ISS', valor: 32.50 },
-      ]
-    },
-    {
-      descricao: 'De 1.800.000,01 a 3.600.000,00',
-      limiteSuperior: 3600000,
-      aliquota: 21.00,
-      distribuicao: [
-        { nome: 'IRPJ', valor: 4.00 },
-        { nome: 'CSLL', valor: 3.50 },
-        { nome: 'Cofins', valor: 12.82 },
-        { nome: 'PIS PASEP', valor: 2.78 },
-        { nome: 'CPP', valor: 43.40 },
-        { nome: 'ISS', valor: 33.50 },
-      ]
-    },
-    {
-      descricao: 'De 3.600.000,01 a 4.800.000,00',
-      limiteSuperior: 4800000,
-      aliquota: 33.00,
-      distribuicao: [
-        { nome: 'IRPJ', valor: 35.00 },
-        { nome: 'CSLL', valor: 15.00 },
-        { nome: 'Cofins', valor: 16.03 },
-        { nome: 'PIS PASEP', valor: 3.47 },
-        { nome: 'CPP', valor: 30.50 },
-        { nome: 'ISS', valor: 0.00 },
-      ]
-    },
-  ];
-
-  const faixaAtual = faixasAnexoIII.find(faixa => receitaBruta <= faixa.limiteSuperior) || faixasAnexoIII[faixasAnexoIII.length - 1];
-
-  const [tributos, setTributos] = useState([
-    { nome: 'ISS', aliquota: 2.01, valor: 5.58, retido: false },
-    { nome: 'Cofins', aliquota: 0.7692, valor: 2.13864, retido: false },
-    { nome: 'IR', aliquota: 0.24, valor: 0.68672, retido: false },
-    { nome: 'CPP', aliquota: 2.604, valor: 7.23391, retido: false },
-    { nome: 'PIS', aliquota: 0.1688, valor: 0.48337, retido: false },
-    { nome: 'INSS', aliquota: 0, valor: 0, retido: false },
-    { nome: 'CSLL', aliquota: 0.213, valor: 0.58338, retido: false },
-    { nome: 'Outras', aliquota: 0, valor: 0, retido: false },
-  ]);
-
-  useEffect(() => {
-    if (!faixaAtual) return;
-
-    const totalDistribuicao = faixaAtual.distribuicao.reduce((acc, curr) => acc + curr.valor, 0);
-
-    const novaLista = tributos.map((tributo) => {
-      // Mapeamento dos nomes dos impostos entre os dois objetos
-      const mapNomes = {
-        IR: 'IRPJ',
-        CSLL: 'CSLL',
-        Cofins: 'Cofins',
-        PIS: 'PIS PASEP',
-        CPP: 'CPP',
-        ISS: 'ISS',
-      };
-
-      const correspondente = faixaAtual.distribuicao.find((item) => item.nome === mapNomes[tributo.nome]);
-
-      if (correspondente) {
-        const novaAliquota = correspondente.valor;
-        const novoValor = parseFloat(((novaAliquota / 100) * receitaBruta).toFixed(2)); // Se valor for sobre receita
-        return {
-          ...tributo,
-          aliquota: parseFloat(novaAliquota.toFixed(4)),
-          valor: novoValor
-        };
-      }
-
-      return tributo; // se não encontrar correspondente, mantém como está
-    });
-
-    setTributos(novaLista);
-  }, [receitaBruta]);
-
-
-  const handleAliquotaChange = (index: number, newAliquota: number) => {
-    const updated = [...tributos];
-    updated[index].aliquota = newAliquota;
-    setTributos(updated);
-  };
-
-  const handleRetidoChange = (index: number, checked: boolean) => {
-    const updated = [...tributos];
-    updated[index].retido = checked;
-    setTributos(updated);
-  };
 
   useEffect(() => {
     loadUserSettings();
@@ -235,7 +110,7 @@ export function UserConfig() {
     }
   };
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = (e:any) => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
@@ -367,102 +242,75 @@ export function UserConfig() {
             />
           </div>
 
-          <div className="w-full bg-white rounded-md p-4 border border-gray-200 space-y-4">
-          {/* Seletor de Anexo e Receita Bruta */}
-          <div className="grid grid-cols-3 gap-4 items-end">
+          <div className="max-w-4xl mx-auto mt-10 bg-white p-6 rounded-xl border shadow-sm">
+          <h2 className="text-xl font-bold text-gray-700 mb-4">Cálculo de Tributos - Simples Nacional</h2>
+
+          <div className="grid grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="text-sm font-semibold text-gray-600">Anexo</label>
+              <label className="block text-sm font-semibold text-gray-600">Anexo</label>
               <select
                 value={anexo}
                 onChange={(e) => setAnexo(e.target.value)}
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+                className="w-full mt-1 p-2 border rounded-md"
               >
-                <option value="Anexo III">ANEXO III DA LEI COMPLEMENTAR Nº 123, DE 14 DE DEZEMBRO DE 2006</option>
+                <option value="Anexo III">Anexo III</option>
+                <option value="Anexo IV">Anexo IV</option>
+                <option value="Anexo V">Anexo V</option>
               </select>
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-gray-600">Receita Bruta dos últimos 12 meses (RBT12)</label>
+              <label className="block text-sm font-semibold text-gray-600">Receita Bruta (12 meses)</label>
               <input
                 type="number"
-                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-                value={receitaBruta}
-                onChange={(e) => setReceitaBruta(parseFloat(e.target.value))}
+                className="w-full mt-1 p-2 border rounded-md"
+                value={receitaBruta12Meses}
+                onChange={(e) => setReceitaBruta12Meses(parseFloat(e.target.value))}
               />
             </div>
 
-            <button className="bg-green-600 text-white font-semibold px-4 py-2 rounded-md h-10">
-              Visualizar Faixas
-            </button>
-          </div>
-          {/* Informações da faixa */}
-          <div className="border-t pt-4">
-            <div className="text-sm mb-2 text-gray-700">Faixa: <strong>{faixaAtual.descricao}</strong></div>
-            <div className="text-sm mb-4 text-gray-700">Alíquota: <strong>{faixaAtual.aliquota}%</strong></div>
-
-            <div className="grid grid-cols-2 gap-y-2 text-sm text-green-700 font-medium">
-              {faixaAtual.distribuicao.map((imp, idx) => (
-                <div key={idx} className="flex justify-between px-2">
-                  <span>{imp.nome}:</span>
-                  <span>{imp.valor}%</span>
-                </div>
-              ))}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600">Receita do Mês</label>
+              <input
+                type="number"
+                className="w-full mt-1 p-2 border rounded-md"
+                value={receitaMes}
+                onChange={(e) => setReceitaMes(parseFloat(e.target.value))}
+              />
             </div>
           </div>
-          {/* Tributos detalhados */}
-          <div className="mt-6 border-t pt-4">
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">Tributos Calculados</h4>
-            <div className="grid grid-cols-2 gap-y-2 text-sm text-gray-800">
-              {tributos.map((t, idx) => (
-                <div key={idx} className="flex justify-between px-2">
-                  <span>{t.nome}:</span>
-                  <span>{t.valor} (Aliquota: {t.aliquota}%)</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
 
-          <div className="w-full">
-              <div className="grid grid-cols-4 gap-2 mb-2">
-                <span className="text-sm font-bold text-gray-700">-------</span>
-                <span className="text-sm font-bold text-gray-700">Alíquota %</span>
-                <span className="text-sm font-bold text-gray-700">Valor</span>
-                <span className="text-sm font-bold text-gray-700">Retido</span>
+          <button
+            onClick={handleCalcular}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+          >
+            Calcular Tributos
+          </button>
+
+          {resultado && (
+            <div className="mt-6 space-y-4">
+              <div className="text-sm text-gray-700">
+                <div><strong>Faixa:</strong> {resultado.faixa}</div>
+                <div><strong>Alíquota Nominal:</strong> {(resultado.aliquotaNominal * 100)}%</div>
+                <div><strong>Alíquota Efetiva:</strong> {(resultado.aliquotaEfetiva * 100)}%</div>
+                <div><strong>Valor a Deduzir:</strong> R$ {resultado.valorADeduzir}</div>
+                <div><strong>Total de Tributos:</strong> R$ {resultado.totalTributos}</div>
               </div>
 
-              <div className="grid grid-cols-1 gap-2">
-                {tributos.map((item, idx) => (
-                  <div key={idx} className="grid grid-cols-4 items-center gap-2">
-                    <label className="text-sm font-semibold text-gray-600 col-span-1">
-                      {item.nome}
-                    </label>
-
-                    <input
-                      type="text"
-                      value={item.aliquota}
-                      className="p-2 border border-gray-300 rounded-md w-full"
-                      onChange={(e) => handleAliquotaChange(idx, parseFloat(e.target.value))}
-                      readOnly
-                    />
-
-                    <input
-                      type="text"
-                      value={`R$ ${item.valor}`}
-                      className="p-2 border border-gray-300 rounded-md w-full"
-                      readOnly
-                    />
-
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4"
-                      checked={item.retido}
-                      onChange={(e) => handleRetidoChange(idx, e.target.checked)}
-                    />
-                  </div>
-                ))}
+              <div className="mt-4">
+                <h4 className="text-sm font-semibold text-gray-700 mb-2">Distribuição por Imposto</h4>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  {Object.entries(resultado.distribuicaoPorImposto).map(([nome, valor], idx) => (
+                    <div key={idx} className="flex justify-between px-2">
+                      <span>{nome}:</span>
+                      <span>R$ {Number(valor)}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
+          )}
+        </div>          
 
           <div>
             <button
