@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, XCircle, Eye } from 'lucide-react';
+import { ToggleRight } from 'lucide-react';
 import { CircularProgress, Modal, Box, Typography, Button } from '@mui/material';
 import { Visibility as VisibilityIcon, MoreVert as MoreVertIcon } from '@mui/icons-material';
 import { IconButton, Menu, MenuItem } from '@mui/material';
 import { api } from '../lib/api';
+import { toast } from 'sonner';
 
 interface User {
   id: number;
@@ -93,6 +94,23 @@ export function AdminUsers() {
     setUsersDB(allusers);
   }
 
+  const handleUpdateUser = async (user:any) => {
+    try {
+      if(user.status === 'active'){
+        await api.update_user_byID(user._id, {status: 'inactive'});
+        toast.success("Usuário atualizado com sucesso!");
+        loadData();
+      }
+      if(user.status === 'inactive'){
+        await api.update_user_byID(user._id, {status: 'active'});
+        toast.success("Usuário atualizado com sucesso!");
+        loadData();
+      }
+    } catch (error) {
+      toast.error("Ocorreu um erro ao atualizar!");
+    }
+  }
+
   useEffect(()=>{
     loadData();
   },[])
@@ -102,7 +120,6 @@ export function AdminUsers() {
       setLoading(false);
     }, 1000);
   }, []);
-
 
   return (
     <div className="p-4 md:p-8">
@@ -116,6 +133,7 @@ export function AdminUsers() {
             <th className="p-2 md:p-4 text-left hidden sm:table-cell">Email</th>
             <th className="p-2 md:p-4 text-left">Status</th>
             <th className="p-2 md:p-4 text-left">Ações</th>
+            <th className="p-2 md:p-4 text-left"></th>
           </tr>
         </thead>
         <tbody>
@@ -124,14 +142,16 @@ export function AdminUsers() {
               <td className="p-2 md:p-4">{user.name}</td>
               <td className="p-2 md:p-4 hidden sm:table-cell">{user.email}</td>      
               <td className="p-2 md:p-4">
-                {user.status ? (
-                  <span className="text-green-500">Ativo</span>
+                {user.status === 'active' ? (
+                    <button onClick={()=> handleUpdateUser(user)} className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
+                    Desativar
+                  </button>
                 ) : (
-                  <span className="text-red-500">Inativo</span>
+                  <button onClick={()=> handleUpdateUser(user)} className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">
+                  Ativar
+                </button>
                 )}
               </td>
-
-
                 <td className="p-2 md:p-4">
                 <IconButton
                   aria-label="more"
@@ -139,7 +159,7 @@ export function AdminUsers() {
                   aria-haspopup="true"
                   onClick={(event) => handleMenuOpen(event, user._id)}
                 >
-                  <MoreVertIcon />
+                  <MoreVertIcon />               
                 </IconButton>
                 <Menu
                   id={`user-menu-${user._id}`}
@@ -156,7 +176,7 @@ export function AdminUsers() {
                   >
                   <VisibilityIcon sx={{ mr: 1 }} />
                   Ver Detalhes
-                  </MenuItem>
+                  </MenuItem>               
                 </Menu>
                 </td>
 
@@ -215,7 +235,13 @@ export function AdminUsers() {
         Nenhuma informação disponível.
         </Typography>
       )}
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 4 }}>
+        <Button variant="contained" color="success" onClick={handleCloseModal}>
+        Emitir NFSE
+        </Button>
+        <Button variant="contained" color="success" onClick={handleCloseModal}>
+        NFSE Recorrente
+        </Button>
         <Button variant="contained" color="primary" onClick={handleCloseModal}>
         Fechar
         </Button>

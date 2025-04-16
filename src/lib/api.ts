@@ -57,6 +57,22 @@ export const api = {
     return response.json();
   },  
 
+  async update_user_byID(id: string, data: any) {
+    const response = await fetch(`${API_URL}/user/update/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao atualizar dados');
+    }
+
+    return response.json();
+  }, 
+
   async update_customer(id: string, data: any) {
     const response = await fetch(`${API_URL}/customer/update/${id}`, {
       method: 'PATCH',

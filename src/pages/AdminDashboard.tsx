@@ -83,6 +83,7 @@ const [invoice, setInvoice] = useState([]);
 const [invoicePrice, setInvoicePrice] = useState(0);
 const [users, setUsers] = useState([]);
 const [plans, setPlans] = useState<Plan | null>(null);
+const [subscriptions, setSubscriptions] = useState([]);
 
 useEffect(() => {
   async function fetchMetrics() {
@@ -101,6 +102,9 @@ useEffect(() => {
 
       const response = await api.find_plans();
       setPlans(response.data[0]);
+
+      const subscriptions = await api.Find_All_Subscriptions();
+      setSubscriptions(subscriptions.data);
 
     } catch (error) {
       console.error('Erro ao buscar métricas:', error);
@@ -169,8 +173,6 @@ useEffect(() => {
     return <p className="text-red-500">Erro: {error}</p>;
   }
 
-  //console.log(plans);
-
   return (
     <div className="min-h-screen bg-gray-100 p-8">
     <h1 className="text-3xl font-bold mb-8 text-gray-800">Painel de Administração</h1>
@@ -188,10 +190,14 @@ useEffect(() => {
         <h2 className="text-lg font-semibold text-gray-700">Clientes Ativos</h2>
         <p className="text-3xl font-bold text-gray-800 mt-2">{users.filter((user) => user.status === 'active').length}</p>
       </div>
-{/*       <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-    <h2 className="text-lg font-semibold text-gray-700">Com Atrasos</h2>
-    <p className="text-3xl font-bold text-gray-800 mt-2">{metrics.latecomers}</p>
-  </div> */}
+       <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+    <h2 className="text-lg font-semibold text-gray-700">Assinaturas canceladas</h2>
+    <p className="text-3xl font-bold text-gray-800 mt-2">{subscriptions.filter((sub) => sub.status === 'canceled').length}</p>
+  </div>
+  <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+    <h2 className="text-lg font-semibold text-gray-700">Assinaturas em atraso</h2>
+    <p className="text-3xl font-bold text-gray-800 mt-2">{subscriptions.filter((sub) => sub.status === 'suspended').length}</p>
+  </div>
 {/*   <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
     <h2 className="text-lg font-semibold text-gray-700">Cancelamentos de Assinatura</h2>
     <p className="text-3xl font-bold text-gray-800 mt-2">{metrics.subscriptionCancellations}</p>
@@ -204,10 +210,10 @@ useEffect(() => {
         <h2 className="text-lg font-semibold text-gray-700">Clientes Inativos</h2>
         <p className="text-3xl font-bold text-gray-800 mt-2">{users.filter((user) => user.status === 'inactive').length}</p>
       </div>
-{/*       <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-        <h2 className="text-lg font-semibold text-gray-700">Novas Assinaturas</h2>
-        <p className="text-3xl font-bold text-gray-800 mt-2">{metrics.newSubscriptions}</p>
-      </div> */}
+       <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <h2 className="text-lg font-semibold text-gray-700">Quantidade de planos</h2>
+        <p className="text-3xl font-bold text-gray-800 mt-2">{[plans]?.length}</p>
+      </div>
     </div>
 
 {/*     <div className="flex flex-col gap-4">
