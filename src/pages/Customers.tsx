@@ -409,7 +409,7 @@ export function Customers() {
 
   const [openMenuId, setOpenMenuId] = useState(null);
 
-const toggleMenu = (id) => {
+const toggleMenu = (id:any) => {
   setOpenMenuId(prev => prev === id ? null : id);
 };
 
@@ -570,7 +570,33 @@ const toggleMenu = (id) => {
           cnae: parseFloat(invoice.cnae),
           quantidade: parseFloat(invoice.quantidade.toString()),
           valor_unitario: parseFloat(invoice.valor_unitario.toString()),
-          desconto: parseFloat(invoice.desconto.toString())
+          desconto: parseFloat(invoice.desconto.toString()),
+          issueDate: invoice.issueDate,
+          dateOfCompetence: invoice.dateOfCompetence,
+          ValorDeducoes: parseFloat(invoice.valor_deducao),
+          AliquotaPis:  parseFloat(invoice.aliquotas.pis),
+          RetidoPis: invoice.retido.pis ? 1 : 2,
+          ValorPis: parseFloat(invoice.valores.pis), 
+          AliquotaCofins: parseFloat(invoice.aliquotas.cofins),
+          RetidoCofins: invoice.retido.cofins ? 1 : 2,
+          ValorCofins: parseFloat(invoice.valores.cofins), 
+          AliquotaInss: parseFloat(invoice.aliquotas.inss),
+          RetidoInss: invoice.retido.inss ? 1 : 2,
+          ValorInss: parseFloat(invoice.valores.inss),
+          AliquotaIr: parseFloat(invoice.aliquotas.ir), 
+          RetidoIr: invoice.retido.ir ? 1 : 2, 
+          ValorIr: parseFloat(invoice.valores.ir),
+          AliquotaCsll: parseFloat(invoice.aliquotas.csll),
+          RetidoCsll: invoice.retido.csll ? 1 : 2,
+          ValorCsll: parseFloat(invoice.valores.csll),
+          AliquotaCpp: parseFloat(invoice.aliquotas.cpp),
+          RetidoCpp: invoice.retido.cpp ? 1 : 2,
+          ValorCpp: parseFloat(invoice.valores.cpp),
+          RetidoOutrasRetencoes: invoice.retido.outras ? 1 : 2,
+          Aliquota: invoice.aliquotas.aliquota,
+          DescontoIncondicionado: parseFloat(invoice.DescontoIncondicionado),
+          DescontoCondicionado: parseFloat(invoice.DescontoCondicionado),
+          IssRetido: invoice.retido.iss ? 1 : 2,
         }
       },
       valor: parseFloat(invoice.quantidade.toString()) * parseFloat(invoice.valor_unitario.toString()),
@@ -615,17 +641,24 @@ const toggleMenu = (id) => {
         ValorDeducoes: parseFloat(invoice.valor_deducao),
         AliquotaPis:  parseFloat(invoice.aliquotas.pis),
         RetidoPis: invoice.retido.pis ? 1 : 2,
+        ValorPis: parseFloat(invoice.valores.pis), 
         AliquotaCofins: parseFloat(invoice.aliquotas.cofins),
         RetidoCofins: invoice.retido.cofins ? 1 : 2,
+        ValorCofins: parseFloat(invoice.valores.cofins), 
         AliquotaInss: parseFloat(invoice.aliquotas.inss),
         RetidoInss: invoice.retido.inss ? 1 : 2,
+        ValorInss: parseFloat(invoice.valores.inss),
         AliquotaIr: parseFloat(invoice.aliquotas.ir), 
         RetidoIr: invoice.retido.ir ? 1 : 2, 
+        ValorIr: parseFloat(invoice.valores.ir),
         AliquotaCsll: parseFloat(invoice.aliquotas.csll),
         RetidoCsll: invoice.retido.csll ? 1 : 2,
+        ValorCsll: parseFloat(invoice.valores.csll),
+        AliquotaCpp: parseFloat(invoice.aliquotas.cpp),
         RetidoCpp: invoice.retido.cpp ? 1 : 2,
+        ValorCpp: parseFloat(invoice.valores.cpp),
         RetidoOutrasRetencoes: invoice.retido.outras ? 1 : 2,
-        Aliquota: parseFloat(invoice.aliquotas.aliquota),
+        Aliquota: invoice.aliquotas.aliquota,
         DescontoIncondicionado: parseFloat(invoice.DescontoIncondicionado),
         DescontoCondicionado: parseFloat(invoice.DescontoCondicionado),
         IssRetido: invoice.retido.iss ? 1 : 2, 
@@ -1137,9 +1170,9 @@ const toggleMenu = (id) => {
           ir: ((response.distribuicao.IRPJ * response.aliquotaEfetiva)/ 100).toString() || '0',
           cpp: ((response.distribuicao.CPP * response.aliquotaEfetiva) / 100).toString() || '0',
           pis: ((response.distribuicao.PIS * response.aliquotaEfetiva) / 100).toString() || '0',
-          inss: '0',
+          inss: invoice.aliquotas.inss || '0',
           csll: ((response.distribuicao.CSLL * response.aliquotaEfetiva) / 100).toString() || '0',
-          outras: '0',
+          outras: invoice.aliquotas.outras || '0',
         },
         valores: {
           iss: (parseFloat(invoice.valor_unitario) * (response.distribuicao.ISS * response.aliquotaEfetiva) / 10000).toFixed(2).toString() || '0',
@@ -1147,9 +1180,9 @@ const toggleMenu = (id) => {
           ir: (parseFloat(invoice.valor_unitario) * (response.distribuicao.IRPJ * response.aliquotaEfetiva) / 10000).toFixed(2).toString() || '0',
           cpp: (parseFloat(invoice.valor_unitario) * (response.distribuicao.CPP * response.aliquotaEfetiva) / 10000).toFixed(2).toString() || '0',
           pis: (parseFloat(invoice.valor_unitario) * (response.distribuicao.PIS * response.aliquotaEfetiva) / 10000).toFixed(2).toString() || '0',
-          inss: '0',
+          inss: invoice.valores.inss || '0',
           csll: (parseFloat(invoice.valor_unitario) * (response.distribuicao.CSLL * response.aliquotaEfetiva) / 10000).toFixed(2).toString() || '0',
-          outras: '0',
+          outras: invoice.valores.outras || '0',
         }
       }));
     }
@@ -2314,10 +2347,17 @@ const toggleMenu = (id) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Serviço LC</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Item Serviço</label>
                   <select
                   value={invoice.item_lista}
-                  onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
+                  onChange={(e) => {
+                    const selectedItem = itemservico.find(item => item.listaServicoVo.id === e.target.value);
+                    setInvoice({ 
+                      ...invoice, 
+                      item_lista: e.target.value,
+                      aliquota_item_lista: selectedItem.listaServicoVo.aliquota // Armazena a descrição
+                    });
+                  }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                   >
@@ -2383,7 +2423,50 @@ const toggleMenu = (id) => {
                     required
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Dedução</label>
+                  <input
+                    type="text"
+                    value={invoice.valor_deducao}
+                    placeholder='ex: 00.00'
+                    onChange={(e) => {
+                      const sanitizedValue = e.target.value.replace(/,/g, ''); 
+                      setInvoice({ ...invoice, valor_deducao: sanitizedValue });
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Desconto</label>
+                  <input
+                    type="text"
+                    value={invoice.desconto}
+                    onChange={(e) => setInvoice({ ...invoice, desconto: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder='ex: 00.00'
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Desconto Condicionado</label>
+                  <input
+                    type="text"
+                    value={invoice.DescontoCondicionado}
+                    onChange={(e) => setInvoice({ ...invoice, DescontoCondicionado: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder='ex: 00.00'                       
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Desconto Incondicionado</label>
+                  <input
+                    type="text"
+                    value={invoice.DescontoIncondicionado}
+                    onChange={(e) => setInvoice({ ...invoice, DescontoIncondicionado: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder='ex: 00.00'
+                  />
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Desconto</label>
                   <input
@@ -2429,8 +2512,106 @@ const toggleMenu = (id) => {
                     required
                   />
                 </div>
-              </form>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Data de Competência</label>
+                  <input
+                    type="date"
+                    value={invoice.dateOfCompetence}
+                    onChange={(e) => setInvoice({ ...invoice, dateOfCompetence: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Anexo do Simples Nacional</label>
+                  <select
+                    value={invoice.anexo}
+                    onChange={(e) => setInvoice({ ...invoice, anexo: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  >
+                    <option value="" disabled>Selecione o Anexo</option>
+                    <option value="III">ANEXO III</option>
+                    <option value="IV">ANEXO IV</option>
+                    <option value="V">ANEXO V</option>
+                  </select>
+                </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Receita Bruta dos últimos 12 meses (RBT12)</label>
+                  <input
+                    type="text"
+                    value={invoice.rbt12}
+                    onChange={(e) => setInvoice({ ...invoice, rbt12: e.target.value })}
+                    placeholder="ex: 180000.00"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div className="overflow-x-auto mt-4">
+                  <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Tributo</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Alíquota (%)</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Valor</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Retido</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        { nome: 'ISS', campo: 'iss' },
+                        { nome: 'Cofins', campo: 'cofins' },
+                        { nome: 'IR', campo: 'ir' },
+                        { nome: 'CPP', campo: 'cpp' },
+                        { nome: 'PIS', campo: 'pis' },
+                        { nome: 'INSS', campo: 'inss' },
+                        { nome: 'CSLL', campo: 'csll' },
+                        { nome: 'Outras', campo: 'outras' }
+                      ].map(({ nome, campo }) => (
+                        <tr key={campo} className="border-t border-gray-200">
+                          <td className="px-4 py-2 text-sm text-gray-700">{nome}</td>
+                          <td className="px-4 py-2">
+                            <input
+                              type="text"
+                              value={invoice.aliquotas?.[campo] || ''}
+                              onChange={(e) => setInvoice({
+                                ...invoice,
+                                aliquotas: { ...invoice.aliquotas, [campo]: e.target.value }
+                              })}
+                              placeholder="%"
+                              className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-blue-400"
+                            />
+                          </td>
+                          <td className="px-4 py-2">
+                            <input
+                              type="text"
+                              value={invoice.valores?.[campo] || ''}
+                              onChange={(e) => setInvoice({
+                                ...invoice,
+                                valores: { ...invoice.valores, [campo]: e.target.value }
+                              })}
+                              placeholder="R$"
+                              className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-blue-400"
+                            />
+                          </td>
+                          <td className="px-4 py-2 text-center">
+                            <input
+                              type="checkbox"
+                              checked={invoice.retido?.[campo] || false}
+                              onChange={(e) => setInvoice({
+                                ...invoice,
+                                retido: { ...invoice.retido, [campo]: e.target.checked }
+                              })}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>                
+              </form>
 
               {/* Campos para configurar assinatura */}
             </div>
