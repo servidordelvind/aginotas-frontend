@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Trash2, XCircle, CircleEllipsis, Calendar, File, FileCodeIcon,Check,Copy, Ban, Edit, Clock, Loader2 } from 'lucide-react';
+import { Plus, Search, Trash2, XCircle, CircleEllipsis, Calendar, File, FileCodeIcon,Check,Copy, ListRestart, Edit, Clock, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { FaEye } from 'react-icons/fa';
 import { api } from '../lib/api.ts';
@@ -124,7 +124,7 @@ export function Customers() {
   const [loading, setLoading] = useState(false);
   const [cnaes, setCnaes] = useState<any[]>([]);
   const [itemservico, setItemServico] = useState<any[]>([]);
-
+  const [datareplaceinvoice, setDataReplaceInvoice] = useState({});
 
   // Funções para CNPJ
   const validateCnpj = (cnpj: string): boolean => {
@@ -732,6 +732,7 @@ const toggleMenu = (id:any) => {
   const handleModalReplaceInvoice = async (invoice: any) => {
     setActiveModal('replace');
     setHandleInvoice(invoice);
+    setDataReplaceInvoice(invoice.data.Rps);
   }
 
   const handleReplaceInvoice = async (e: React.FormEvent) => {
@@ -749,12 +750,38 @@ const toggleMenu = (id:any) => {
         customer_id: handleinvoice.customer,
         servico: {
           Discriminacao: invoice.discriminacao,
-          descricao: invoice.descricao,
-          item_lista: invoice.item_lista,
-          cnae: invoice.cnae,
-          quantidade: invoice.quantidade,
-          valor_unitario: invoice.valor_unitario,
-          desconto: invoice.desconto
+          descricao: datareplaceinvoice.Servico.ListaItensServico[0].Descricao,
+          item_lista: datareplaceinvoice.Servico.ListaItensServico[0].ItemListaServico,
+          cnae: datareplaceinvoice.Servico.ListaItensServico[0].CodigoCnae,
+          quantidade: parseFloat(invoice.quantidade.toString()),
+          valor_unitario: parseFloat(invoice.valor_unitario.toString()),
+          desconto: parseFloat(invoice.desconto.toString()),
+          issueDate: invoice.issueDate,
+          dateOfCompetence: datareplaceinvoice.Competencia,
+          ValorDeducoes: parseFloat(invoice.valor_deducao),
+          AliquotaPis:  parseFloat(invoice.aliquotas.pis),
+          RetidoPis: invoice.retido.pis ? 1 : 2,
+          ValorPis: parseFloat(invoice.valores.pis), 
+          AliquotaCofins: parseFloat(invoice.aliquotas.cofins),
+          RetidoCofins: invoice.retido.cofins ? 1 : 2,
+          ValorCofins: parseFloat(invoice.valores.cofins), 
+          AliquotaInss: parseFloat(invoice.aliquotas.inss),
+          RetidoInss: invoice.retido.inss ? 1 : 2,
+          ValorInss: parseFloat(invoice.valores.inss),
+          AliquotaIr: parseFloat(invoice.aliquotas.ir), 
+          RetidoIr: invoice.retido.ir ? 1 : 2, 
+          ValorIr: parseFloat(invoice.valores.ir),
+          AliquotaCsll: parseFloat(invoice.aliquotas.csll),
+          RetidoCsll: invoice.retido.csll ? 1 : 2,
+          ValorCsll: parseFloat(invoice.valores.csll),
+          AliquotaCpp: parseFloat(invoice.aliquotas.cpp),
+          RetidoCpp: invoice.retido.cpp ? 1 : 2,
+          ValorCpp: parseFloat(invoice.valores.cpp),
+          RetidoOutrasRetencoes: invoice.retido.outras ? 1 : 2,
+          Aliquota: invoice.aliquotas.aliquota,
+          DescontoIncondicionado: parseFloat(invoice.DescontoIncondicionado),
+          DescontoCondicionado: parseFloat(invoice.DescontoCondicionado),
+          IssRetido: invoice.retido.iss ? 1 : 2, 
         },
         numeroNfse: nfseData.numeroNota,
         CodigoMunicipio: nfseData.codigoMunicipio,
@@ -2285,6 +2312,13 @@ const toggleMenu = (id:any) => {
                               >
                                 <File className="w-4 h-4" />
                               </button>
+                              <button
+                                onClick={() => handleModalReplaceInvoice(invoice)}
+                                className="text-blue-600 hover:text-blue-800"
+                                title="Substituir NFSE"
+                              >
+                                <ListRestart className="w-4 h-4" />
+                              </button>
                               {(invoice.status === 'emitida' || invoice.status === 'substituida') && (
                                 <button
                                   onClick={() => handleCancelInvoice(invoice)}
@@ -2910,53 +2944,72 @@ const toggleMenu = (id:any) => {
             </div>
             <div className="p-6 overflow-y-auto flex-1">
               <form id="invoiceReplaceForm" onSubmit={handleReplaceInvoice} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Discriminação do Serviço</label>
-                  <input
-                    type="text"
-                    placeholder={handleinvoice.data.Rps.Servico.Discriminacao || ''}
-                    onChange={(e) => setInvoice({ ...invoice, discriminacao: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                <div>
+              <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">CNAE</label>
-                  <input
+                    <input
                     type="text"
-                    placeholder={handleinvoice.data.Rps.Servico.ListaItensServico[0].CodigoCnae || ''}
+                    list="cnae-options"
+                    value={datareplaceinvoice.Servico.ListaItensServico[0].CodigoCnae || ''}
                     onChange={(e) => setInvoice({ ...invoice, cnae: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-
-                  />
+                    disabled
+                    />
+                    <datalist id="cnae-options">
+                    {cnaes.map((cnae) => (
+                      <option key={cnae.codigo} value={cnae.codigo}>
+                      {cnae.codigo} - {cnae.descricao}
+                      </option>
+                    ))}
+                    </datalist>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Item da Lista de Serviço</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Item Serviço</label>
                   <input
-                    type="text"
-                    placeholder={handleinvoice.data.Rps.Servico.ListaItensServico[0].ItemListaServico}
-                    onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-
-                  />
+                  disabled
+                  value={datareplaceinvoice.Servico.ListaItensServico[0].ItemListaServico || ''}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                  </input>
                 </div>
+                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Descrição do Serviço</label>
-                  <textarea
-                    placeholder={handleinvoice.data.Rps.Servico.ListaItensServico[0].Descricao || ''}
+                    <input
+                    type="text"
+                    list="descricao-options"
+                    value={datareplaceinvoice.Servico.ListaItensServico[0].Descricao || ''}
                     onChange={(e) => setInvoice({ ...invoice, descricao: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-
+                    placeholder={datareplaceinvoice.Servico.ListaItensServico[0].Descricao}
+                    disabled
+                    />
+                    <datalist id="descricao-options">
+                    {itemservico.map((item, index) => (
+                      <option key={index} value={item.listaServicoVo.descricao}>
+                      {item.listaServicoVo.descricao}
+                      </option>
+                    ))}
+                    </datalist>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Discriminação</label>
+                  <input
+                    type="text"
+                    value={invoice.discriminacao || ''}
+                    onChange={(e) => setInvoice({ ...invoice, discriminacao: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder={datareplaceinvoice.Discriminacao}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Quantidade</label>
                   <input
                     type="number"
-                    placeholder={(handleinvoice.data.Rps.Servico.ListaItensServico[0].Quantidade).toString()}
+                    value={invoice.quantidade}
                     onChange={(e) => setInvoice({ ...invoice, quantidade: parseInt(e.target.value) || 1 })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-
+                    placeholder={datareplaceinvoice.Servico.ListaItensServico[0].Quantidade}
                   />
                 </div>
 
@@ -2965,13 +3018,27 @@ const toggleMenu = (id:any) => {
                   <input
                     type="text"
                     value={invoice.valor_unitario}
-                    placeholder="ex: 1600.90"
+                    placeholder='ex: 1600.90'
                     onChange={(e) => {
                       const sanitizedValue = e.target.value.replace(/,/g, ''); // Remove commas
                       setInvoice({ ...invoice, valor_unitario: sanitizedValue });
                     }}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
+                    
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Dedução</label>
+                  <input
+                    type="text"
+                    value={invoice.valor_deducao}
+                    placeholder='ex: 00.00'
+                    onChange={(e) => {
+                      const sanitizedValue = e.target.value.replace(/,/g, ''); 
+                      setInvoice({ ...invoice, valor_deducao: sanitizedValue });
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
 
@@ -2982,31 +3049,127 @@ const toggleMenu = (id:any) => {
                     value={invoice.desconto}
                     onChange={(e) => setInvoice({ ...invoice, desconto: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder='ex: 00.00'
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Desconto Condicionado</label>
+                  <input
+                    type="text"
+                    value={invoice.DescontoCondicionado}
+                    onChange={(e) => setInvoice({ ...invoice, DescontoCondicionado: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder='ex: 00.00'                       
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Desconto Incondicionado</label>
+                  <input
+                    type="text"
+                    value={invoice.DescontoIncondicionado}
+                    onChange={(e) => setInvoice({ ...invoice, DescontoIncondicionado: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder='ex: 00.00'
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Data de Competência</label>
+                  <input
+                    type="date"
+                    value={datareplaceinvoice.Competencia || ''}
+                    onChange={(e) => setInvoice({ ...invoice, dateOfCompetence: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    disabled
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Anexo do Simples Nacional</label>
+                  <select
+                    value={invoice.anexo}
+                    onChange={(e) => setInvoice({ ...invoice, anexo: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
-                    placeholder="0"
-                  />
+                  >
+                    <option value="" disabled>Selecione o Anexo</option>
+                    <option value="III">ANEXO III</option>
+                    <option value="IV">ANEXO IV</option>
+                    <option value="V">ANEXO V</option>
+                  </select>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Data de Emissão</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Receita Bruta dos últimos 12 meses (RBT12)</label>
                   <input
-                    type="date"
-                    value={invoice.issueDate}
-                    onChange={(e) => setInvoice({ ...invoice, issueDate: e.target.value })}
+                    type="text"
+                    value={invoice.rbt12}
+                    onChange={(e) => setInvoice({ ...invoice, rbt12: e.target.value })}
+                    placeholder="ex: 180000.00"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-
+                    required
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Vencimento</label>
-                  <input
-                    type="date"
-                    value={invoice.dueDate}
-                    onChange={(e) => setInvoice({ ...invoice, dueDate: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-
-                  />
+                <div className="overflow-x-auto mt-4">
+                  <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Tributo</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Alíquota (%)</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Valor</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Retido</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        { nome: 'ISS', campo: 'iss' },
+                        { nome: 'Cofins', campo: 'cofins' },
+                        { nome: 'IR', campo: 'ir' },
+                        { nome: 'CPP', campo: 'cpp' },
+                        { nome: 'PIS', campo: 'pis' },
+                        { nome: 'INSS', campo: 'inss' },
+                        { nome: 'CSLL', campo: 'csll' },
+                        { nome: 'Outras', campo: 'outras' }
+                      ].map(({ nome, campo }) => (
+                        <tr key={campo} className="border-t border-gray-200">
+                          <td className="px-4 py-2 text-sm text-gray-700">{nome}</td>
+                          <td className="px-4 py-2">
+                            <input
+                              type="text"
+                              value={invoice.aliquotas?.[campo] || ''}
+                              onChange={(e) => setInvoice({
+                                ...invoice,
+                                aliquotas: { ...invoice.aliquotas, [campo]: e.target.value }
+                              })}
+                              placeholder="%"
+                              className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-blue-400"
+                            />
+                          </td>
+                          <td className="px-4 py-2">
+                            <input
+                              type="text"
+                              value={invoice.valores?.[campo] || ''}
+                              onChange={(e) => setInvoice({
+                                ...invoice,
+                                valores: { ...invoice.valores, [campo]: e.target.value }
+                              })}
+                              placeholder="R$"
+                              className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-blue-400"
+                            />
+                          </td>
+                          <td className="px-4 py-2 text-center">
+                            <input
+                              type="checkbox"
+                              checked={invoice.retido?.[campo] || false}
+                              onChange={(e) => setInvoice({
+                                ...invoice,
+                                retido: { ...invoice.retido, [campo]: e.target.checked }
+                              })}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </form>
             </div>
