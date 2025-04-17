@@ -2261,7 +2261,191 @@ const toggleMenu = (id:any) => {
               </button>
             </div>
 
-            <div className="mt-4">
+          <div className="mt-4">
+          <h3 className="text-lg font-semibold text-gray-800">{selectedCustomer.name}</h3>
+          <div className="overflow-x-auto shadow border rounded-lg mt-2">
+          <div className="max-h-[60vh] overflow-y-auto">
+          {/* Versão Desktop (mostrada em telas médias/grandes) */}
+          <table className="w-full table-auto text-sm hidden sm:table">
+            <thead className="sticky top-0 bg-white z-10">
+              <tr className="border-b">
+                <th className="py-3 px-2 text-left font-medium text-gray-600">Status</th>
+                <th className="py-3 px-2 text-left font-medium text-gray-600">Descrição</th>
+                <th className="py-3 px-2 text-left font-medium text-gray-600">Valor</th>
+                <th className="py-3 px-2 text-left font-medium text-gray-600">Data</th>
+                <th className="py-3 px-2 text-left font-medium text-gray-600">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+          {invoiceHistory.length === 0 ? (
+            <tr className="border-b">
+              <td colSpan={5} className="py-4 px-2 text-center text-gray-500">Nenhuma nota fiscal encontrada</td>
+            </tr>
+          ) : (
+            invoiceHistory.map((invoice) => (               
+              <tr key={invoice.id} className="border-b hover:bg-gray-50">
+                <td className="py-3 px-2 text-gray-700">
+                  <span className={`px-2 py-1 rounded-full text-xs ${
+                    invoice.status === 'emitida' ? 'bg-green-100 text-green-800' :
+                    invoice.status === 'cancelada' ? 'bg-red-100 text-red-800' :
+                    invoice.status === 'substituida' ? 'bg-blue-100 text-blue-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {invoice.status || ''}
+                  </span>
+                </td>
+                <td className="py-3 px-2 text-gray-700 max-w-[80px] sm:max-w-[300px] truncate" title={invoice.data.Rps.Servico.Discriminacao || ''}>
+                  {invoice.data.Rps.Servico.Discriminacao || ''}
+                </td>
+                <td className="py-3 px-2 text-gray-700">
+                  {new Intl.NumberFormat('pt-BR', { 
+                    style: 'currency', 
+                    currency: 'BRL' 
+                  }).format(invoice.valor * invoice.data.Rps.Servico.ListaItensServico[0].Quantidade)}
+                </td>
+                <td className="py-3 px-2 text-gray-700">
+                  {new Date(invoice.date).toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  }) || ''}
+                </td>
+                <td className="py-3 px-2 text-gray-700">
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => downloadCustomerXml(invoice)}
+                      className="text-blue-600 hover:text-blue-800"
+                      title="Baixar XML"
+                    >
+                      <FileCodeIcon className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => criarNotaFiscalPDF(invoice)}
+                      className="text-blue-600 hover:text-blue-800"
+                      title="Baixar PDF"
+                    >
+                      <File className="w-4 h-4" />
+                    </button>
+{/*                     <button
+                      onClick={() => handleModalReplaceInvoice(invoice)}
+                      className="text-blue-600 hover:text-blue-800"
+                      title="Substituir NFSE"
+                    >
+                      <ListRestart className="w-4 h-4" />
+                    </button> */}
+                    {(invoice.status === 'emitida' || invoice.status === 'substituida') && (
+                      <button
+                        onClick={() => handleCancelInvoice(invoice)}
+                        className="text-red-600 hover:text-red-800"
+                        title="Cancelar Nota Fiscal"
+                      >
+                        <XCircle className="w-4 h-4" />
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(`https://www.aginotas.com.br/detalhesNfse/${invoice._id}`);
+                        toast.success('Link copiado para a área de transferência!');
+                      }}
+                      className="text-blue-600 hover:text-blue-800"
+                      title="Copiar Link"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </button>
+                  </div>
+                </td>
+              </tr>                   
+            ))
+          )}
+        </tbody>
+      </table>
+
+      {/* Versão Mobile (mostrada em telas pequenas) */}
+      <div className="sm:hidden">
+        {invoiceHistory.length === 0 ? (
+          <div className="py-4 px-2 text-center text-gray-500">Nenhuma nota fiscal encontrada</div>
+        ) : (
+          <div className="divide-y">
+            {invoiceHistory.map((invoice) => (
+              <div key={invoice.id} className="p-3 hover:bg-gray-50">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className={`px-2 py-1 rounded-full text-xs ${
+                      invoice.status === 'emitida' ? 'bg-green-100 text-green-800' :
+                      invoice.status === 'cancelada' ? 'bg-red-100 text-red-800' :
+                      invoice.status === 'substituida' ? 'bg-blue-100 text-blue-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {invoice.status || ''}
+                    </span>
+                    <p className="font-medium mt-1 truncate" title={invoice.data.Rps.Servico.Discriminacao || ''}>
+                      {invoice.data.Rps.Servico.Discriminacao || ''}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold">
+                      {new Intl.NumberFormat('pt-BR', { 
+                        style: 'currency', 
+                        currency: 'BRL' 
+                      }).format(invoice.valor * invoice.data.Rps.Servico.ListaItensServico[0].Quantidade)}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {new Date(invoice.date).toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                      }) || ''}
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Ações em mobile */}
+                <div className="flex justify-between mt-2 pt-2 border-t">
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => downloadCustomerXml(invoice)}
+                      className="text-blue-600 hover:text-blue-800"
+                      title="Baixar XML"
+                    >
+                      <FileCodeIcon className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => criarNotaFiscalPDF(invoice)}
+                      className="text-blue-600 hover:text-blue-800"
+                      title="Baixar PDF"
+                    >
+                      <File className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(`https://www.aginotas.com.br/detalhesNfse/${invoice._id}`);
+                        toast.success('Link copiado para a área de transferência!');
+                      }}
+                      className="text-blue-600 hover:text-blue-800"
+                      title="Copiar Link"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </button>
+                  </div>
+                  {(invoice.status === 'emitida' || invoice.status === 'substituida') && (
+                    <button
+                      onClick={() => handleCancelInvoice(invoice)}
+                      className="text-red-600 hover:text-red-800"
+                      title="Cancelar Nota Fiscal"
+                    >
+                      <XCircle className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+            </div>
+{/*             <div className="mt-4">
               <h3 className="text-lg font-semibold text-gray-800">{selectedCustomer.name}</h3>
               <div className="overflow-x-auto">
                 <table className="mt-4 w-full table-auto text-sm">
@@ -2274,7 +2458,7 @@ const toggleMenu = (id:any) => {
                       <th className="py-2 px-2 text-left font-medium text-gray-600">Ações</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="block max-h-[400px] overflow-y-auto">
                     {invoiceHistory.length === 0 ? (
                       <tr>
                         <td colSpan={5} className="py-2 px-2 text-center text-gray-500">Nenhuma nota fiscal encontrada</td>
@@ -2312,13 +2496,13 @@ const toggleMenu = (id:any) => {
                               >
                                 <File className="w-4 h-4" />
                               </button>
-                              <button
+                               <button
                                 onClick={() => handleModalReplaceInvoice(invoice)}
                                 className="text-blue-600 hover:text-blue-800"
                                 title="Substituir NFSE"
                               >
                                 <ListRestart className="w-4 h-4" />
-                              </button>
+                              </button> 
                               {(invoice.status === 'emitida' || invoice.status === 'substituida') && (
                                 <button
                                   onClick={() => handleCancelInvoice(invoice)}
@@ -2346,7 +2530,7 @@ const toggleMenu = (id:any) => {
                   </tbody>
                 </table>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       )}      
