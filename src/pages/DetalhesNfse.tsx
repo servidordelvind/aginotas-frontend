@@ -219,7 +219,7 @@ export function DetalhesNfse() {
                 const xmlDoc = parser.parseFromString(invoice?.xml || "", "text/xml");
                 return parseFloat(xmlDoc.getElementsByTagName("ns2:DescontoIncondicionado")[0]?.textContent || "0").toFixed(2);
             })()}</p>
-            <p><span className="font-semibold">% Deduções:</span> {(() => {
+            <p><span className="font-semibold">% Aliquota:</span> {(() => {
                 const parser = new DOMParser();
                 const xmlDoc = parser.parseFromString(invoice?.xml || "", "text/xml");
                 return parseFloat(xmlDoc.getElementsByTagName("ns2:Aliquota")[0]?.textContent || "0").toFixed(2);
