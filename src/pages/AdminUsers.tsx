@@ -121,6 +121,8 @@ export function AdminUsers() {
     }, 1000);
   }, []);
 
+  //console.log(infoSubscription);
+
   return (
     <div className="p-4 md:p-8">
     <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-8 text-gray-800">Gerenciamento de Usuários</h1>

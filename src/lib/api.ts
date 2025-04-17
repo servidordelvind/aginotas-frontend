@@ -709,7 +709,6 @@ export const api = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${Cookies.get('token')}`,
         },
         body: JSON.stringify(data),
       });
@@ -723,4 +722,6 @@ export const api = {
       console.error('Error when calculate:', error);
     }
   },
+
+
 };

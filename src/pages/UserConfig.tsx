@@ -25,7 +25,7 @@ export function UserConfig() {
   const [receitaMes, setReceitaMes] = useState(0);
   const [resultado, setResultado] = useState(null);
 
-  const handleCalcular = async () => {
+/*   const handleCalcular = async () => {
     try {
       const response = await api.Calculate_Taxation({
         anexo,
@@ -36,7 +36,7 @@ export function UserConfig() {
     } catch (error) {
       console.error("Erro ao calcular tributos:", error);
     }
-  };
+  }; */
 
   const navigate = useNavigate();
   const { styles, attributes } = usePopper(referenceRef.current, popperRef.current, {
@@ -242,7 +242,7 @@ export function UserConfig() {
             />
           </div>
 
-          <div className="max-w-4xl mx-auto mt-10 bg-white p-6 rounded-xl border shadow-sm">
+{/*           <div className="max-w-4xl mx-auto mt-10 bg-white p-6 rounded-xl border shadow-sm">
           <h2 className="text-xl font-bold text-gray-700 mb-4">Cálculo de Tributos - Simples Nacional</h2>
 
           <div className="grid grid-cols-3 gap-4 mb-4">
@@ -310,7 +310,7 @@ export function UserConfig() {
               </div>
             </div>
           )}
-        </div>          
+        </div>   */}        
 
           <div>
             <button
