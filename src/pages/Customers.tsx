@@ -636,8 +636,8 @@ const toggleMenu = (id) => {
     try {
       if (selectedCustomer.status === 'active') {
         setIsGerating(true);
-        //const response = await api.create_invoice(data);
-        //toast.success(response.message);
+        const response = await api.create_invoice(data);
+        toast.success(response.message);
         setActiveModal('none');
         setIsGerating(false);
       } else {
