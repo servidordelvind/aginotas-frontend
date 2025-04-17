@@ -343,6 +343,7 @@ export function Customers() {
     discriminacao: '',
     descricao: '',
     item_lista: '',
+    aliquota_item_lista: 0,
     cnpj: selectedCustomer?.cnpj || "",
     cnae: '',
     quantidade: 1,
@@ -374,7 +375,7 @@ export function Customers() {
     anexo: '',
     rbt12: '',
     aliquotas: {
-      aliquota: '',
+      aliquota: 0,
       iss: '',
       cofins: '',
       ir: '',
@@ -1102,7 +1103,7 @@ const toggleMenu = (id) => {
         setInvoice(prevState => ({
           ...prevState, // Mantém todos os outros campos do estado
           aliquotas: {
-            aliquota: '',
+            aliquota: 0,
             iss: '',
             cofins: '',
             ir: '',
@@ -1130,7 +1131,7 @@ const toggleMenu = (id) => {
       setInvoice(prevState => ({
         ...prevState, // Mantém todos os outros campos do estado
         aliquotas: {
-          aliquota: response.aliquotaEfetiva || '0',
+          aliquota: invoice.aliquota_item_lista || 0,
           iss: ((response.distribuicao.ISS * response.aliquotaEfetiva) / 100).toString() || '0',
           cofins: ((response.distribuicao.COFINS * response.aliquotaEfetiva) / 100).toString() || '0',
           ir: ((response.distribuicao.IRPJ * response.aliquotaEfetiva)/ 100).toString() || '0',
@@ -1158,6 +1159,8 @@ const toggleMenu = (id) => {
   },[invoice.rbt12, invoice.anexo, invoice.valor_unitario])
 
   //console.log(invoiceHistory);
+  //console.log(invoice.aliquota_item_lista);
+  //console.log(invoice.item_lista);
 
   if (loading) return <div>Carregando...</div>;
  
@@ -2481,7 +2484,14 @@ const toggleMenu = (id) => {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Item Serviço</label>
                   <select
                   value={invoice.item_lista}
-                  onChange={(e) => setInvoice({ ...invoice, item_lista: e.target.value })}
+                  onChange={(e) => {
+                    const selectedItem = itemservico.find(item => item.listaServicoVo.id === e.target.value);
+                    setInvoice({ 
+                      ...invoice, 
+                      item_lista: e.target.value,
+                      aliquota_item_lista: selectedItem.listaServicoVo.aliquota // Armazena a descrição
+                    });
+                  }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                   >
