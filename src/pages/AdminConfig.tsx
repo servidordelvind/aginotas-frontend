@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 const ApiUrl = import.meta.env.VITE_API_URL;
 
-export function UserConfig() {
+export function AdminConfig() {
   const [user, setUser] = useState("");
   const [senhaElotech, setSenhaElotech] = useState("");
   const [homologacao, setHomologacao] = useState('');
@@ -19,11 +19,6 @@ export function UserConfig() {
   const referenceRef = useRef(null);
   const popperRef = useRef(null);
   const [base64Image, setBase64Image] = useState("");
-
-  const [anexo, setAnexo] = useState("Anexo III");
-  const [receitaBruta12Meses, setReceitaBruta12Meses] = useState(0);
-  const [receitaMes, setReceitaMes] = useState(0);
-  const [resultado, setResultado] = useState(null);
 
   const navigate = useNavigate();
   
@@ -55,7 +50,7 @@ export function UserConfig() {
 
   
   const loadUserSettings = async () => {
-    const user = localStorage.getItem("user");
+    const user = localStorage.getItem("admin");
     if (!user) throw new Error("Usuário não encontrado");
     const userConvertido = JSON.parse(user);
 
@@ -74,7 +69,12 @@ export function UserConfig() {
 
   const handleSaveSettings = async () => {
     try {
+      const user = localStorage.getItem("admin");
+      if (!user) throw new Error("Usuário não encontrado");
+      const userConvertido = JSON.parse(user);
+
       let verify = false;
+      const id = userConvertido._id;
 
       if(homologacao === 'Sim'){
         verify = true;
@@ -89,9 +89,9 @@ export function UserConfig() {
         IncentivoFiscal: incentivoFiscal,
       };
 
-      await api.update_user(updatedSettings);
+      await api.update_admin(id,updatedSettings);
       loadUserSettings();
-      navigate('/login');
+      navigate('/admin/login');
       console.log("Configurações salvas com sucesso");
     } catch (error) {
       console.error("Erro ao salvar configurações:", error);
@@ -111,9 +111,13 @@ export function UserConfig() {
 
   const handleUpdateUser = async () => {
     try {
-      await api.update_user({picture:base64Image});
+      const user = localStorage.getItem("admin");
+      if (!user) throw new Error("Usuário não encontrado");
+      const userConvertido = JSON.parse(user);
+
+      await api.update_admin(userConvertido._id, {picture:base64Image});
       toast.success("Imagem atualizada com sucesso!");
-      navigate('/login');
+      navigate('/admin/login');
     } catch (error) {
       toast.error("Ocorreu um erro ao realizar essa atualização!");
       return;

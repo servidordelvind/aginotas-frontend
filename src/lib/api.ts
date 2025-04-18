@@ -57,6 +57,23 @@ export const api = {
     return response.json();
   },  
 
+  async update_admin(id: string, data: any) {
+    const response = await fetch(`${API_URL}/admin/update/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Cookies.get('admin_token')}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao atualizar dados');
+    }
+
+    return response.json();
+  }, 
+
   async update_user_byID(id: string, data: any) {
     const response = await fetch(`${API_URL}/user/update/${id}`, {
       method: 'PATCH',
@@ -387,6 +404,23 @@ export const api = {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${Cookies.get('token')}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao criar nota fiscal');
+    }
+
+    return response.json();
+  },
+
+  async create_invoice_admin(data: any) {
+    const response = await fetch(`${API_URL}/invoice/create-admin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Cookies.get('admin_token')}`,
       },
       body: JSON.stringify(data),
     });

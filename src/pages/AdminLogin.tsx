@@ -16,6 +16,7 @@ export function AdminLogin() {
         setIsLoading(true);
         try {
             const token = await api.login_admin({ email, password });
+            localStorage.setItem("admin", JSON.stringify(token.userdb)); //Nova implementação
             Cookies.set("admin_token", token.token, { secure: true, sameSite: 'Strict', expires: 1 });
             toast.success('Login de administrador realizado com sucesso!');
             navigate('/admin/dashboard');

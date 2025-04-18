@@ -22,6 +22,7 @@ import { UserChat } from './pages/UserChat';
 import { SubscriptionManagement } from './pages/SubscriptionManagement';
 import { DetalhesNfse } from './pages/DetalhesNfse';
 import { Financial } from './pages/Financial';
+import { AdminConfig } from './pages/AdminConfig';
 
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/reports" element={<AdminReports />} />
           <Route path="/admin/subscriptions" element={<SubscriptionManagement />} />
+          <Route path="/AdminConfig" element={<AdminConfig />} />
         </Route>
         </Route>
       </Routes>

@@ -71,6 +71,7 @@ export function Layout() {
           { icon: UserCog, label: 'Admin Users', path: '/admin/users' },
           { icon: MessageCircleCode, label: 'Admin Reports', path: '/admin/reports' },
           { icon: Settings, label: 'Admin Subscriptions', path: '/admin/subscriptions' },
+          { icon: Settings, label: 'Configurações', path: '/AdminConfig' },
         ]
       : [
           { icon: User2, label: `Olá, ${userName}. Seja bem vindo!` },
