@@ -297,6 +297,21 @@ export const api = {
     return response.json();
   },
 
+  async delete_schedule_ById(id: String) {
+    const response = await fetch(`${API_URL}/scheduling/deletebyid/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao excluir agendamento');
+    }
+
+    return response.json();
+  },
+
   async changestatus_customer(id: String, status: String) {
     const data = {
       status
@@ -381,6 +396,21 @@ export const api = {
     return response.json();
   },
 
+  async find_schedulings_byUserId(id: string){
+    const response = await fetch(`${API_URL}/scheduling/find-user/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao buscar agendamentos');
+    }
+
+    return response.json();
+  },  
+
   async create_scheduling(data: any) {
     const response = await fetch(`${API_URL}/scheduling/create`, {
       method: 'POST',
@@ -397,6 +427,23 @@ export const api = {
 
     return response.json();
   },
+
+  async create_scheduling_admin(data: any) {
+    const response = await fetch(`${API_URL}/scheduling/create-admin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Cookies.get('admin_token')}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao criar agendamento');
+    }
+
+    return response.json();
+  },  
 
   async create_invoice(data: any) {
     const response = await fetch(`${API_URL}/invoice/create`, {
