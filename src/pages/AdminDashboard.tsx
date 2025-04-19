@@ -81,6 +81,7 @@ const [error, setError] = useState(null);
 const [selectedChart, setSelectedChart] = useState('invoices');
 const [invoice, setInvoice] = useState([]);
 const [invoicePrice, setInvoicePrice] = useState(0);
+const [invoicePricecancel, setInvoicePriceCancel] = useState([]);
 const [users, setUsers] = useState([]);
 const [plans, setPlans] = useState<Plan | null>(null);
 const [subscriptions, setSubscriptions] = useState([]);
@@ -96,6 +97,10 @@ useEffect(() => {
         .reduce((sum, inv) => sum + inv.valor, 0);
 
       setInvoicePrice(totalPrice);
+
+      const totalPricecancel = invoice
+        .filter((inv) => inv.status === 'cancelada')
+      setInvoicePriceCancel(totalPricecancel);
       
       const usersdb = await api.find_all_users();
       setUsers(usersdb);
@@ -179,12 +184,16 @@ useEffect(() => {
 
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-        <h2 className="text-lg font-semibold text-gray-700">Total de Notas Emitidas</h2>
+        <h2 className="text-lg font-semibold text-gray-700">Total de Notas Emitidas (GERAL)</h2>
         <p className="text-3xl font-bold text-gray-800 mt-2">{invoice.length}</p>
       </div>
       <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-        <h2 className="text-lg font-semibold text-gray-700">Valor Total das Notas Emitidas</h2>
+        <h2 className="text-lg font-semibold text-gray-700">Valor Total das Notas Emitidas (GERAL)</h2>
         <p className="text-3xl font-bold text-gray-800 mt-2">R$ {invoicePrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+      </div>
+      <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <h2 className="text-lg font-semibold text-gray-700">Total de Notas Canceladas (GERAL)</h2>
+        <p className="text-3xl font-bold text-gray-800 mt-2">{invoicePricecancel.length}</p>
       </div>
       <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
         <h2 className="text-lg font-semibold text-gray-700">Clientes Ativos</h2>
@@ -204,7 +213,7 @@ useEffect(() => {
   </div> */}
   <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
     <h2 className="text-lg font-semibold text-gray-700">Receita Total de Assinaturas</h2>
-    <p className="text-3xl font-bold text-gray-800 mt-2">R$ {((plans?.items[0].pricing_scheme.price / 100) * users.filter((user) => user.status === 'active').length).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+    <p className="text-3xl font-bold text-gray-800 mt-2">R$ {(((plans?.items[0].pricing_scheme.price || 0) / 100) * users.filter((user) => user.status === 'active').length).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || 0}</p>
   </div>
       <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
         <h2 className="text-lg font-semibold text-gray-700">Clientes Inativos</h2>
