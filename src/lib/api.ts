@@ -463,12 +463,58 @@ export const api = {
     return response.json();
   },
 
+  async find_all_invoices_customer_admin(id:string){
+    const response = await fetch(`${API_URL}/invoice/findinvoicescustomeradmin/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao buscar notas fiscais geradas no sistema');
+    }
+
+    return response.json();
+  },  
+
+  async find_all_invoices_admin(id:string){
+    const response = await fetch(`${API_URL}/invoice/findinvoicesadmin/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao buscar notas fiscais geradas no sistema');
+    }
+
+    return response.json();
+  },
+
   async cancel_invoice(data: any){
     const response = await fetch(`${API_URL}/invoice/cancel`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${Cookies.get('token')}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Falha ao cancelar nota fiscal');
+    }
+
+    return response.json();
+  },
+
+  async cancel_invoice_admin(data: any){
+    const response = await fetch(`${API_URL}/invoice/cancel-admin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     });
@@ -667,7 +713,60 @@ export const api = {
   
     } catch (error) {
       console.error('Erro no download:', error);
-      throw new Error(`Falha no download: ${error.message}`);
+      throw new Error(`Falha no download`);
+    }
+  },
+
+  async Export_Invoice_PDF_ADMIN(customer: any){
+    try {
+      const response = await fetch(`${API_URL}/invoice/nfsepdf-admin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Cookies.get('token')}`,
+        },
+        body: JSON.stringify(customer),
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Falha ao gerar PDF');
+      }
+  
+      // Verifica se é um PDF
+      const contentType = response.headers.get('content-type');
+      if (!contentType?.includes('application/pdf')) {
+        const responseData = await response.text();
+        console.error('Resposta inesperada:', responseData);
+        throw new Error('Resposta não é um PDF válido');
+      }
+  
+      const blob = await response.blob();
+      
+      // Verificação adicional
+      if (blob.size === 0) {
+        throw new Error('PDF recebido está vazio');
+      }
+  
+      // Cria URL temporária para download
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `NFSe_${customer.numero || Date.now()}.pdf`;
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      link.click();
+  
+      // Limpeza
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+  
+    } catch (error) {
+      console.error('Erro no download:', error);
+      throw new Error(`Falha no download`);
     }
   },
   
