@@ -226,13 +226,20 @@ export function Customers() {
         throw new Error(data.message || 'CNPJ não encontrado');
       }
 
+      //console.log(data);
+
       setNewCustomer({
         ...newCustomer,
         name: data.razao_social || '',
         inscricaoMunicipal: data.inscricao_municipal || '',
         email: data.estabelecimento.email || '',
+        phone: data.estabelecimento.telefone1 || '',
         address: {
           ...newCustomer.address,
+          number: `${data.estabelecimento.numero || ''}`,
+          neighborhood: `${data.estabelecimento.bairro || ''}`,
+          zipCode: `${data.estabelecimento.cep || ''}`,
+          cityCode: `${data.estabelecimento.cidade.ibge_id || ''}`,
           street: `${data.estabelecimento.tipo_logradouro || ''} ${data.estabelecimento.logradouro || ''}`.trim(),
           city: data.estabelecimento.cidade.nome || '',
           state: data.estabelecimento.estado.sigla || '',
