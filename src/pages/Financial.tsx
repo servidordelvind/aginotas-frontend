@@ -21,7 +21,7 @@ export function Financial() {
   const [loading, setLoading] = useState(false);
   const reportRef = useRef();
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   const [recurrenceTime, setRecurrenceTime] = useState('');
@@ -351,7 +351,8 @@ export function Financial() {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-    <div className="flex gap-4 mb-6">
+
+{/*     <div className="flex gap-4 mb-6">
       <button
         onClick={() => setView("dashboard")}
         className={`px-4 py-2 rounded font-medium ${
@@ -376,57 +377,150 @@ export function Financial() {
       >Recebimentos
       </button>
     
-    </div>
+    </div> */}
+
+<div className="mb-6">
+      {/* Versão Desktop - sempre visível */}
+      <div className="hidden md:flex gap-4">
+        <button
+          onClick={() => setView("dashboard")}
+          className={`px-4 py-2 rounded font-medium ${
+            view === "dashboard" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+          }`}
+        >
+          Dashboard
+        </button>
+        <button
+          onClick={() => setView("payments")}
+          className={`px-4 py-2 rounded font-medium ${
+            view === "payments" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+          }`}
+        >
+          Pagamentos
+        </button>
+        <button
+          onClick={() => setView("receipts")}
+          className={`px-4 py-2 rounded font-medium ${
+            view === "receipts" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+          }`}
+        >
+          Recebimentos
+        </button>
+      </div>
+
+      {/* Versão Mobile - menu dropdown */}
+      <div className="md:hidden">
+        {/* Botão do menu */}
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="w-full px-4 py-2 rounded font-medium bg-gray-200 text-gray-700 flex justify-between items-center"
+        >
+          {view === "dashboard" && "Dashboard"}
+          {view === "payments" && "Pagamentos"}
+          {view === "receipts" && "Recebimentos"}
+          <svg
+            className={`w-5 h-5 ml-2 transition-transform ${
+              isMobileMenuOpen ? "rotate-180" : ""
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        {/* Itens do menu (aparecem quando o menu está aberto) */}
+        {isMobileMenuOpen && (
+          <div className="mt-2 space-y-2">
+            <button
+              onClick={() => {
+                setView("dashboard");
+                setIsMobileMenuOpen(false);
+              }}
+              className={`w-full px-4 py-2 rounded font-medium text-left ${
+                view === "dashboard" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+              }`}
+            >
+              Dashboard
+            </button>
+            <button
+              onClick={() => {
+                setView("payments");
+                setIsMobileMenuOpen(false);
+              }}
+              className={`w-full px-4 py-2 rounded font-medium text-left ${
+                view === "payments" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+              }`}
+            >
+              Pagamentos
+            </button>
+            <button
+              onClick={() => {
+                setView("receipts");
+                setIsMobileMenuOpen(false);
+              }}
+              className={`w-full px-4 py-2 rounded font-medium text-left ${
+                view === "receipts" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+              }`}
+            >
+              Recebimentos
+            </button>
+          </div>
+        )}
+      </div>
+    </div>  
 
     <div className="flex flex-col md:flex-row justify-end mb-4 gap-4 md:items-center">
-  <div className="flex flex-col md:flex-row gap-4">
-    <button
-      onClick={() => handleExportYearPDF()}
-      className="px-4 py-2 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg"
-    >
-      Exportar PDF ANUAL
-    </button>
-    <button
-      onClick={() => handleExportPDF()}
-      className="px-4 py-2 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg"
-    >
-      Exportar PDF MENSAL
-    </button>
-  </div>
-  
-  <div className="flex flex-col md:flex-row gap-4">
-    {/* Select de mês */}
-    <select
-      value={selectedMonth}
-      onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-      className="px-3 py-2 rounded border border-gray-300"
-    >
-      {[
-        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-      ].map((month, index) => (
-        <option key={index} value={index}>
-          {month}
-        </option>
-      ))}
-    </select>
-
-    {/* Select de ano */}
-    <select
-      value={selectedYear}
-      onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-      className="px-3 py-2 rounded border border-gray-300"
-    >
-      {Array.from({ length: 10 }, (_, i) => {
-        const year = new Date().getFullYear() - i;
-        return (
-          <option key={year} value={year}>
-            {year}
+    <div className="flex flex-col md:flex-row gap-4">
+      <button
+        onClick={() => handleExportYearPDF()}
+        className="px-4 py-2 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg"
+      >
+        Exportar PDF ANUAL
+      </button>
+      <button
+        onClick={() => handleExportPDF()}
+        className="px-4 py-2 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg"
+      >
+        Exportar PDF MENSAL
+      </button>
+    </div>
+    
+    <div className="flex flex-col md:flex-row gap-4">
+      {/* Select de mês */}
+      <select
+        value={selectedMonth}
+        onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+        className="px-3 py-2 rounded border border-gray-300"
+      >
+        {[
+          "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+          "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+        ].map((month, index) => (
+          <option key={index} value={index}>
+            {month}
           </option>
-        );
-      })}
-    </select>
-  </div>
+        ))}
+      </select>
+
+      {/* Select de ano */}
+      <select
+        value={selectedYear}
+        onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+        className="px-3 py-2 rounded border border-gray-300"
+      >
+        {Array.from({ length: 10 }, (_, i) => {
+          const year = new Date().getFullYear() - i;
+          return (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          );
+        })}
+      </select>
+    </div>
     </div>
 
     {view === "dashboard" && (
