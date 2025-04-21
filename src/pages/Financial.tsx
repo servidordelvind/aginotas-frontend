@@ -793,12 +793,21 @@ export function Financial() {
                 </p>
                 {r.status !== "Pago" && (
                   <div className="flex gap-2 items-center">
+                  {r.status !== "Pago" && r.status !== "Atrasado" && r.status !== "A Receber" ? (
                     <button
                       onClick={() => handleMarkAsPaid(r._id)}
                       className="text-sm px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
                     >
                       Último mês pago
                     </button>
+                    ):(
+                      <button
+                      onClick={() => handleMarkAsPaid(r._id)}
+                      className="text-sm px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
+                    >
+                      Pago
+                    </button>                      
+                    )}
   {/*                   <button className="text-sm px-3 py-1 rounded bg-gray-700 text-white hover:bg-gray-800">
                       Desativar
                     </button> */}
