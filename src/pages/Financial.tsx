@@ -755,11 +755,18 @@ export function Financial() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded ${
-              activeTab === tab
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-            } transition-all duration-200`}
+            className={`
+              whitespace-nowrap  /* Impede que o texto quebre em várias linhas */
+              px-4 py-2         /* Padding padrão */
+              md:px-6 md:py-3   /* Padding maior em telas médias/grandes */
+              rounded 
+              ${
+                activeTab === tab
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+              } 
+              transition-all duration-200
+            `}
           >
             {tab}
           </button>
@@ -803,7 +810,7 @@ export function Financial() {
                     ):(
                       <button
                       onClick={() => handleMarkAsPaid(r._id)}
-                      className="text-sm px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
+                      className="text-sm px-3 py-1 rounded bg-green-600 text-white hover:bg-green-700"
                     >
                       Pago
                     </button>                      
