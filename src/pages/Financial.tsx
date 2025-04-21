@@ -24,6 +24,8 @@ export function Financial() {
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
+  const [recurrenceTime, setRecurrenceTime] = useState('');
+
   const toggleDetails = (idx: number) => {
     setExpandedIndex((prev) => (prev === idx ? null : idx));
   };
@@ -39,56 +41,6 @@ export function Financial() {
     "Recorrente": "Recorrente",
     "Pago": "Pago",
   };
-  
-/*   const filteredReceivables = receivables.filter((r) => {
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const [day, month, year] = r.dueDate.split('/');
-    const dueDate = new Date(`${year}-${month}-${day}`);
-    dueDate.setHours(0, 0, 0, 0);
-
-
-    const status = r.status;
-  
-    const isDueBeforeToday = dueDate < today;
-    const isDueToday = dueDate.getTime() === today.getTime();
-    const isNotPaid = status !== "Pago";
-  
-    switch (activeTab) {
-      case "Atrasado":
-        // Está atrasado se a data é anterior a hoje E não está pago
-        return isDueBeforeToday && isNotPaid;
-  
-      case "A Receber":
-        // Deve aparecer aqui se a data for hoje, independentemente do status
-        return isDueToday;
-  
-      case "Pago":
-        // Somente status Pago, independentemente da data
-        return status === "Pago";
-  
-      case "Parcelado":
-        // Se for parcelado, não deve estar vencido nem ser hoje
-        return (
-          status === "Parcelado" &&
-          !isDueToday &&
-          !isDueBeforeToday
-        );
-  
-      case "Recorrente":
-        // Mesmo critério do parcelado, mas com status Recorrente
-        return (
-          status === "Recorrente" &&
-          !isDueToday &&
-          !isDueBeforeToday
-        );
-  
-      default:
-        return false;
-    }
-  });  */
 
   const filteredReceivables = receivables
     .filter((r) => {
@@ -377,6 +329,23 @@ export function Financial() {
     setLoading(false);
   }, []);
 
+  function calcularTempoDeRecorrencia(creationDate: string, dueDate: string): string {
+    const start = new Date(creationDate);
+    const end = new Date(dueDate);
+  
+    let months =
+      (end.getFullYear() - start.getFullYear()) * 12 +
+      (end.getMonth() - start.getMonth());
+  
+    // Se o dia do mês da data de vencimento for maior ou igual ao da criação, soma +1 mês
+    if (end.getDate() >= start.getDate()) {
+      months += 1;
+    }
+  
+    return `${months} ${months === 1 ? 'mês' : 'meses'}`;
+  }
+
+
 
   if (loading) return <div>Carregando...</div>;
 
@@ -399,56 +368,16 @@ export function Financial() {
       >
         Pagamentos
       </button>
+      <button
+        onClick={() => setView("receipts")}
+        className={`px-4 py-2 rounded font-medium ${
+          view === "receipts" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+        }`}
+      >Recebimentos
+      </button>
     
     </div>
 
-{/*     <div className="flex justify-end mb-4 gap-4">
-    <button
-      onClick={() => handleExportYearPDF()}
-      className="px-4 py-2 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg"
-    >
-      Exportar PDF ANUAL
-    </button>
-    <button
-      onClick={() => handleExportPDF()}
-      className="px-4 py-2 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg"
-    >
-      Exportar PDF MENSAL
-    </button>
-    <div className="flex gap-4">
-
-    <select
-      value={selectedMonth}
-      onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-      className="px-3 py-2 rounded border border-gray-300"
-    >
-      {[
-        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-      ].map((month, index) => (
-        <option key={index} value={index}>
-          {month}
-        </option>
-      ))}
-    </select>
-
-
-  <select
-    value={selectedYear}
-    onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-    className="px-3 py-2 rounded border border-gray-300"
-  >
-    {Array.from({ length: 10 }, (_, i) => {
-      const year = new Date().getFullYear() - i;
-      return (
-        <option key={year} value={year}>
-          {year}
-        </option>
-      );
-    })}
-  </select>
-  </div>
-    </div> */}
     <div className="flex flex-col md:flex-row justify-end mb-4 gap-4 md:items-center">
   <div className="flex flex-col md:flex-row gap-4">
     <button
@@ -673,10 +602,17 @@ export function Financial() {
             </button>
             </div>
             <div className="mt-8">
+            </div>            
+      </div>
+    )}
+
+    {view === "receipts" && (
+/*       <div>
+ 
               <h3 className="text-lg font-semibold mb-2">Recebimentos</h3>
-              {/* Abas de status */}
+
               <div className="mb-4">
-                {/* Mobile (dropdown) */}
+
                 <div className="md:hidden">
                   <select
                     value={activeTab}
@@ -700,7 +636,7 @@ export function Financial() {
               </label>
                 </div>
 
-                {/* Desktop (horizontal buttons) */}
+
                 <div className="hidden md:flex gap-2">
                   {Object.keys(statusMap).map((tab) => (
                     <button
@@ -726,10 +662,10 @@ export function Financial() {
                 />
               </label>
                 </div>
-              </div>
+              </div> 
+              
 
-              {/* Lista de recebimentos filtrados */}
-              <div className="bg-white rounded-lg shadow p-4 max-h-96 overflow-y-auto">
+               <div className="bg-white rounded-lg shadow p-4 max-h-96 overflow-y-auto">
                 {filteredReceivables.length === 0 ? (
                   <p className="text-gray-500">Nenhum lançamento ainda.</p>
                 ) : (
@@ -787,8 +723,121 @@ export function Financial() {
                   </div>
                 )}
               </div>
-            </div>            
+      </div> */
+      <div>
+    <h3 className="text-lg font-semibold mb-4">Recebimentos</h3>
+
+    {/* Filtros */}
+    <div className="mb-4">
+      <div className="md:hidden flex flex-col gap-2">
+        <select
+          value={activeTab}
+          onChange={(e) => setActiveTab(e.target.value)}
+          className="w-full px-4 py-2 rounded bg-gray-200 text-gray-800"
+        >
+          {Object.keys(statusMap).map((tab) => (
+            <option key={tab} value={tab}>
+              {tab}
+            </option>
+          ))}
+        </select>
+        <input
+          type="text"
+          placeholder="Pesquisar..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="border rounded px-2 py-1 w-full"
+        />
       </div>
+
+      <div className="hidden md:flex gap-2 items-center">
+        {Object.keys(statusMap).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 rounded ${
+              activeTab === tab
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+            } transition-all duration-200`}
+          >
+            {tab}
+          </button>
+        ))}
+        <input
+          type="text"
+          placeholder="Pesquisar..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="border rounded px-2 py-1 w-full"
+        />
+      </div>
+    </div>
+
+    {/* Cards */}
+    <div className="bg-white rounded-lg shadow p-4 max-h-96 overflow-y-auto">
+      {filteredReceivables.length === 0 ? (
+        <p className="text-gray-500">Nenhum lançamento ainda.</p>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {filteredReceivables.map((r, idx) => (
+            <div
+              key={idx}
+              className={`rounded-xl p-4 ${
+                r.status === "Pago" ? "bg-green-100" : "bg-gray-300"
+              }`}
+            >
+              <div className="flex justify-between items-center">
+                <p className="font-bold text-sm md:text-base">
+                  {r.customer.name || r.customer.razaoSocial}
+                </p>
+                {r.status !== "Pago" && (
+                  <div className="flex gap-2 items-center">
+                    <button
+                      onClick={() => handleMarkAsPaid(r._id)}
+                      className="text-sm px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
+                    >
+                      Último mês pago
+                    </button>
+  {/*                   <button className="text-sm px-3 py-1 rounded bg-gray-700 text-white hover:bg-gray-800">
+                      Desativar
+                    </button> */}
+                    <button
+                      onClick={() => handleDelete(r._id)}
+                      className="text-sm px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700"
+                    >
+                      Excluir
+                    </button>
+                    <button
+                      onClick={() => {toggleDetails(idx), setRecurrenceTime(calcularTempoDeRecorrencia(r.creationDate, r.dueDate))}}
+                      className="text-xl text-red-600 transform transition-transform duration-300"
+                    >
+                      {expandedIndex === idx ? "▲" : "▼"}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {expandedIndex === idx && (
+                <div className="mt-4 text-sm text-gray-800">
+                  <p><strong>Recorrência:</strong> R$ {r.value.toFixed(2)}</p>
+                  <p><strong>Data de início:</strong> {r.creationDate}</p>
+                  <p><strong>Dia de vencimento:</strong> {r.dueDate}</p>
+                  <p><strong>Descrição:</strong> {r.description}</p>
+                  <p><strong>Status:</strong> {r.status}</p>
+                  <p><strong>Tempo de recorrência:</strong> {recurrenceTime}</p>
+                  {r.history?.map((item, index) => (
+                    <p key={index}>{item.date} {item.status}</p>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+    </div>
+
     )}
     </div>
   )
